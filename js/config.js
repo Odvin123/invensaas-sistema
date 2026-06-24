@@ -3,7 +3,8 @@ const isLocal = window.location.hostname === 'localhost' ||
 
 const API_URLS = {
     local: 'http://localhost:4000/api',
-    production: 'https://invensaas-backend.onrender.com/api' // ← CAMBIA ESTO
+    production: 'https://invensaas-backend.onrender.com/api' 
+    
 };
 
 const API_URL = isLocal ? API_URLS.local : API_URLS.production;
