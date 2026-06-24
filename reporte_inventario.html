@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Movimientos de Inventario | InvenSaaS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/reporte_inventario.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1><i class="fas fa-boxes"></i> Reporte de Movimientos de Inventario</h1>
+            <a href="inventario_dashboard.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver al Panel Principal
+            </a>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="group">
+                <label><i class="fas fa-filter"></i> Tipo de Movimiento</label>
+                <select id="tipo-movimiento">
+                    <option value="TODOS">TODOS</option>
+                    <option value="ENTRADA">ENTRADA</option>
+                    <option value="SALIDA">SALIDA</option>
+                    <option value="AJUSTE">AJUSTE</option>
+                </select>
+            </div>
+            <div class="group">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
+                <input type="date" id="fecha-inicio">
+            </div>
+            <div class="group">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
+                <input type="date" id="fecha-fin">
+            </div>
+            <div class="actions">
+                <button class="btn btn-execute" id="btn-ejecutar"><i class="fas fa-play"></i> Ejecutar</button>
+                <button class="btn btn-refresh" id="btn-recargar"><i class="fas fa-sync-alt"></i> Recargar</button>
+                <button class="btn btn-export" id="btn-exportar"><i class="fas fa-file-export"></i> Exportar CSV</button>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-card">
+            <div class="table-wrapper">
+                <table id="movimientos-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Producto</th>
+                            <th>Tipo</th>
+                            <th style="text-align:center;">Cantidad</th>
+                            <th style="text-align:center;">Stock Antes</th>
+                            <th style="text-align:center;">Stock Después</th>
+                            <th>Usuario</th>
+                            <th>Referencia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="movimientos-tbody">
+                        <tr><td colspan="8" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando movimientos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Resumen -->
+        <div class="summary">
+            <div class="card">
+                <div class="label"><i class="fas fa-arrow-down" style="color:var(--success);"></i> Entradas</div>
+                <div class="value success" id="total-entradas">0</div>
+                <small>unidades ingresadas</small>
+            </div>
+            <div class="card">
+                <div class="label"><i class="fas fa-arrow-up" style="color:var(--danger);"></i> Salidas</div>
+                <div class="value danger" id="total-salidas">0</div>
+                <small>unidades vendidas</small>
+            </div>
+            <div class="card">
+                <div class="label"><i class="fas fa-balance-scale" style="color:var(--primary);"></i> Balance Neto</div>
+                <div class="value primary" id="balance-neto">0</div>
+                <small>(Entradas − Salidas)</small>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+<script src="js/reporte_inventario.js"></script>
+</body>
+</html>

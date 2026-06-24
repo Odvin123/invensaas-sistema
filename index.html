@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InvenSaaS - Inventario Multi-Tenant</title>
+    <link rel="icon" type="image/png" href="IM.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <style>
+        /* ============================================
+           RESET Y VARIABLES
+        ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+            --secondary: #0f172a;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 12px 40px rgba(99, 102, 241, 0.2);
+            --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--white);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ============================================
+           NAVBAR
+        ============================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 16px 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 900;
+            text-decoration: none;
+        }
+
+        .logo .icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .logo .text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo .text span {
+            color: var(--secondary);
+            -webkit-text-fill-color: var(--secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 15px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .btn-login {
+            padding: 10px 24px;
+            background: var(--primary-gradient);
+            color: white !important;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-login::after { display: none !important; }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        /* ============================================
+           HERO
+        ============================================ */
+        .hero {
+            padding: 140px 0 80px;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            opacity: 0.06;
+            animation: floatBlob 8s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            opacity: 0.04;
+            animation: floatBlob 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        .hero .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-content h1 {
+            font-size: 52px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-content h1 .highlight {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 18px;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 32px;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 14px 32px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 14px 32px;
+            background: transparent;
+            color: var(--secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .hero-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image .mockup {
+            width: 100%;
+            max-width: 500px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-hover);
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .hero-image .mockup .bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .hero-image .mockup .bar span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .hero-image .mockup .bar span:nth-child(1) { background: #ef4444; }
+        .hero-image .mockup .bar span:nth-child(2) { background: #f59e0b; }
+        .hero-image .mockup .bar span:nth-child(3) { background: #22c55e; }
+
+        .mockup-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .mockup-table th {
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .mockup-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .mockup-table .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge.green { background: #dcfce7; color: #16a34a; }
+        .badge.yellow { background: #fef3c7; color: #d97706; }
+        .badge.red { background: #fee2e2; color: #dc2626; }
+
+        /* ============================================
+           STATS
+        ============================================ */
+        .stats-section {
+            padding: 60px 0;
+            background: var(--light);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .stat-item .number {
+            font-size: 40px;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-item .label {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* ============================================
+           FEATURES
+        ============================================ */
+        .features-section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 48px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .feature-card {
+            padding: 32px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            background: var(--white);
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary);
+        }
+
+        .feature-card .icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           CTA
+        ============================================ */
+        .cta-section {
+            padding: 80px 0;
+            background: var(--secondary);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            margin-bottom: 32px;
+        }
+
+        .cta-section .btn-primary {
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        /* ============================================
+           FOOTER
+        ============================================ */
+        .footer {
+            padding: 40px 0;
+            background: var(--secondary);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+
+        .footer .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* ============================================
+           WHATSAPP FLOATING BUTTON
+        ============================================ */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 64px;
+            height: 64px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            z-index: 999;
+            text-decoration: none;
+            transition: var(--transition);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 32px rgba(37, 211, 102, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); }
+            50% { box-shadow: 0 4px 40px rgba(37, 211, 102, 0.6); }
+        }
+
+        .whatsapp-float svg {
+            width: 36px;
+            height: 36px;
+            fill: white;
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 992px) {
+            .hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content p {
+                margin: 0 auto 32px;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                background: var(--white);
+                padding: 24px;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow-hover);
+                position: absolute;
+                top: 70px;
+                left: 16px;
+                right: 16px;
+                gap: 16px;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .footer .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .whatsapp-float {
+                width: 56px;
+                height: 56px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .whatsapp-float svg {
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content h1 {
+                font-size: 28px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ============================================
+           ANIMACIONES
+        ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .animate-1 { animation-delay: 0.05s; }
+        .animate-2 { animation-delay: 0.10s; }
+        .animate-3 { animation-delay: 0.15s; }
+        .animate-4 { animation-delay: 0.20s; }
+        .animate-5 { animation-delay: 0.25s; }
+        .animate-6 { animation-delay: 0.30s; }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="#" class="logo">
+                <div class="icon"><i class="fas fa-cubes"></i></div>
+                <div class="text">Inven<span>SaaS</span></div>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#features">Características</a></li>
+                <li><a href="#about">Acerca de</a></li>
+                <li><a href="#contact">Contacto</a></li>
+                <li><a href="login.html" class="btn-login"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    HERO
+    ============================================ -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="animate animate-1">
+                    Gestión de Inventario<br>
+                    <span class="highlight">Multi-Tenant</span> Profesional
+                </h1>
+                <p class="animate animate-2">
+                    Controla tus productos, ventas y proveedores en un solo lugar. 
+                    Escalable, seguro y diseñado para múltiples sucursales o empresas.
+                </p>
+                <div class="hero-buttons animate animate-3">
+                    <a href="login.html" class="btn-primary">
+                        <i class="fas fa-rocket"></i> Comenzar Ahora
+                    </a>
+                    <a href="#features" class="btn-secondary">
+                        <i class="fas fa-info-circle"></i> Más Información
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image animate animate-4">
+                <div class="mockup">
+                    <div class="bar">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <table class="mockup-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Stock</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Laptop Pro</td>
+                                <td>12</td>
+                                <td><span class="badge green">En Stock</span></td>
+                            </tr>
+                            <tr>
+                                <td>Mouse Inalámbrico</td>
+                                <td>3</td>
+                                <td><span class="badge yellow">Stock Bajo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Monitor 27"</td>
+                                <td>0</td>
+                                <td><span class="badge red">Agotado</span></td>
+                            </tr>
+                            <tr>
+                                <td>Teclado Mecánico</td>
+                                <td>8</td>
+                                <td><span class="badge green">En Stock</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+    STATS
+    ============================================ -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item animate animate-1">
+                    <div class="number">1K+</div>
+                    <div class="label">Productos Gestionados</div>
+                </div>
+                <div class="stat-item animate animate-2">
+                    <div class="number">50+</div>
+                    <div class="label">Empresas Activas</div>
+                </div>
+                <div class="stat-item animate animate-3">
+                    <div class="number">99.9%</div>
+                    <div class="label">Uptime Garantizado</div>
+                </div>
+                <div class="stat-item animate animate-4">
+                    <div class="number">24/7</div>
+                    <div class="label">Soporte Técnico</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+    FEATURES
+    ============================================ -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <h2 class="section-title animate animate-1">¿Por qué elegir <span style="background:var(--primary-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">InvenSaaS</span>?</h2>
+            <p class="section-subtitle animate animate-2">
+                Una plataforma completa para la gestión de inventario con todas las herramientas que necesitas.
+            </p>
+            <div class="features-grid">
+                <div class="feature-card animate animate-3">
+                    <div class="icon"><i class="fas fa-layer-group"></i></div>
+                    <h3>Multi-Tenant</h3>
+                    <p>Gestiona múltiples empresas o sucursales desde una sola plataforma con total aislamiento de datos.</p>
+                </div>
+                <div class="feature-card animate animate-4">
+                    <div class="icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Reportes Avanzados</h3>
+                    <p>Visualiza ventas, movimientos de inventario y ganancias con gráficos interactivos en tiempo real.</p>
+                </div>
+                <div class="feature-card animate animate-5">
+                    <div class="icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Seguridad Garantizada</h3>
+                    <p>Autenticación JWT, hash de contraseñas y aislamiento total entre empresas para máxima protección.</p>
+                </div>
+                <div class="feature-card animate animate-3">
+                    <div class="icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h3>Punto de Venta</h3>
+                    <p>Sistema POS integrado con escáner de productos, tickets y múltiples métodos de pago.</p>
+                </div>
+                <div class="feature-card animate animate-4">
+                    <div class="icon"><i class="fas fa-sync-alt"></i></div>
+                    <h3>Movimientos en Vivo</h3>
+                    <p>Cada entrada, salida o ajuste de inventario se registra automáticamente con auditoría completa.</p>
+                </div>
+                <div class="feature-card animate animate-5">
+                    <div class="icon"><i class="fas fa-headset"></i></div>
+                    <h3>Soporte 24/7</h3>
+                    <p>Nuestro equipo está disponible para ayudarte en cualquier momento a través de WhatsApp y correo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+    CTA
+    ============================================ -->
+    <section class="cta-section" id="about">
+        <div class="container">
+            <h2 class="animate animate-1">¿Listo para transformar tu inventario?</h2>
+            <p class="animate animate-2">
+                Únete a cientos de empresas que ya confían en InvenSaaS para gestionar su inventario.
+            </p>
+            <a href="login.html" class="btn-primary animate animate-3">
+                <i class="fas fa-arrow-right"></i> Comenzar Gratis
+            </a>
+        </div>
+    </section>
+
+    <!-- ============================================
+    FOOTER
+    ============================================ -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <span>© 2025 InvenSaaS. Todos los derechos reservados.</span>
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-shield-alt"></i> Privacidad</a>
+                <a href="#"><i class="fas fa-file-contract"></i> Términos</a>
+                <a href="mailto:odvinenriquerivera12345@gmail.com"><i class="fas fa-envelope"></i> Contacto</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================
+    WHATSAPP FLOATING BUTTON
+    ============================================ -->
+    <a href="https://wa.me/50558764830?text=Hola,%20vengo%20desde%20InvenSaaS.%20Necesito%20m%C3%A1s%20informaci%C3%B3n." 
+       target="_blank"
+       class="whatsapp-float"
+       aria-label="Chatear con soporte en WhatsApp">
+        <svg viewBox="0 0 448 512">
+            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3 18.3-69.8-4-6.7c-16.06-27.05-25.7-59.4-25.7-94 0-111.9 91.1-203 203-203 49.8 0 96.6 18.4 136.2 50.2C383.6 119.3 412 163.9 412 213.1c0 37.9-11.1 74.3-31.7 106.1L422 420.5l-31.7-41.7c31.8-20.6 58.2-52 79.4-88.8z"/>
+        </svg>
+    </a>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Hamburger menu
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('open');
+        });
+
+        // Close menu on link click (mobile)
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.remove('open');
+            });
+        });
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            observer.observe(el);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

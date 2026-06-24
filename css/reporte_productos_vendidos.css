@@ -1,0 +1,297 @@
+/* ============================================
+   reporte_productos_vendidos.css - Diseño Moderno
+   ============================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --secondary: #0f172a;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --white: #ffffff;
+    --light: #f1f5f9;
+    --border: #e2e8f0;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.15);
+    --radius: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--light);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+}
+
+.container { max-width: 1400px; margin: 0 auto; }
+
+/* ============================================
+   HEADER
+   ============================================ */
+.page-header {
+    background: var(--white);
+    padding: 20px 28px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.page-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-header h1 i { color: var(--primary); }
+
+.page-header .btn-back {
+    padding: 10px 20px;
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.page-header .btn-back:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ============================================
+   TOOLBAR
+   ============================================ */
+.toolbar {
+    background: var(--white);
+    padding: 16px 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toolbar .actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.toolbar .actions .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.toolbar .actions .btn-print {
+    background: var(--secondary);
+    color: white;
+}
+.toolbar .actions .btn-print:hover { transform: translateY(-2px); }
+
+.toolbar .actions .btn-export {
+    background: var(--success);
+    color: white;
+}
+.toolbar .actions .btn-export:hover { transform: translateY(-2px); }
+
+.toolbar .filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: end;
+}
+
+.toolbar .filters .group label {
+    display: block;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.toolbar .filters .group input {
+    padding: 8px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    transition: var(--transition);
+}
+
+.toolbar .filters .group input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.toolbar .filters .btn-execute {
+    padding: 8px 16px;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.toolbar .filters .btn-execute:hover { transform: translateY(-2px); }
+
+.toolbar .filters .btn-refresh {
+    padding: 8px 16px;
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.toolbar .filters .btn-refresh:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ============================================
+   TABLA
+   ============================================ */
+.table-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.table-wrapper { overflow-x: auto; padding: 0 24px 24px; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+thead th {
+    text-align: left;
+    padding: 10px 12px;
+    background: var(--light);
+    color: var(--text-light);
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+}
+
+tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+tbody tr:hover td { background: rgba(99, 102, 241, 0.03); }
+
+tbody .empty {
+    text-align: center;
+    color: var(--text-light);
+    padding: 40px;
+}
+
+/* ============================================
+   TOTALES FOOTER
+   ============================================ */
+.totals-footer {
+    background: var(--white);
+    padding: 16px 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    text-align: center;
+}
+
+.totals-footer .item { padding: 8px; }
+
+.totals-footer .item .label {
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.totals-footer .item .value {
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.totals-footer .item .value.primary { color: var(--primary); }
+.totals-footer .item .value.success { color: var(--success); }
+.totals-footer .item .value.danger { color: var(--danger); }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    body { padding: 16px; }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+    }
+
+    .toolbar .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar .filters .group input { width: 100%; }
+
+    .table-wrapper { padding: 0 12px 16px; }
+    table { font-size: 12px; }
+    thead th, tbody td { padding: 6px 8px; }
+
+    .totals-footer {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}

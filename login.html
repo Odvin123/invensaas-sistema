@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - InvenSaaS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/png" href="IM.png" />
+
+    <script src="js/config.js"></script>
+    
+    <style>
+        /* ============================================
+           RESET Y VARIABLES
+        ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --secondary: #0f172a;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.2);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ============================================
+           FONDO CON EFECTO
+        ============================================ */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 600px;
+            height: 600px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            opacity: 0.06;
+            animation: floatBlob 8s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -20%;
+            width: 500px;
+            height: 500px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            opacity: 0.04;
+            animation: floatBlob 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        /* ============================================
+           CONTENEDOR PRINCIPAL
+        ============================================ */
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-hover);
+            padding: 40px;
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================
+           LOGO Y TÍTULO
+        ============================================ */
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: 900;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        .login-header .logo .icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .login-header .logo .text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-header .logo .text span {
+            color: var(--secondary);
+            -webkit-text-fill-color: var(--secondary);
+        }
+
+        .login-header h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+
+        .login-header p {
+            color: var(--text-light);
+            font-size: 15px;
+            margin-top: 4px;
+        }
+
+        /* ============================================
+           FORMULARIO
+        ============================================ */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .form-group .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group .input-wrapper input {
+            width: 100%;
+            padding: 12px 16px;
+            padding-right: 48px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition);
+            background: var(--light);
+        }
+
+        .form-group .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group .input-wrapper input::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-group .input-wrapper .toggle-password {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            transition: var(--transition);
+        }
+
+        .form-group .input-wrapper .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        /* ============================================
+           OPCIONES EXTRAS
+        ============================================ */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin: 4px 0 8px;
+        }
+
+        .form-options .back-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-options .back-link:hover {
+            color: var(--primary);
+        }
+
+        .form-options .forgot-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .form-options .forgot-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           BOTÓN PRINCIPAL
+        ============================================ */
+        .btn-login {
+            padding: 14px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-login i {
+            font-size: 18px;
+        }
+
+        /* ============================================
+           MENSAJES
+        ============================================ */
+        .message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #86efac;
+        }
+
+        /* ============================================
+           LOCKOUT MESSAGE
+        ============================================ */
+        .lockout-message {
+            display: none;
+            padding: 12px 16px;
+            background: #fef3c7;
+            color: #d97706;
+            border-radius: 10px;
+            border: 1px solid #fcd34d;
+            font-weight: 600;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .lockout-message .countdown {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--danger);
+        }
+
+        /* ============================================
+           FOOTER DEL LOGIN
+        ============================================ */
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .login-footer p {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .login-footer .brand-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer .brand-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 480px) {
+            .login-wrapper {
+                padding: 24px 20px;
+            }
+
+            .login-header .logo {
+                font-size: 24px;
+            }
+
+            .login-header h2 {
+                font-size: 20px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .form-options .forgot-link {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper" id="loginWrapper">
+        <!-- HEADER -->
+        <div class="login-header">
+            <div class="logo">
+                <div class="icon"><i class="fas fa-cubes"></i></div>
+                <div class="text">Inven<span>SaaS</span></div>
+            </div>
+            <h2>Bienvenido</h2>
+            <p>Accede a tu panel de gestión de inventario</p>
+        </div>
+
+        <!-- MENSAJES -->
+        <div id="message" class="message"></div>
+        <div id="lockoutMessage" class="lockout-message">
+            <i class="fas fa-lock"></i> Demasiados intentos fallidos.<br>
+            Intenta de nuevo en <span class="countdown" id="countdown">10</span> segundos.
+        </div>
+
+        <!-- FORMULARIO -->
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="tenantId"><i class="fas fa-building"></i> ID de Puesto/Empresa</label>
+                <div class="input-wrapper">
+                    <input type="text" id="tenantId" placeholder="" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" placeholder="usuario@empresa.com" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="••••••••" required />
+                    <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <a href="index.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Volver al Inicio
+                </a>
+                <a href="reset_password.html" class="forgot-link" id="forgotPasswordLink">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginButton">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            </button>
+        </form>
+
+        <!-- FOOTER -->
+        <div class="login-footer">
+            <p>© 2025 <a href="#" class="brand-link">InvenSaaS</a> — Gestión de inventario Multi-Tenant</p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        const API_URL_LOGIN = API_URL + '/login';
+        const loginForm = document.getElementById('loginForm');
+        const loginButton = document.getElementById('loginButton');
+        const messageEl = document.getElementById('message');
+        const lockoutMessage = document.getElementById('lockoutMessage');
+        const countdownSpan = document.getElementById('countdown');
+        const passwordInput = document.getElementById('password');
+        const togglePasswordButton = document.getElementById('togglePassword');
+
+        let failCount = 0;
+        const MAX_ATTEMPTS = 3;
+        const LOCKOUT_DURATION_MS = 10000;
+        let isLocked = false;
+        let lockoutTimer = null;
+
+        // ============================================
+        // TOGGLE CONTRASEÑA
+        // ============================================
+        togglePasswordButton.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+            this.setAttribute('aria-label', isPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
+        });
+
+        // ============================================
+        // LOCKOUT
+        // ============================================
+        function setLockout(duration) {
+            isLocked = true;
+            failCount = 0;
+
+            document.getElementById('tenantId').disabled = true;
+            document.getElementById('email').disabled = true;
+            passwordInput.disabled = true;
+            loginButton.disabled = true;
+            togglePasswordButton.disabled = true;
+
+            lockoutMessage.style.display = 'block';
+            let countdown = duration / 1000;
+            countdownSpan.textContent = countdown;
+
+            if (lockoutTimer) clearInterval(lockoutTimer);
+            lockoutTimer = setInterval(() => {
+                countdown--;
+                countdownSpan.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(lockoutTimer);
+                    unlockForm();
+                }
+            }, 1000);
+        }
+
+        function unlockForm() {
+            isLocked = false;
+            document.getElementById('tenantId').disabled = false;
+            document.getElementById('email').disabled = false;
+            passwordInput.disabled = false;
+            loginButton.disabled = false;
+            togglePasswordButton.disabled = false;
+            lockoutMessage.style.display = 'none';
+        }
+
+        // ============================================
+        // MOSTRAR MENSAJES
+        // ============================================
+        function showMessage(text, type = 'error') {
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+        }
+
+        function hideMessage() {
+            messageEl.style.display = 'none';
+        }
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessage();
+
+            if (isLocked) {
+                showMessage('El formulario está bloqueado. Espera unos segundos.', 'error');
+                return;
+            }
+
+            const tenant_id = document.getElementById('tenantId').value.trim();
+            const correo_electronico = document.getElementById('email').value.trim();
+            const password = passwordInput.value;
+
+            loginButton.disabled = true;
+            loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+
+            try {
+                const response = await fetch(API_URL_LOGIN, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tenant_id, correo_electronico, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    failCount = 0;
+
+                    sessionStorage.setItem('authToken', result.token);
+                    sessionStorage.setItem('userRol', result.rol);
+                    sessionStorage.setItem('tenantId', result.tenant_id);
+
+                    localStorage.setItem('token', result.token);
+                    localStorage.setItem('rol', result.rol);
+                    localStorage.setItem('tenant_id', result.tenant_id);
+
+                    if (result.necesitaCambioPw) {
+                        showMessage('🔐 Por seguridad, debes cambiar tu contraseña.', 'success');
+                        setTimeout(() => {
+                            window.location.href = `cambio_pw.html?tenant=${result.tenant_id}&email=${correo_electronico}`;
+                        }, 1500);
+                    } else {
+                        if (result.rol === 'super_admin') {
+                            window.location.href = 'superadmin_dashboard.html';
+                        } else {
+                            window.location.href = 'inventario_dashboard.html';
+                        }
+                    }
+                } else {
+                    failCount++;
+                    showMessage(result.message || 'Credenciales inválidas.', 'error');
+
+                    const remaining = MAX_ATTEMPTS - failCount;
+                    if (remaining > 0 && failCount >= MAX_ATTEMPTS) {
+                        showMessage(`🔒 Demasiados intentos. Bloqueo temporal de 10 segundos.`, 'error');
+                        setLockout(LOCKOUT_DURATION_MS);
+                    }
+                }
+            } catch (error) {
+                showMessage('Error de conexión con el servidor.', 'error');
+            } finally {
+                loginButton.disabled = isLocked;
+                loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+            }
+        });
+
+        // ============================================
+        // PRECARGAR TENANT DESDE URL
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tenant = urlParams.get('tenant');
+            if (tenant) {
+                document.getElementById('tenantId').value = tenant;
+            }
+        });
+    </script>
+</body>
+</html>

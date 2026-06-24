@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Productos Vendidos | InvenSaaS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/reporte_productos_vendidos.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1><i class="fas fa-shopping-bag"></i> Reporte de Productos Vendidos</h1>
+            <a href="inventario_dashboard.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver al Panel Principal
+            </a>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="actions">
+                <button class="btn btn-print" id="btn-imprimir"><i class="fas fa-print"></i> Imprimir</button>
+                <button class="btn btn-export" id="btn-exportar"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+            </div>
+            <div class="filters">
+                <div class="group">
+                    <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
+                    <input type="date" id="fecha-inicio">
+                </div>
+                <div class="group">
+                    <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
+                    <input type="date" id="fecha-fin">
+                </div>
+                <button class="btn-execute" id="btn-ejecutar"><i class="fas fa-play"></i> Ejecutar</button>
+                <button class="btn-refresh" id="btn-recargar"><i class="fas fa-sync-alt"></i> Recargar</button>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-card">
+            <div class="table-wrapper">
+                <table id="productos-vendidos-table">
+                    <thead>
+                        <tr>
+                            <th>FECHA</th>
+                            <th>CLAVE</th>
+                            <th>DESCRIPCIÓN</th>
+                            <th style="text-align:center;">CANTIDAD</th>
+                            <th style="text-align:right;">VENTA</th>
+                            <th style="text-align:right;">PRECIO</th>
+                            <th style="text-align:right;">COSTO</th>
+                            <th style="text-align:right;">RECUPERACIÓN</th>
+                            <th style="text-align:right;">GANANCIA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productos-tbody">
+                        <tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando productos vendidos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Totales -->
+        <div class="totals-footer">
+            <div class="item">
+                <div class="label">VENTA TOTAL</div>
+                <div class="value primary" id="venta-total">C$0.00</div>
+            </div>
+            <div class="item">
+                <div class="label">RECUPERACIÓN</div>
+                <div class="value primary" id="recuperacion-total">C$0.00</div>
+            </div>
+            <div class="item">
+                <div class="label">GANANCIA</div>
+                <div class="value success" id="ganancia-total">C$0.00</div>
+            </div>
+        </div>
+    </div>
+
+   <script src="js/config.js"></script>
+<script src="js/reporte_productos_vendidos.js"></script>
+
+</body>
+</html>

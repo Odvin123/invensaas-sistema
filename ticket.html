@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Factura - InvenSaaS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .ticket-wrapper {
+            background: #ffffff;
+            max-width: 400px;
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            padding: 32px 28px;
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .ticket-header {
+            text-align: center;
+            border-bottom: 2px dashed #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ticket-header .logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .ticket-header .logo span {
+            color: #0f172a;
+            -webkit-text-fill-color: #0f172a;
+        }
+
+        .ticket-header .company-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 4px;
+        }
+
+        .ticket-header .company-info {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .ticket-header .ticket-type {
+            display: inline-block;
+            background: #6366f1;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        .ticket-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+        }
+
+        .ticket-info .label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .ticket-info .value {
+            font-weight: 600;
+            color: #0f172a;
+            text-align: right;
+        }
+
+        .ticket-info .full-width {
+            grid-column: 1 / -1;
+            text-align: center;
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+
+        .ticket-products {
+            margin-bottom: 16px;
+        }
+
+        .ticket-products table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .ticket-products thead th {
+            text-align: left;
+            padding: 8px 4px;
+            border-bottom: 2px solid #e2e8f0;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ticket-products thead th:last-child {
+            text-align: right;
+        }
+
+        .ticket-products tbody td {
+            padding: 6px 4px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .ticket-products tbody td:last-child {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .ticket-products tbody .product-name {
+            font-weight: 500;
+        }
+
+        .ticket-products tbody .product-detail {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .ticket-totals {
+            border-top: 2px dashed #e2e8f0;
+            padding-top: 16px;
+            margin-top: 4px;
+        }
+
+        .ticket-totals .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 14px;
+        }
+
+        .ticket-totals .row.total {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f172a;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        .ticket-totals .row.total .label {
+            color: #0f172a;
+        }
+
+        .ticket-totals .row.total .value {
+            color: #6366f1;
+        }
+
+        .ticket-totals .row .label {
+            color: #64748b;
+        }
+
+        .ticket-totals .row .value {
+            font-weight: 600;
+        }
+
+        .ticket-payments {
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 12px;
+        }
+
+        .ticket-payments .row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding: 2px 0;
+        }
+
+        .ticket-payments .row .label {
+            color: #64748b;
+        }
+
+        .ticket-payments .row .value {
+            font-weight: 600;
+        }
+
+        .ticket-payments .row.cambio .value {
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+        .ticket-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 2px dashed #e2e8f0;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .ticket-footer .thanks {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .ticket-footer .qr-placeholder {
+            display: inline-block;
+            background: #f1f5f9;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .btn-download {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-download i {
+            margin-right: 8px;
+        }
+
+        .btn-print {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-print:hover {
+            background: #1e293b;
+        }
+
+        .btn-print i {
+            margin-right: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .ticket-wrapper {
+                padding: 20px 16px;
+            }
+
+            .ticket-header .logo {
+                font-size: 24px;
+            }
+
+            .ticket-totals .row.total {
+                font-size: 18px;
+            }
+
+            .ticket-info {
+                font-size: 12px;
+                padding: 10px 12px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .ticket-wrapper {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            .btn-download,
+            .btn-print {
+                display: none !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ticket-wrapper" id="ticketWrapper">
+        <!-- HEADER -->
+        <div class="ticket-header">
+            <span class="logo">Inven<span>SaaS</span></span>
+            <div class="company-name" id="ticket-company">CARGANDO...</div>
+            <div class="company-info">Sistema de Gestión de Inventario</div>
+            <span class="ticket-type">FACTURA</span>
+        </div>
+
+        <!-- INFO -->
+        <div class="ticket-info">
+            <span class="label">Folio:</span>
+            <span class="value" id="ticket-folio">#--</span>
+            <span class="label">Fecha:</span>
+            <span class="value" id="ticket-fecha">--</span>
+            <span class="label">Cliente:</span>
+            <span class="value" id="ticket-cliente">--</span>
+            <span class="label">Vendedor:</span>
+            <span class="value" id="ticket-vendedor">--</span>
+            <div class="full-width">
+                <i class="fas fa-check-circle" style="color:#22c55e;"></i> Pago en Efectivo
+            </div>
+        </div>
+
+        <!-- PRODUCTOS -->
+        <div class="ticket-products">
+            <table>
+                <thead>
+                    <tr>
+                        <th>CANT.</th>
+                        <th>DESCRIPCIÓN</th>
+                        <th style="text-align:right;">TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody id="ticket-items">
+                    <tr>
+                        <td colspan="3" style="text-align:center; color:#94a3b8; padding:20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Cargando...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TOTALES -->
+        <div class="ticket-totals">
+            <div class="row">
+                <span class="label">Subtotal</span>
+                <span class="value" id="ticket-subtotal">C$0.00</span>
+            </div>
+            <div class="row">
+                <span class="label">IVA (0%)</span>
+                <span class="value">C$0.00</span>
+            </div>
+            <div class="row">
+                <span class="label">Descuento</span>
+                <span class="value">C$0.00</span>
+            </div>
+            <div class="row total">
+                <span class="label">TOTAL</span>
+                <span class="value" id="ticket-total">C$0.00</span>
+            </div>
+        </div>
+
+        <!-- PAGOS -->
+        <div class="ticket-payments">
+            <div class="row">
+                <span class="label">Efectivo recibido</span>
+                <span class="value" id="ticket-efectivo">C$0.00</span>
+            </div>
+            <div class="row cambio">
+                <span class="label"><i class="fas fa-arrow-left"></i> Cambio</span>
+                <span class="value" id="ticket-cambio">C$0.00</span>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="ticket-footer">
+            <div class="thanks">¡Gracias por su compra!</div>
+            <p>Este documento es un comprobante de pago válido.</p>
+            <div class="qr-placeholder">
+                <i class="fas fa-qrcode"></i> InvenSaaS - Facturación Electrónica
+            </div>
+        </div>
+
+        <!-- BOTONES -->
+        <button class="btn-download no-print" onclick="downloadTicket()">
+            <i class="fas fa-download"></i> Descargar Factura
+        </button>
+        <button class="btn-print no-print" onclick="window.print()">
+            <i class="fas fa-print"></i> Imprimir Factura
+        </button>
+    </div>
+
+    <!-- ✅ SCRIPT EXTERNO -->
+    <script src="js/ticket.js"></script>
+
+</body>
+</html>

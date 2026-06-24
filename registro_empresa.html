@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Empresa - InvenSaaS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="js/config.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --secondary: #0f172a;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.2);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 600px;
+            height: 600px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            opacity: 0.06;
+            animation: floatBlob 8s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -20%;
+            width: 500px;
+            height: 500px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            opacity: 0.04;
+            animation: floatBlob 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        .register-wrapper {
+            width: 100%;
+            max-width: 480px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-hover);
+            padding: 40px;
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .register-header .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: 900;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        .register-header .logo .icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .register-header .logo .text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .register-header .logo .text span {
+            color: var(--secondary);
+            -webkit-text-fill-color: var(--secondary);
+        }
+
+        .register-header h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-top: 8px;
+        }
+
+        .register-header p {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .register-header .invite-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+            font-size: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition);
+            background: var(--light);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+        }
+
+        .form-group input::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-group .helper {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #86efac;
+        }
+
+        .btn-submit {
+            padding: 14px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .register-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .register-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .register-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .register-wrapper { padding: 24px 20px; }
+            .register-header .logo { font-size: 24px; }
+            .register-header h2 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-wrapper">
+        <div class="register-header">
+            <div class="logo">
+                <div class="icon"><i class="fas fa-cubes"></i></div>
+                <div class="text">Inven<span>SaaS</span></div>
+            </div>
+            <h2>Registro de Empresa</h2>
+            <p>Completa tus datos para crear tu cuenta</p>
+            <span class="invite-badge"><i class="fas fa-envelope"></i> Invitación</span>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <form class="register-form" id="registerForm">
+            <div class="form-group">
+                <label><i class="fas fa-building"></i> ID de Puesto/Empresa <span class="required">*</span></label>
+                <input type="text" id="tenant_id" placeholder="ej: miempresa" required>
+                <div class="helper">Sin espacios, solo letras y números</div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-store"></i> Nombre de la Empresa <span class="required">*</span></label>
+                <input type="text" id="nombre_empresa" placeholder="Mi Empresa S.A." required>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Nombre del Administrador <span class="required">*</span></label>
+                <input type="text" id="nombre_admin" placeholder="Nombre completo" required>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Correo Electrónico <span class="required">*</span></label>
+                <input type="email" id="correo_electronico" placeholder="admin@empresa.com" required>
+                <div class="helper">Solo dominios: @gmail.com, @outlook.com, @yahoo.com, @icloud.com</div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Contraseña <span class="required">*</span></label>
+                <input type="password" id="password" placeholder="Mínimo 6 caracteres" required minlength="6">
+                <div class="helper">Mínimo 6 caracteres</div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-check-circle"></i> Confirmar Contraseña <span class="required">*</span></label>
+                <input type="password" id="confirm_password" placeholder="Repite tu contraseña" required>
+            </div>
+
+            <button type="submit" class="btn-submit" id="registerButton">
+                <i class="fas fa-user-plus"></i> Registrar Empresa
+            </button>
+        </form>
+
+        <div class="register-footer">
+            <a href="login.html"><i class="fas fa-arrow-left"></i> Volver al Login</a>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // REGISTRO DE EMPRESA
+        // ============================================
+
+        const form = document.getElementById('registerForm');
+        const message = document.getElementById('message');
+        const btn = document.getElementById('registerButton');
+
+        // ✅ Validar dominios de correo
+        const emailRegex = /^[^\s@]+@(gmail\.com|outlook\.com|yahoo\.com|icloud\.com)$/i;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            message.className = 'message';
+            message.style.display = 'none';
+
+            // Obtener datos
+            const tenant_id = document.getElementById('tenant_id').value.trim();
+            const nombre_empresa = document.getElementById('nombre_empresa').value.trim();
+            const nombre_admin = document.getElementById('nombre_admin').value.trim();
+            const correo_electronico = document.getElementById('correo_electronico').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
+
+            // ✅ Validaciones
+            if (tenant_id.toLowerCase() === 'super_admin') {
+                showMessage('❌ El Tenant ID "super_admin" está reservado.', 'error');
+                return;
+            }
+
+            if (!emailRegex.test(correo_electronico)) {
+                showMessage('❌ Correo inválido. Solo se permiten: @gmail.com, @outlook.com, @yahoo.com, @icloud.com', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('❌ La contraseña debe tener al menos 6 caracteres.', 'error');
+                return;
+            }
+
+            if (password !== confirm_password) {
+                showMessage('❌ Las contraseñas no coinciden.', 'error');
+                return;
+            }
+
+            // ✅ Verificar que el Tenant ID no exista
+            try {
+                const checkResponse = await fetch(`${API_URL}/check-tenant/${tenant_id}`);
+                const checkResult = await checkResponse.json();
+
+                if (checkResult.exists) {
+                    showMessage(`❌ El Tenant ID "${tenant_id}" ya está en uso.`, 'error');
+                    return;
+                }
+            } catch (error) {
+                showMessage('❌ Error al verificar disponibilidad.', 'error');
+                return;
+            }
+
+            // ✅ Enviar registro
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+
+            try {
+                const data = {
+                    tenant_id,
+                    nombre_empresa,
+                    nombre_admin,
+                    correo_electronico,
+                    password,
+                    forzar_cambio_pw: true
+                };
+
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showMessage(`✅ ¡Empresa "${nombre_empresa}" registrada exitosamente!`, 'success');
+                    
+                    // Mostrar credenciales
+                    setTimeout(() => {
+                        alert(`✅ ¡Registro exitoso!\n\nTenant ID: ${tenant_id}\nCorreo: ${correo_electronico}\n\nAhora puedes iniciar sesión.`);
+                        window.location.href = `login.html?tenant=${tenant_id}`;
+                    }, 1500);
+                } else {
+                    showMessage('❌ Error: ' + (result.message || 'Error desconocido.'), 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error de conexión con el servidor.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Registrar Empresa';
+            }
+        });
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = 'message ' + type;
+            message.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
