@@ -1,3 +1,6 @@
+¡Perfecto! Aquí tienes el código completo de `punto_de_venta.html` con el botón Cobrar corregido:
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -84,7 +87,8 @@
                     <div class="amount" id="total-amount">C$0.00</div>
                 </div>
 
-                <button class="btn-cobrar" onclick="handleCobrar()" id="btnCobrar">
+                <!-- 🔥 BOTÓN COBRAR CORREGIDO -->
+                <button class="btn-cobrar" id="btnCobrar" type="button">
                     <i class="fas fa-cash-register"></i> Cobrar (F8)
                 </button>
 
@@ -137,7 +141,8 @@
                     <div style="flex: 1;">
                         <label for="cantidad_venta">Cantidad a Vender:</label>
                         <input type="number" id="cantidad_venta" required min="0.01" step="any" value="1" oninput="validateStock()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; -moz-appearance:textfield;" 
-       onfocus="this.select()" inputmode="decimal">
+                               onfocus="this.select()" inputmode="decimal">
+                    </div>
                     <div style="flex: 1;">
                         <label for="existencia_stock">Existencia (Stock):</label>
                         <input type="text" id="existencia_stock" disabled style="background:var(--light);">
@@ -533,39 +538,40 @@
         }
 
         function selectProductForSale(productId) {
-    const producto = productosInventarioCache.find(p => p.id === productId);
-    if (!producto) return;
+            const producto = productosInventarioCache.find(p => p.id === productId);
+            if (!producto) return;
 
-    document.getElementById('selected_product_id').value = producto.id;
-    document.getElementById('selected_product_clave').value = producto.id;
-    document.getElementById('producto_nombre').value = producto.descripcion;
-    document.getElementById('existencia_stock').value = parseFloat(producto.stock).toFixed(2);
-    document.getElementById('precio_unitario').value = `C$${parseFloat(producto.precio).toFixed(2)}`;
-    document.getElementById('cantidad_venta').value = '1.00';
+            document.getElementById('selected_product_id').value = producto.id;
+            document.getElementById('selected_product_clave').value = producto.id;
+            document.getElementById('producto_nombre').value = producto.descripcion;
+            document.getElementById('existencia_stock').value = parseFloat(producto.stock).toFixed(2);
+            document.getElementById('precio_unitario').value = `C$${parseFloat(producto.precio).toFixed(2)}`;
+            document.getElementById('cantidad_venta').value = '1.00';
 
-    closeBusquedaProductoModal();
-    validateStock();
-}
-
-      function validateStock() {
-    const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
-    const cantidadInput = document.getElementById('cantidad_venta');
-    let cantidad = parseFloat(cantidadInput.value) || 0;
-
-    if (isNaN(cantidad) || cantidad <= 0) {
-        cantidadInput.value = 1.00;
-        cantidad = 1.00;
-    }
-
-    if (stock !== '--' && stock < cantidad) {
-        alert(`Stock Insuficiente. Solo hay ${stock.toFixed(2)} unidades disponibles.`);
-        cantidadInput.value = stock > 0 ? stock.toFixed(2) : 1.00;
-        if (stock <= 0) {
-            alert("Este producto no tiene stock disponible.");
-            cantidadInput.value = 1.00;
+            closeBusquedaProductoModal();
+            validateStock();
         }
-    }
-}
+
+        function validateStock() {
+            const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
+            const cantidadInput = document.getElementById('cantidad_venta');
+            let cantidad = parseFloat(cantidadInput.value) || 0;
+
+            if (isNaN(cantidad) || cantidad <= 0) {
+                cantidadInput.value = 1.00;
+                cantidad = 1.00;
+            }
+
+            if (stock !== '--' && stock < cantidad) {
+                alert(`Stock Insuficiente. Solo hay ${stock.toFixed(2)} unidades disponibles.`);
+                cantidadInput.value = stock > 0 ? stock.toFixed(2) : 1.00;
+                if (stock <= 0) {
+                    alert("Este producto no tiene stock disponible.");
+                    cantidadInput.value = 1.00;
+                }
+            }
+        }
+
         function clearMovimientoInputs() {
             document.getElementById('selected_product_id').value = '';
             document.getElementById('selected_product_clave').value = '';
@@ -580,39 +586,39 @@
         // ============================================
 
         document.getElementById('movimientoVentasForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const productId = parseInt(document.getElementById('selected_product_id').value);
-    const cantidad = parseFloat(document.getElementById('cantidad_venta').value) || 0;
-    const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
-    const precioStr = document.getElementById('precio_unitario').value.replace('C$', '');
-    const precio = parseFloat(precioStr) || 0;
+            e.preventDefault();
+            const productId = parseInt(document.getElementById('selected_product_id').value);
+            const cantidad = parseFloat(document.getElementById('cantidad_venta').value) || 0;
+            const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
+            const precioStr = document.getElementById('precio_unitario').value.replace('C$', '');
+            const precio = parseFloat(precioStr) || 0;
 
-    if (!productId) { alert("Debe seleccionar un producto primero."); return; }
-    if (cantidad <= 0 || isNaN(cantidad)) { alert("La cantidad debe ser un número positivo."); return; }
+            if (!productId) { alert("Debe seleccionar un producto primero."); return; }
+            if (cantidad <= 0 || isNaN(cantidad)) { alert("La cantidad debe ser un número positivo."); return; }
 
-    const productoData = productosInventarioCache.find(p => p.id === productId);
-    if (!productoData) return;
+            const productoData = productosInventarioCache.find(p => p.id === productId);
+            if (!productoData) return;
 
-    const existingItem = ventaActual.find(item => item.id === productId);
-    const currentlyInSale = existingItem ? existingItem.cantidad : 0;
+            const existingItem = ventaActual.find(item => item.id === productId);
+            const currentlyInSale = existingItem ? existingItem.cantidad : 0;
 
-    if ((currentlyInSale + cantidad) > stock) {
-        alert(`Stock Insuficiente. Al añadir ${cantidad.toFixed(2)}, se superaría el stock disponible de ${stock.toFixed(2)}.`);
-        return;
-    }
+            if ((currentlyInSale + cantidad) > stock) {
+                alert(`Stock Insuficiente. Al añadir ${cantidad.toFixed(2)}, se superaría el stock disponible de ${stock.toFixed(2)}.`);
+                return;
+            }
 
-    addProductToSale(productoData, cantidad, precio);
-    closeMovimientoVentasModal();
-});
+            addProductToSale(productoData, cantidad, precio);
+            closeMovimientoVentasModal();
+        });
 
         function addProductToSale(producto, cantidad, precio) {
-             cantidad = parseFloat(cantidad) || 0;
-    precio = parseFloat(precio) || 0;
+            cantidad = parseFloat(cantidad) || 0;
+            precio = parseFloat(precio) || 0;
 
-    if (cantidad <= 0) {
-        alert("La cantidad debe ser mayor a 0.");
-        return;
-    }
+            if (cantidad <= 0) {
+                alert("La cantidad debe ser mayor a 0.");
+                return;
+            }
 
             const importe = cantidad * precio;
 
@@ -716,6 +722,8 @@
         }
 
         function handleCobrar() {
+            console.log('💰 handleCobrar() ejecutado');
+            
             if (ventaActual.length === 0) {
                 alert("No hay productos en la venta para cobrar.");
                 return;
@@ -727,146 +735,149 @@
             const totalVentaStr = document.getElementById('total-amount').textContent.replace('C$', '');
             const totalVenta = parseFloat(totalVentaStr);
 
+            console.log('📊 Total a cobrar:', totalVenta);
+            console.log('👤 Cliente:', clienteActualNombre);
+            console.log('👤 Vendedor:', vendedorActualNombre);
+
             openCajaModal(totalVenta, clienteActualNombre, vendedorActualNombre);
         }
-async function finalizarVentaDesdeCaja() {
-    const totalVentaStr = document.getElementById('total-amount').textContent.replace('C$', '');
-    const totalVenta = parseFloat(totalVentaStr);
 
-    const efectivo = parseFloat(document.getElementById('pago-efectivo').value) || 0;
-    const tarjeta = parseFloat(document.getElementById('pago-tarjeta').value) || 0;
-    const transferencia = parseFloat(document.getElementById('pago-transferencia').value) || 0;
-    const credito = parseFloat(document.getElementById('pago-credito').value) || 0;
+        async function finalizarVentaDesdeCaja() {
+            const totalVentaStr = document.getElementById('total-amount').textContent.replace('C$', '');
+            const totalVenta = parseFloat(totalVentaStr);
 
-    const totalPagado = efectivo + tarjeta + transferencia + credito;
+            const efectivo = parseFloat(document.getElementById('pago-efectivo').value) || 0;
+            const tarjeta = parseFloat(document.getElementById('pago-tarjeta').value) || 0;
+            const transferencia = parseFloat(document.getElementById('pago-transferencia').value) || 0;
+            const credito = parseFloat(document.getElementById('pago-credito').value) || 0;
 
-    if (totalPagado < totalVenta) {
-        alert(`¡ERROR! Falta pagar C$${(totalVenta - totalPagado).toFixed(2)}. Complete el pago.`);
-        return;
-    }
+            const totalPagado = efectivo + tarjeta + transferencia + credito;
 
-    const pagos = [];
-    if (efectivo > 0) pagos.push({ metodo: 'Efectivo', monto: efectivo });
-    if (tarjeta > 0) pagos.push({ metodo: 'Tarjeta', monto: tarjeta });
-    if (transferencia > 0) pagos.push({ metodo: 'Transferencia', monto: transferencia });
-    if (credito > 0) pagos.push({ metodo: 'Credito', monto: credito });
+            if (totalPagado < totalVenta) {
+                alert(`¡ERROR! Falta pagar C$${(totalVenta - totalPagado).toFixed(2)}. Complete el pago.`);
+                return;
+            }
 
-    if (pagos.length === 0) {
-        alert("Debe ingresar al menos un pago para finalizar la venta.");
-        return;
-    }
+            const pagos = [];
+            if (efectivo > 0) pagos.push({ metodo: 'Efectivo', monto: efectivo });
+            if (tarjeta > 0) pagos.push({ metodo: 'Tarjeta', monto: tarjeta });
+            if (transferencia > 0) pagos.push({ metodo: 'Transferencia', monto: transferencia });
+            if (credito > 0) pagos.push({ metodo: 'Credito', monto: credito });
 
-    const btnAceptar = document.querySelector('#cajaModal .btn-primary');
-    btnAceptar.disabled = true;
+            if (pagos.length === 0) {
+                alert("Debe ingresar al menos un pago para finalizar la venta.");
+                return;
+            }
 
-    try {
-        const ventaData = {
-            cliente_id: parseInt(localStorage.getItem('currentClienteId')) || 1,
-            vendedor_id: parseInt(localStorage.getItem('currentVendedorId')) || 1,
-            es_factura: document.getElementById('check-factura').checked,
-            detalles: ventaActual.map(item => ({
-                producto_id: item.id,
-                cantidad: item.cantidad,
-                precio_unitario: item.precio
-            })),
-            pagos: pagos
-        };
+            const btnAceptar = document.querySelector('#cajaModal .btn-primary');
+            btnAceptar.disabled = true;
 
-        const response = await fetch(`${API_URL}/admin/ventas`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(ventaData)
-        });
+            try {
+                const ventaData = {
+                    cliente_id: parseInt(localStorage.getItem('currentClienteId')) || 1,
+                    vendedor_id: parseInt(localStorage.getItem('currentVendedorId')) || 1,
+                    es_factura: document.getElementById('check-factura').checked,
+                    detalles: ventaActual.map(item => ({
+                        producto_id: item.id,
+                        cantidad: item.cantidad,
+                        precio_unitario: item.precio
+                    })),
+                    pagos: pagos
+                };
 
-        const result = await response.json();
+                const response = await fetch(`${API_URL}/admin/ventas`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(ventaData)
+                });
 
-        if (response.ok && result.success) {
-            alert(`¡ÉXITO! Venta #${result.folio} registrada. Cambio: C$${result.cambio}`);
+                const result = await response.json();
 
-            // ✅ PASAR TODOS LOS DATOS
-            const clienteNombre = window.currentClienteNombre || localStorage.getItem('currentClienteName') || 'PUBLICO EN GENERAL';
-            const vendedorNombre = window.currentVendedorNombre || localStorage.getItem('currentVendedorName') || 'MOSTRADOR';
+                if (response.ok && result.success) {
+                    alert(`¡ÉXITO! Venta #${result.folio} registrada. Cambio: C$${result.cambio}`);
 
-            // ✅ LLAMAR A GENERATE TICKET CON EL EFECTIVO
-            generateTicket(
-                result.folio,           // folio
-                ventaActual,            // productos
-                totalVenta,             // total
-                clienteNombre,          // cliente
-                vendedorNombre,         // vendedor
-                result.cambio,          // cambio
-                efectivo                // ✅ efectivo recibido
-            );
+                    const clienteNombre = window.currentClienteNombre || localStorage.getItem('currentClienteName') || 'PUBLICO EN GENERAL';
+                    const vendedorNombre = window.currentVendedorNombre || localStorage.getItem('currentVendedorName') || 'MOSTRADOR';
 
-            ventaActual = [];
-            renderVentaActual();
-            closeCajaModal();
-            loadInventarioPDV();
+                    generateTicket(
+                        result.folio,
+                        ventaActual,
+                        totalVenta,
+                        clienteNombre,
+                        vendedorNombre,
+                        result.cambio,
+                        efectivo
+                    );
 
-        } else {
-            alert('Error al registrar la venta: ' + (result.message || 'Error desconocido.'));
+                    ventaActual = [];
+                    renderVentaActual();
+                    closeCajaModal();
+                    loadInventarioPDV();
+
+                } else {
+                    alert('Error al registrar la venta: ' + (result.message || 'Error desconocido.'));
+                }
+            } catch (error) {
+                alert('Error de conexión o de red al procesar la venta.');
+                console.error('Error:', error);
+            } finally {
+                btnAceptar.disabled = false;
+            }
         }
-    } catch (error) {
-        alert('Error de conexión o de red al procesar la venta.');
-        console.error('Error:', error);
-    } finally {
-        btnAceptar.disabled = false;
-    }
-}
-    //ticket
-function generateTicket(folio, productos, total, clienteNombre, vendedorNombre, cambio, efectivo) {
-    console.log('🔍 generateTicket llamado con:');
-    console.log('  folio:', folio);
-    console.log('  productos:', productos);
-    console.log('  total:', total);
-    console.log('  clienteNombre:', clienteNombre);
-    console.log('  vendedorNombre:', vendedorNombre);
-    console.log('  cambio:', cambio);
-    console.log('  efectivo:', efectivo);
 
-    const now = new Date();
-    const fechaHora = now.toLocaleString('es-NI');
-    const nombreEmpresa = localStorage.getItem('nombre_empresa') || 'TU EMPRESA';
+        // ============================================
+        // TICKET
+        // ============================================
 
-    if (!productos || productos.length === 0) {
-        alert('⚠️ No hay productos para generar la factura.');
-        return;
-    }
+        function generateTicket(folio, productos, total, clienteNombre, vendedorNombre, cambio, efectivo) {
+            console.log('🔍 generateTicket llamado con:');
+            console.log('  folio:', folio);
+            console.log('  productos:', productos);
+            console.log('  total:', total);
+            console.log('  clienteNombre:', clienteNombre);
+            console.log('  vendedorNombre:', vendedorNombre);
+            console.log('  cambio:', cambio);
+            console.log('  efectivo:', efectivo);
 
-    const ticketData = {
-        folio: folio || 0,
-        fechaHora: fechaHora,
-        clienteNombre: clienteNombre || 'PUBLICO EN GENERAL',
-        vendedorNombre: vendedorNombre || 'MOSTRADOR',
-        productos: productos.map(p => ({
-            id: p.id || p.clave || 'N/A',
-            descripcion: p.descripcion || 'Sin descripción',
-            cantidad: p.cantidad || 1,
-            precio: p.precio || 0,
-            importe: (p.cantidad || 1) * (p.precio || 0)
-        })),
-        total: total || 0,
-        cambio: cambio || 0,
-        efectivo: efectivo || total || 0,
-        nombreEmpresa: nombreEmpresa
-    };
+            const now = new Date();
+            const fechaHora = now.toLocaleString('es-NI');
+            const nombreEmpresa = localStorage.getItem('nombre_empresa') || 'TU EMPRESA';
 
-    console.log('📄 Datos a guardar:', ticketData);
+            if (!productos || productos.length === 0) {
+                alert('⚠️ No hay productos para generar la factura.');
+                return;
+            }
 
-    // ✅ GUARDAR EN localStorage
-    localStorage.setItem('ticketData', JSON.stringify(ticketData));
+            const ticketData = {
+                folio: folio || 0,
+                fechaHora: fechaHora,
+                clienteNombre: clienteNombre || 'PUBLICO EN GENERAL',
+                vendedorNombre: vendedorNombre || 'MOSTRADOR',
+                productos: productos.map(p => ({
+                    id: p.id || p.clave || 'N/A',
+                    descripcion: p.descripcion || 'Sin descripción',
+                    cantidad: p.cantidad || 1,
+                    precio: p.precio || 0,
+                    importe: (p.cantidad || 1) * (p.precio || 0)
+                })),
+                total: total || 0,
+                cambio: cambio || 0,
+                efectivo: efectivo || total || 0,
+                nombreEmpresa: nombreEmpresa
+            };
 
-    // ✅ VERIFICAR QUE SE GUARDÓ
-    const saved = localStorage.getItem('ticketData');
-    console.log('✅ Datos guardados en localStorage:', saved ? 'SÍ' : 'NO');
-    console.log('📄 Contenido:', saved);
+            console.log('📄 Datos a guardar:', ticketData);
 
-    // ✅ ABRIR EL TICKET
-    window.open('ticket.html', '_blank', 'width=400,height=700,resizable,scrollbars');
-}
+            localStorage.setItem('ticketData', JSON.stringify(ticketData));
+
+            const saved = localStorage.getItem('ticketData');
+            console.log('✅ Datos guardados en localStorage:', saved ? 'SÍ' : 'NO');
+
+            window.open('ticket.html', '_blank', 'width=400,height=700,resizable,scrollbars');
+        }
 
         // ============================================
         // UTILIDADES
@@ -904,6 +915,53 @@ function generateTicket(folio, productos, total, clienteNombre, vendedorNombre, 
                 renderVentaActual();
             }
         }
+
+        // ============================================
+        // 🔥 EVENTO COBRAR CORREGIDO
+        // ============================================
+
+        (function() {
+            function setupCobrarButton() {
+                const btnCobrar = document.getElementById('btnCobrar');
+                if (!btnCobrar) {
+                    console.error('❌ Botón Cobrar no encontrado');
+                    return;
+                }
+
+                // Crear un nuevo botón para evitar eventos duplicados
+                const newBtn = document.createElement('button');
+                newBtn.className = btnCobrar.className;
+                newBtn.id = 'btnCobrar';
+                newBtn.type = 'button';
+                newBtn.innerHTML = btnCobrar.innerHTML;
+
+                // Reemplazar el botón viejo con el nuevo
+                btnCobrar.parentNode.replaceChild(newBtn, btnCobrar);
+
+                // Agregar eventos
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🟢 Botón Cobrar click (nuevo)');
+                    handleCobrar();
+                });
+
+                newBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🟢 Botón Cobrar touchstart');
+                    handleCobrar();
+                });
+
+                console.log('✅ Botón Cobrar configurado correctamente');
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setupCobrarButton);
+            } else {
+                setupCobrarButton();
+            }
+        })();
 
         // ============================================
         // INICIALIZACIÓN
