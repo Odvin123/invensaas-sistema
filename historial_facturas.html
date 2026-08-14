@@ -491,33 +491,30 @@
     </div>
 
     <script>
-       
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
         const token = localStorage.getItem('token');
         const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
         let ventasCache = [];
         let ventaSeleccionada = null;
 
         console.log('🚀 Iniciando Historial de Facturas...');
-        console.log('🔑 Token:', token ? '✅ Sí' : '❌ No');
 
+        // ============================================
+        // CARGAR FACTURAS
+        // ============================================
         async function cargarFacturas() {
             const tbody = document.getElementById('historial-tbody');
             tbody.innerHTML = '<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando facturas...</td></tr>';
 
             try {
-                console.log('📡 Haciendo fetch a:', `${API_URL}/admin/ventas/reportes`);
-                
                 const response = await fetch(`${API_URL}/admin/ventas/reportes`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                console.log('📡 Status:', response.status);
-
-                if (response.status === 401 || response.status === 403) {
-                    alert('Sesión expirada. Redirigiendo...');
-                    localStorage.clear();
-                    window.location.href = 'login.html';
-                    return;
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -532,12 +529,14 @@
                     tbody.innerHTML = `<tr><td colspan="7" class="empty">❌ ${data.message || 'Error al cargar facturas.'}</td></tr>`;
                 }
             } catch (error) {
-                console.error('❌ Error:', error);
-                tbody.innerHTML = `<tr><td colspan="7" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
+                console.error('❌ Error en cargarFacturas:', error);
+                tbody.innerHTML = `<tr><td colspan="7" class="empty">❌ Error: ${error.message}</td></tr>`;
             }
         }
 
-    
+        // ============================================
+        // RENDERIZAR FACTURAS
+        // ============================================
         function renderFacturas(ventas) {
             const tbody = document.getElementById('historial-tbody');
             tbody.innerHTML = '';
@@ -574,7 +573,9 @@
             console.log(`✅ ${ventas.length} facturas renderizadas`);
         }
 
-      
+        // ============================================
+        // RESUMEN
+        // ============================================
         function actualizarResumen(ventas) {
             document.getElementById('total-ventas-count').textContent = ventas.length;
             
@@ -585,6 +586,9 @@
             document.getElementById('total-monto').textContent = `C$${totalMonto.toFixed(2)}`;
         }
 
+        // ============================================
+        // FILTROS
+        // ============================================
         function aplicarFiltros() {
             const folio = document.getElementById('filtro-folio').value.trim();
             const cliente = document.getElementById('filtro-cliente').value.toLowerCase().trim();
@@ -627,7 +631,9 @@
             actualizarResumen(ventasCache);
         }
 
-        
+        // ============================================
+        // VER DETALLE
+        // ============================================
         async function verDetalle(id) {
             try {
                 const venta = ventasCache.find(v => v.id === id);
@@ -674,7 +680,9 @@
             ventaSeleccionada = null;
         }
 
-        
+        // ============================================
+        // REIMPRIMIR FACTURA
+        // ============================================
         function reimprimirFactura() {
             if (!ventaSeleccionada) {
                 alert('No hay factura seleccionada.');
@@ -687,6 +695,7 @@
             const clienteNombre = v.cliente_nombre || 'PUBLICO EN GENERAL';
             const vendedorNombre = v.vendedor_nombre || 'MOSTRADOR';
 
+            // Intentar usar generateTicket
             if (typeof generateTicket === 'function') {
                 generateTicket(
                     v.folio,
@@ -704,10 +713,6 @@
                     total
                 );
             } else {
-                console.log('🧾 Factura #', v.folio);
-                console.log('Cliente:', clienteNombre);
-                console.log('Productos:', productos);
-                console.log('Total:', total);
                 alert(`Factura #${v.folio} - Total: C$${total.toFixed(2)}\n\n(La función de ticket no está disponible)`);
             }
 
@@ -718,14 +723,18 @@
             verDetalle(id);
         }
 
-        
+        // ============================================
+        // CERRAR MODAL CON CLICK FUERA
+        // ============================================
         window.onclick = function(event) {
             if (event.target.id === 'detalleModal') {
                 closeDetalleModal();
             }
         };
 
-    
+        // ============================================
+        // INICIALIZAR
+        // ============================================
         document.addEventListener('DOMContentLoaded', () => {
             if (!token) {
                 alert('Sesión no válida. Redirigiendo...');
