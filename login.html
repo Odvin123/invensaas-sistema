@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Iniciar Sesión - InvenSaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" type="image/png" href="IM.png" />
+
     <script src="js/config.js"></script>
+    
     <style>
+        /* ============================================
+           RESET Y VARIABLES
+        ============================================ */
         * {
             margin: 0;
             padding: 0;
@@ -18,236 +24,361 @@
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --primary-light: #818cf8;
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --bg-main: #f8fafc;
-            --bg-white: #ffffff;
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --secondary: #0f172a;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --light: #f8fafc;
             --border: #e2e8f0;
             --success: #22c55e;
             --danger: #ef4444;
-            --warning: #f59e0b;
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.2);
             --radius: 16px;
-            --radius-sm: 8px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-main);
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: var(--light);
             padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .login-container {
-            background: var(--bg-white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            padding: 48px;
+        /* ============================================
+           FONDO CON EFECTO
+        ============================================ */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 600px;
+            height: 600px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            opacity: 0.06;
+            animation: floatBlob 8s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -20%;
+            width: 500px;
+            height: 500px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            opacity: 0.04;
+            animation: floatBlob 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        /* ============================================
+           CONTENEDOR PRINCIPAL
+        ============================================ */
+        .login-wrapper {
             width: 100%;
             max-width: 440px;
-            animation: fadeInUp 0.5s ease;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-hover);
+            padding: 40px;
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            animation: fadeInUp 0.6s ease forwards;
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
+        /* ============================================
+           LOGO Y TÍTULO
+        ============================================ */
         .login-header {
             text-align: center;
             margin-bottom: 32px;
         }
 
         .login-header .logo {
-            font-size: 32px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
             font-weight: 900;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        .login-header .logo .icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .login-header .logo .text {
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
         }
 
-        .login-header .logo span {
-            -webkit-text-fill-color: var(--primary);
+        .login-header .logo .text span {
+            color: var(--secondary);
+            -webkit-text-fill-color: var(--secondary);
         }
 
         .login-header h2 {
             font-size: 24px;
             font-weight: 800;
-            color: var(--text-primary);
-            margin-top: 8px;
+            color: var(--secondary);
         }
 
         .login-header p {
-            color: var(--text-secondary);
-            font-size: 14px;
+            color: var(--text-light);
+            font-size: 15px;
             margin-top: 4px;
         }
 
+        /* ============================================
+           FORMULARIO
+        ============================================ */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .form-group label {
-            display: block;
             font-weight: 600;
             font-size: 14px;
-            color: var(--text-primary);
-            margin-bottom: 6px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .form-group label .required {
-            color: var(--danger);
-            margin-left: 2px;
+        .form-group label i {
+            color: var(--primary);
+            font-size: 14px;
         }
 
         .form-group .input-wrapper {
             position: relative;
+            display: flex;
+            align-items: center;
         }
 
-        .form-group .input-wrapper i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 16px;
-        }
-
-        .form-group input {
+        .form-group .input-wrapper input {
             width: 100%;
-            padding: 12px 16px 12px 44px;
+            padding: 12px 16px;
+            padding-right: 48px;
             border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-family: 'Inter', sans-serif;
+            border-radius: 10px;
             font-size: 15px;
+            font-family: 'Inter', sans-serif;
             transition: var(--transition);
-            background: var(--bg-white);
-            color: var(--text-primary);
+            background: var(--light);
         }
 
-        .form-group input:focus {
+        .form-group .input-wrapper input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
-        .form-group input::placeholder {
-            color: var(--text-muted);
+        .form-group .input-wrapper input::placeholder {
+            color: #94a3b8;
         }
 
-        .form-group input:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 14px;
+        .form-group .input-wrapper .toggle-password {
+            position: absolute;
+            right: 12px;
+            background: none;
             border: none;
-            border-radius: var(--radius-sm);
-            background: var(--primary-gradient);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
+            color: var(--text-light);
             cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-login:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-login:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-login .spinner {
-            display: none;
-            animation: spin 1s linear infinite;
-        }
-
-        .btn-login.loading .spinner {
-            display: inline-block;
-        }
-
-        .btn-login.loading .btn-text {
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .message-box {
-            padding: 12px 16px;
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            display: none;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .message-box.show {
-            display: flex;
-        }
-
-        .message-box.error {
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
-        .message-box.success {
-            background: #dcfce7;
-            color: #16a34a;
-            border: 1px solid #bbf7d0;
-        }
-
-        .message-box.warning {
-            background: #fef3c7;
-            color: #d97706;
-            border: 1px solid #fde68a;
-        }
-
-        .message-box .message-icon {
             font-size: 18px;
-            flex-shrink: 0;
+            padding: 4px;
+            transition: var(--transition);
         }
 
-        .login-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 13px;
-            color: var(--text-muted);
+        .form-group .input-wrapper .toggle-password:hover {
+            color: var(--primary);
         }
 
-        .login-footer a {
+        /* ============================================
+           OPCIONES EXTRAS
+        ============================================ */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin: 4px 0 8px;
+        }
+
+        .form-options .back-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-options .back-link:hover {
+            color: var(--primary);
+        }
+
+        .form-options .forgot-link {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
             transition: var(--transition);
         }
 
-        .login-footer a:hover {
+        .form-options .forgot-link:hover {
             color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           BOTÓN PRINCIPAL
+        ============================================ */
+        .btn-login {
+            padding: 14px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-login i {
+            font-size: 18px;
+        }
+
+        /* ============================================
+           MENSAJES
+        ============================================ */
+        .message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #86efac;
+        }
+
+        /* ============================================
+           LOCKOUT MESSAGE
+        ============================================ */
+        .lockout-message {
+            display: none;
+            padding: 12px 16px;
+            background: #fef3c7;
+            color: #d97706;
+            border-radius: 10px;
+            border: 1px solid #fcd34d;
+            font-weight: 600;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .lockout-message .countdown {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--danger);
+        }
+
+        /* ============================================
+           FOOTER DEL LOGIN
+        ============================================ */
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .login-footer p {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .login-footer .brand-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer .brand-link:hover {
             text-decoration: underline;
         }
 
@@ -255,309 +386,258 @@
            RESPONSIVE
         ============================================ */
         @media (max-width: 480px) {
-            .login-container {
-                padding: 32px 24px;
+            .login-wrapper {
+                padding: 24px 20px;
             }
 
             .login-header .logo {
-                font-size: 26px;
+                font-size: 24px;
             }
 
             .login-header h2 {
                 font-size: 20px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .form-options .forgot-link {
+                align-self: flex-start;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="login-container">
+    <div class="login-wrapper" id="loginWrapper">
         <!-- HEADER -->
         <div class="login-header">
-            <div class="logo">Inven<span>SaaS</span></div>
-            <h2>Iniciar Sesión</h2>
-            <p>Ingresa tus credenciales para acceder</p>
+            <div class="logo">
+                <div class="icon"><i class="fas fa-cubes"></i></div>
+                <div class="text">Inven<span>SaaS</span></div>
+            </div>
+            <h2>Bienvenido</h2>
+            <p>Accede a tu panel de gestión de inventario</p>
         </div>
 
-        <!-- MESSAGE BOX -->
-        <div id="messageBox" class="message-box">
-            <span class="message-icon" id="messageIcon"><i class="fas fa-exclamation-circle"></i></span>
-            <span id="messageText">Mensaje de error</span>
+        <!-- MENSAJES -->
+        <div id="message" class="message"></div>
+        <div id="lockoutMessage" class="lockout-message">
+            <i class="fas fa-lock"></i> Demasiados intentos fallidos.<br>
+            Intenta de nuevo en <span class="countdown" id="countdown">10</span> segundos.
         </div>
 
-        <!-- FORM -->
-        <form id="loginForm" autocomplete="off">
+        <!-- FORMULARIO -->
+        <form class="login-form" id="loginForm">
             <div class="form-group">
-                <label for="tenant_id">Tenant ID <span class="required">*</span></label>
+                <label for="tenantId"><i class="fas fa-building"></i> ID de Puesto/Empresa</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-building"></i>
-                    <input type="text" id="tenant_id" placeholder="Ej: super_admin" required>
+                    <input type="text" id="tenantId" placeholder="" required />
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="correo_electronico">Correo Electrónico <span class="required">*</span></label>
+                <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="correo_electronico" placeholder="admin@empresa.com" required>
+                    <input type="email" id="email" placeholder="usuario@empresa.com" required />
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="password">Contraseña <span class="required">*</span></label>
+                <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
                 <div class="input-wrapper">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" placeholder="••••••••" required>
+                    <input type="password" id="password" placeholder="••••••••" required />
+                    <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
             </div>
 
-            <button type="submit" class="btn-login" id="loginBtn">
-                <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</span>
-                <span class="spinner"><i class="fas fa-spinner"></i></span>
+            <div class="form-options">
+                <a href="index.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Volver al Inicio
+                </a>
+                <a href="reset_password.html" class="forgot-link" id="forgotPasswordLink">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginButton">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
             </button>
         </form>
 
+        <!-- FOOTER -->
         <div class="login-footer">
-            ¿Olvidaste tu contraseña? <a href="recuperar.html">Recupérala aquí</a>
+            <p>© 2025 <a href="#" class="brand-link">InvenSaaS</a> — Gestión de inventario Multi-Tenant</p>
         </div>
     </div>
 
     <script>
-        const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
-        let intentosFallidos = 0;
-        let bloqueado = false;
-        let tiempoRestante = 0;
-        let contadorInterval = null;
-
         // ============================================
-        // DOM ELEMENTS
+        // CONFIGURACIÓN
         // ============================================
-        const form = document.getElementById('loginForm');
-        const tenantInput = document.getElementById('tenant_id');
-        const emailInput = document.getElementById('correo_electronico');
+        const API_URL_LOGIN = API_URL + '/login';
+        const loginForm = document.getElementById('loginForm');
+        const loginButton = document.getElementById('loginButton');
+        const messageEl = document.getElementById('message');
+        const lockoutMessage = document.getElementById('lockoutMessage');
+        const countdownSpan = document.getElementById('countdown');
         const passwordInput = document.getElementById('password');
-        const loginBtn = document.getElementById('loginBtn');
-        const messageBox = document.getElementById('messageBox');
-        const messageText = document.getElementById('messageText');
-        const messageIcon = document.getElementById('messageIcon');
+        const togglePasswordButton = document.getElementById('togglePassword');
+
+        let failCount = 0;
+        const MAX_ATTEMPTS = 3;
+        const LOCKOUT_DURATION_MS = 10000;
+        let isLocked = false;
+        let lockoutTimer = null;
 
         // ============================================
-        // FUNCIONES DE MENSAJES
+        // TOGGLE CONTRASEÑA
         // ============================================
-        function showMessage(text, type = 'error', icon = 'fa-exclamation-circle') {
-            messageBox.className = `message-box show ${type}`;
-            messageText.textContent = text;
-            messageIcon.innerHTML = `<i class="fas ${icon}"></i>`;
-            
-            // Ocultar mensaje después de 8 segundos
-            clearTimeout(window.messageTimeout);
-            window.messageTimeout = setTimeout(() => {
-                messageBox.classList.remove('show');
-            }, 8000);
-        }
+        togglePasswordButton.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            const isPassword = passwordInput.getAttribute('type') === 'password';
 
-        function hideMessage() {
-            messageBox.classList.remove('show');
-            clearTimeout(window.messageTimeout);
-        }
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+            this.setAttribute('aria-label', isPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
+        });
 
         // ============================================
-        // FUNCIÓN DE LOGIN
+        // LOCKOUT
         // ============================================
-        async function handleLogin(e) {
-            e.preventDefault();
-            hideMessage();
+        function setLockout(duration) {
+            isLocked = true;
+            failCount = 0;
 
-            // Verificar si está bloqueado
-            if (bloqueado) {
-                showMessage(
-                    `⛔ Demasiados intentos fallidos. Espera ${tiempoRestante} segundos para intentar nuevamente.`,
-                    'warning',
-                    'fa-clock'
-                );
-                return;
-            }
-
-            // Obtener datos
-            const tenant_id = tenantInput.value.trim();
-            const correo_electronico = emailInput.value.trim();
-            const password = passwordInput.value;
-
-            // Validaciones básicas
-            if (!tenant_id || !correo_electronico || !password) {
-                showMessage('⚠️ Todos los campos son obligatorios.', 'error', 'fa-exclamation-triangle');
-                return;
-            }
-
-            // Validar formato de email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(correo_electronico)) {
-                showMessage('⚠️ Ingresa un correo electrónico válido.', 'error', 'fa-envelope');
-                return;
-            }
-
-            // Estado de carga
-            loginBtn.disabled = true;
-            loginBtn.classList.add('loading');
-
-            try {
-                const response = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        tenant_id,
-                        correo_electronico,
-                        password
-                    })
-                });
-
-                const data = await response.json();
-
-                // Manejar respuesta 429 (Rate Limit)
-                if (response.status === 429) {
-                    const mensaje = data.message || 'Demasiados intentos fallidos. Espera unos segundos.';
-                    showMessage(`⛔ ${mensaje}`, 'warning', 'fa-clock');
-                    
-                    // Bloquear por 10 segundos
-                    bloquearLogin(10);
-                    return;
-                }
-
-                if (response.ok && data.success) {
-                    // ✅ LOGIN EXITOSO
-                    showMessage('✅ ¡Bienvenido! Redirigiendo...', 'success', 'fa-check-circle');
-                    
-                    // Guardar token
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('tenant_id', data.tenant_id);
-                    localStorage.setItem('rol', data.rol);
-                    
-                    // Resetear intentos
-                    intentosFallidos = 0;
-                    
-                    // Redirigir según rol
-                    setTimeout(() => {
-                        if (data.rol === 'super_admin') {
-                            window.location.href = 'dashboard_superadmin.html';
-                        } else if (data.rol === 'administrador') {
-                            window.location.href = 'dashboard_admin.html';
-                        } else {
-                            window.location.href = 'dashboard_vendedor.html';
-                        }
-                    }, 1500);
-                } else {
-                    // ❌ LOGIN FALLIDO
-                    intentosFallidos++;
-                    
-                    const mensaje = data.message || 'Credenciales incorrectas.';
-                    const intentosRestantes = 3 - intentosFallidos;
-                    
-                    if (intentosRestantes > 0) {
-                        showMessage(
-                            `❌ ${mensaje} (${intentosRestantes} intentos restantes)`,
-                            'error',
-                            'fa-times-circle'
-                        );
-                    } else {
-                        // Bloquear después de 3 intentos
-                        showMessage(
-                            '⛔ Demasiados intentos fallidos. Bloqueado por 10 segundos.',
-                            'warning',
-                            'fa-clock'
-                        );
-                        bloquearLogin(10);
-                    }
-                }
-
-            } catch (error) {
-                console.error('Error de conexión:', error);
-                showMessage('❌ Error de conexión. Verifica tu internet.', 'error', 'fa-wifi');
-            } finally {
-                // Restaurar botón
-                loginBtn.disabled = false;
-                loginBtn.classList.remove('loading');
-                
-                // Limpiar contraseña por seguridad
-                passwordInput.value = '';
-            }
-        }
-
-        // ============================================
-        // FUNCIÓN DE BLOQUEO
-        // ============================================
-        function bloquearLogin(segundos) {
-            bloqueado = true;
-            tiempoRestante = segundos;
-            
-            // Deshabilitar campos
-            tenantInput.disabled = true;
-            emailInput.disabled = true;
+            document.getElementById('tenantId').disabled = true;
+            document.getElementById('email').disabled = true;
             passwordInput.disabled = true;
-            loginBtn.disabled = true;
-            
-            // Mostrar contador en el botón
-            loginBtn.innerHTML = `<span class="btn-text"><i class="fas fa-clock"></i> Espera ${tiempoRestante}s</span>`;
-            
-           
-            if (contadorInterval) clearInterval(contadorInterval);
-            
-            contadorInterval = setInterval(() => {
-                tiempoRestante--;
-                
-                if (tiempoRestante <= 0) {
-                    clearInterval(contadorInterval);
-                    desbloquearLogin();
-                } else {
-                    loginBtn.innerHTML = `<span class="btn-text"><i class="fas fa-clock"></i> Espera ${tiempoRestante}s</span>`;
+            loginButton.disabled = true;
+            togglePasswordButton.disabled = true;
+
+            lockoutMessage.style.display = 'block';
+            let countdown = duration / 1000;
+            countdownSpan.textContent = countdown;
+
+            if (lockoutTimer) clearInterval(lockoutTimer);
+            lockoutTimer = setInterval(() => {
+                countdown--;
+                countdownSpan.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(lockoutTimer);
+                    unlockForm();
                 }
             }, 1000);
         }
 
-        function desbloquearLogin() {
-            bloqueado = false;
-            tiempoRestante = 0;
-            intentosFallidos = 0;
-            
-            tenantInput.disabled = false;
-            emailInput.disabled = false;
+        function unlockForm() {
+            isLocked = false;
+            document.getElementById('tenantId').disabled = false;
+            document.getElementById('email').disabled = false;
             passwordInput.disabled = false;
-            loginBtn.disabled = false;
-            
-            loginBtn.innerHTML = `<span class="btn-text"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</span><span class="spinner"><i class="fas fa-spinner"></i></span>`;
-            
-            hideMessage();
-            showMessage('✅ Ya puedes intentar nuevamente.', 'success', 'fa-check-circle');
-            
-            setTimeout(() => {
-                hideMessage();
-            }, 3000);
+            loginButton.disabled = false;
+            togglePasswordButton.disabled = false;
+            lockoutMessage.style.display = 'none';
         }
 
-        
-        form.addEventListener('submit', handleLogin);
+        // ============================================
+        // MOSTRAR MENSAJES
+        // ============================================
+        function showMessage(text, type = 'error') {
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+        }
 
-        tenantInput.addEventListener('input', hideMessage);
-        emailInput.addEventListener('input', hideMessage);
-        passwordInput.addEventListener('input', hideMessage);
+        function hideMessage() {
+            messageEl.style.display = 'none';
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('token');
-            const rol = localStorage.getItem('rol');
-            
-            if (token && rol) {
-                
-                if (rol === 'super_admin') {
-                    window.location.href = 'dashboard_superadmin.html';
-                } else if (rol === 'administrador') {
-                    window.location.href = 'dashboard_admin.html';
-                } else if (rol === 'vendedor') {
-                    window.location.href = 'dashboard_vendedor.html';
+        // ============================================
+        // LOGIN
+        // ============================================
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessage();
+
+            if (isLocked) {
+                showMessage('El formulario está bloqueado. Espera unos segundos.', 'error');
+                return;
+            }
+
+            const tenant_id = document.getElementById('tenantId').value.trim();
+            const correo_electronico = document.getElementById('email').value.trim();
+            const password = passwordInput.value;
+
+            loginButton.disabled = true;
+            loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+
+            try {
+                const response = await fetch(API_URL_LOGIN, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tenant_id, correo_electronico, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    failCount = 0;
+
+                    sessionStorage.setItem('authToken', result.token);
+                    sessionStorage.setItem('userRol', result.rol);
+                    sessionStorage.setItem('tenantId', result.tenant_id);
+
+                    localStorage.setItem('token', result.token);
+                    localStorage.setItem('rol', result.rol);
+                    localStorage.setItem('tenant_id', result.tenant_id);
+
+                    if (result.necesitaCambioPw) {
+                        showMessage('🔐 Por seguridad, debes cambiar tu contraseña.', 'success');
+                        setTimeout(() => {
+                            window.location.href = `cambio_pw.html?tenant=${result.tenant_id}&email=${correo_electronico}`;
+                        }, 1500);
+                    } else {
+                        if (result.rol === 'super_admin') {
+                            window.location.href = 'superadmin_dashboard.html';
+                        } else {
+                            window.location.href = 'inventario_dashboard.html';
+                        }
+                    }
+                } else {
+                    failCount++;
+                    showMessage(result.message || 'Credenciales inválidas.', 'error');
+
+                    const remaining = MAX_ATTEMPTS - failCount;
+                    if (remaining > 0 && failCount >= MAX_ATTEMPTS) {
+                        showMessage(`🔒 Demasiados intentos. Bloqueo temporal de 10 segundos.`, 'error');
+                        setLockout(LOCKOUT_DURATION_MS);
+                    }
                 }
+            } catch (error) {
+                showMessage('Error de conexión con el servidor.', 'error');
+            } finally {
+                loginButton.disabled = isLocked;
+                loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
             }
         });
 
-      
+        // ============================================
+        // PRECARGAR TENANT DESDE URL
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tenant = urlParams.get('tenant');
+            if (tenant) {
+                document.getElementById('tenantId').value = tenant;
+            }
+        });
     </script>
-
 </body>
 </html>
