@@ -1988,6 +1988,7 @@ function formatStock(value) {
 
                 if (response.ok && result.success) {
                     alert(`✅ Entrada registrada con ${entradaProductos.length} producto(s).`);
+                    loadDashboardData(); 
                     entradaProductos = [];
                     document.getElementById('entrada-productos-tbody').innerHTML = '<tr><td colspan="3" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>';
                     document.getElementById('entrada-referencia').value = '';

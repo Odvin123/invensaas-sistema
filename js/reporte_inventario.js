@@ -1,180 +1,274 @@
+// js/reporte_inventario.js
+// ============================================
+// CONFIGURACIÓN
+// ============================================
+const token = localStorage.getItem('token');
+const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
+let movimientosCache = [];
 
-let token = localStorage.getItem('token');
+// ============================================
+// ELEMENTOS DOM
+// ============================================
+const tbody = document.getElementById('movimientos-tbody');
+const totalEntradasEl = document.getElementById('total-entradas');
+const totalSalidasEl = document.getElementById('total-salidas');
+const balanceNetoEl = document.getElementById('balance-neto');
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (!token) {
-        alert('⚠️ Sesión no válida. Redirigiendo al login...');
-        window.location.href = 'login.html';
-        return;
-    }
-
-    // Fechas predeterminadas: último mes
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    
-    document.getElementById('fecha-inicio').valueAsDate = startOfMonth;
-    document.getElementById('fecha-fin').valueAsDate = now;
-
-    loadMovimientos();
-
-    // Event listeners
-    document.getElementById('btn-ejecutar').addEventListener('click', handleEjecutar);
-    document.getElementById('btn-recargar').addEventListener('click', loadMovimientos);
-    document.getElementById('btn-exportar').addEventListener('click', exportarCSV);
-});
-
-function formatDate(dateString) {
-    if (!dateString) return '—';
-    return new Date(dateString).toLocaleString('es-NI', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+// ============================================
+// FUNCIONES DE FORMATO
+// ============================================
+function formatNumber(value) {
+    if (value === null || value === undefined) return '0.00';
+    const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+    if (isNaN(num)) return '0.00';
+    return num.toFixed(2);
 }
 
-function renderMovimientos(movimientos) {
-    const tbody = document.getElementById('movimientos-tbody');
-    const entradasEl = document.getElementById('total-entradas');
-    const salidasEl = document.getElementById('total-salidas');
-    const balanceEl = document.getElementById('balance-neto');
-
-    if (!movimientos || movimientos.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #6c757d;">No hay movimientos en el rango seleccionado.</td></tr>`;
-        entradasEl.textContent = '0';
-        salidasEl.textContent = '0';
-        balanceEl.textContent = '0';
-        balanceEl.style.color = '#6c757d';
-        return;
+function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    try {
+        const d = new Date(dateStr);
+        return d.toLocaleString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+    } catch {
+        return dateStr;
     }
-
-    let totalEntradas = 0;
-    let totalSalidas = 0;
-
-    let rows = '';
-    movimientos.forEach(m => {
-        const tipoClass = `tipo-${m.tipo}`;
-        const cantidad = m.cantidad;
-        const stockAntes = m.nuevo_stock - cantidad;
-
-        if (m.tipo === 'ENTRADA') totalEntradas += cantidad;
-        if (m.tipo === 'SALIDA') totalSalidas += Math.abs(cantidad);
-
-        rows += `
-            <tr>
-                <td>${formatDate(m.fecha)}</td>
-                <td>${m.producto || '—'}</td>
-                <td><span class="${tipoClass}">${m.tipo}</span></td>
-                <td style="text-align: right;">${cantidad > 0 ? '+' : ''}${cantidad}</td>
-                <td style="text-align: right;">${stockAntes}</td>
-                <td style="text-align: right;">${m.nuevo_stock}</td>
-                <td>${m.usuario || 'Sistema'}</td>
-                <td>${m.referencia || '—'}</td>
-            </tr>
-        `;
-    });
-
-    tbody.innerHTML = rows;
-    entradasEl.textContent = totalEntradas;
-    salidasEl.textContent = totalSalidas;
-    const balance = totalEntradas - totalSalidas;
-    balanceEl.textContent = balance;
-    balanceEl.style.color = balance >= 0 ? '#28a745' : '#dc3545';
 }
 
-async function loadMovimientos(tipo = 'TODOS', inicio = null, fin = null) {
-    const tbody = document.getElementById('movimientos-tbody');
-    tbody.innerHTML = '<tr><td colspan="8" class="loading">Cargando movimientos...</td></tr>';
+// ============================================
+// CARGAR MOVIMIENTOS
+// ============================================
+async function loadMovimientos() {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando movimientos...</td></tr>';
 
     try {
-        let url = `${API_URL}/admin/inventario/entradas?tipo=${tipo}`;
-        if (inicio && fin) {
-            url += `&inicio=${inicio}&fin=${fin}`;
-        }
-
-        const response = await fetch(url, {
+        const response = await fetch(`${API_URL}/admin/inventario/movimientos`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (response.status === 401 || response.status === 403) {
-            alert('⚠️ Sesión expirada. Redirigiendo...');
+            alert('Sesión expirada. Redirigiendo...');
             localStorage.clear();
             window.location.href = 'login.html';
             return;
         }
 
-        const result = await response.json();
-        if (result.success) {
-            renderMovimientos(result.movimientos || []);
+        const data = await response.json();
+
+        if (data.success) {
+            movimientosCache = data.movimientos || [];
+            console.log('📦 Movimientos cargados:', movimientosCache.length);
+            renderMovimientos(movimientosCache);
+            updateSummary(movimientosCache);
         } else {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">${result.message || 'Error al cargar.'}</td></tr>`;
+            tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Error al cargar movimientos.</td></tr>';
         }
     } catch (error) {
-        console.error('Error en loadMovimientos:', error);
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error de conexión.</td></tr>`;
+        console.error('Error:', error);
+        tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Error de conexión.</td></tr>';
     }
 }
 
-function handleEjecutar() {
-    const tipo = document.getElementById('tipo-movimiento').value;
-    const inicio = document.getElementById('fecha-inicio').value;
-    const fin = document.getElementById('fecha-fin').value;
+// ============================================
+// RENDERIZAR TABLA
+// ============================================
+function renderMovimientos(movimientos) {
+    tbody.innerHTML = '';
 
-    if (!inicio || !fin) {
-        alert('⚠️ Seleccione ambas fechas.');
+    if (!movimientos || movimientos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty">📭 No hay movimientos registrados.</td></tr>';
         return;
     }
 
-    const inicioDate = new Date(inicio);
-    const finDate = new Date(fin);
-    if (finDate < inicioDate) {
-        alert('⚠️ La fecha final no puede ser anterior a la inicial.');
-        return;
-    }
+    movimientos.forEach(m => {
+        const tr = document.createElement('tr');
+        const tipo = m.tipo || 'DESCONOCIDO';
+        const cantidad = parseFloat(m.cantidad) || 0;
+        const stockAntes = parseFloat(m.stock_antes) || 0;
+        const stockDespues = parseFloat(m.stock_despues) || 0;
 
-    const inicioISO = inicioDate.toISOString().split('T')[0];
-    const finISO = finDate.toISOString().split('T')[0];
+        let tipoColor = '';
+        let tipoIcon = '';
+        if (tipo === 'ENTRADA') {
+            tipoColor = '#22c55e';
+            tipoIcon = '📥';
+        } else if (tipo === 'SALIDA') {
+            tipoColor = '#ef4444';
+            tipoIcon = '📤';
+        } else {
+            tipoColor = '#f59e0b';
+            tipoIcon = '⚡';
+        }
 
-    loadMovimientos(tipo, inicioISO, finISO);
+        tr.innerHTML = `
+            <td>${formatDate(m.fecha)}</td>
+            <td><strong>${m.producto_nombre || 'Desconocido'}</strong></td>
+            <td style="color:${tipoColor}; font-weight:600;">${tipoIcon} ${tipo}</td>
+            <td style="text-align:center; font-weight:600;">${formatNumber(cantidad)}</td>
+            <td style="text-align:center;">${formatNumber(stockAntes)}</td>
+            <td style="text-align:center;">${formatNumber(stockDespues)}</td>
+            <td>${m.usuario_nombre || 'Sistema'}</td>
+            <td>${m.referencia || '—'}</td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
-function exportarCSV() {
-    const rows = document.querySelectorAll('#movimientos-tbody tr');
-    if (rows.length === 0 || rows[0].querySelector('td').colSpan) {
-        alert('⚠️ No hay datos para exportar.');
-        return;
+// ============================================
+// ACTUALIZAR RESUMEN CON DIAGNÓSTICO
+// ============================================
+function updateSummary(movimientos) {
+    console.log('📊 ===== INICIO DEL RESUMEN =====');
+    console.log('📦 Total de movimientos:', movimientos.length);
+    
+    // 🔥 Mostrar los primeros 3 movimientos para diagnosticar
+    if (movimientos.length > 0) {
+        console.log('📋 Primer movimiento:', movimientos[0]);
+        console.log('   - cantidad:', movimientos[0].cantidad);
+        console.log('   - tipo:', movimientos[0].tipo);
+        console.log('   - tipo de cantidad:', typeof movimientos[0].cantidad);
     }
 
-    const data = [];
-    const headers = ['Fecha', 'Producto', 'Tipo', 'Cantidad', 'Stock Antes', 'Stock Después', 'Usuario', 'Referencia'];
-    data.push(headers);
+    let totalEntradas = 0;
+    let totalSalidas = 0;
 
-    rows.forEach(row => {
-        const cols = row.querySelectorAll('td');
-        const rowData = [
-            cols[0].innerText.trim(),
-            cols[1].innerText.trim(),
-            cols[2].querySelector('span').innerText.trim(),
-            cols[3].innerText.trim(),
-            cols[4].innerText.trim(),
-            cols[5].innerText.trim(),
-            cols[6].innerText.trim(),
-            cols[7].innerText.trim()
-        ];
-        data.push(rowData);
+    movimientos.forEach((m, index) => {
+        // 🔥 CONVERTIR A NÚMERO DE FORMA SEGURA
+        let cantidad = 0;
+        const raw = m.cantidad;
+        
+        if (raw !== undefined && raw !== null) {
+            // Si es string, limpiar y convertir
+            if (typeof raw === 'string') {
+                const limpia = raw.replace(/,/g, '.').trim();
+                cantidad = parseFloat(limpia);
+            } else {
+                cantidad = Number(raw);
+            }
+        }
+        
+        // Si no es número válido, usar 0
+        if (isNaN(cantidad)) cantidad = 0;
+
+        const tipo = m.tipo || '';
+
+        // 🔥 LOG POR MOVIMIENTO (solo los primeros 5 para no llenar la consola)
+        if (index < 5) {
+            console.log(`   ${index + 1}. ${tipo}: ${cantidad} (original: "${raw}")`);
+        }
+
+        if (tipo === 'ENTRADA') {
+            totalEntradas += cantidad;
+        } else if (tipo === 'SALIDA') {
+            totalSalidas += cantidad;
+        }
     });
 
-    const csv = data.map(e => `"${e.join('","')}"`).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const balance = totalEntradas - totalSalidas;
+
+    console.log('📊 TOTALES CALCULADOS:');
+    console.log(`   ✅ Entradas: ${totalEntradas}`);
+    console.log(`   ❌ Salidas: ${totalSalidas}`);
+    console.log(`   ⚖️ Balance: ${balance}`);
+    console.log('📊 ===== FIN DEL RESUMEN =====');
+
+    // Mostrar en pantalla
+    totalEntradasEl.textContent = totalEntradas.toFixed(2);
+    totalSalidasEl.textContent = totalSalidas.toFixed(2);
+    balanceNetoEl.textContent = balance.toFixed(2);
+
+    // 🔥 Color del balance
+    if (balance > 0) {
+        balanceNetoEl.style.color = '#22c55e';
+    } else if (balance < 0) {
+        balanceNetoEl.style.color = '#ef4444';
+    } else {
+        balanceNetoEl.style.color = '#64748b';
+    }
+}
+
+// ============================================
+// FILTRAR
+// ============================================
+function aplicarFiltros() {
+    const tipo = document.getElementById('tipo-movimiento').value;
+    const fechaInicio = document.getElementById('fecha-inicio').value;
+    const fechaFin = document.getElementById('fecha-fin').value;
+
+    let filtrados = movimientosCache;
+
+    if (tipo !== 'TODOS') {
+        filtrados = filtrados.filter(m => m.tipo === tipo);
+    }
+
+    if (fechaInicio) {
+        const inicio = new Date(fechaInicio);
+        filtrados = filtrados.filter(m => new Date(m.fecha) >= inicio);
+    }
+
+    if (fechaFin) {
+        const fin = new Date(fechaFin);
+        fin.setHours(23, 59, 59);
+        filtrados = filtrados.filter(m => new Date(m.fecha) <= fin);
+    }
+
+    renderMovimientos(filtrados);
+    updateSummary(filtrados);
+}
+
+// ============================================
+// EXPORTAR CSV
+// ============================================
+function exportCSV() {
+    if (movimientosCache.length === 0) {
+        alert('No hay datos para exportar.');
+        return;
+    }
+
+    let csv = 'Fecha,Hora,Producto,Tipo,Cantidad,Stock Antes,Stock Después,Usuario,Referencia\n';
+    
+    movimientosCache.forEach(m => {
+        const fecha = new Date(m.fecha);
+        csv += `"${fecha.toLocaleDateString('es-ES')}","${fecha.toLocaleTimeString('es-ES')}","${m.producto_nombre || ''}","${m.tipo || ''}","${parseFloat(m.cantidad) || 0}","${parseFloat(m.stock_antes) || 0}","${parseFloat(m.stock_despues) || 0}","${m.usuario_nombre || ''}","${m.referencia || ''}"\n`;
+    });
+
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'reporte_inventario.csv';
+    a.download = `movimientos_inventario_${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
-    setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }, 0);
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
+
+// ============================================
+// EVENTOS
+// ============================================
+document.getElementById('btn-ejecutar').addEventListener('click', aplicarFiltros);
+document.getElementById('btn-recargar').addEventListener('click', () => {
+    document.getElementById('tipo-movimiento').value = 'TODOS';
+    document.getElementById('fecha-inicio').value = '';
+    document.getElementById('fecha-fin').value = '';
+    loadMovimientos();
+});
+document.getElementById('btn-exportar').addEventListener('click', exportCSV);
+
+// ============================================
+// INICIALIZAR
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    if (!token) {
+        alert('Sesión no válida. Redirigiendo...');
+        window.location.href = 'login.html';
+        return;
+    }
+    loadMovimientos();
+});
