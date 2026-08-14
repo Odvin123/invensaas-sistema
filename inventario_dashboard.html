@@ -1011,13 +1011,13 @@
                     let productos = data.productos || [];
                     
                     if (tipo === 'stock-bajo') {
-                        productos = productos.filter(p => parseInt(p.stock) > 0 && parseInt(p.stock) <= STOCK_BAJO_UMBRAL);
+                        productos = productos.filter(p => parseFloat(p.stock) > 0 && parseFloat(p.stock) <= STOCK_BAJO_UMBRAL);
                         document.getElementById('productos-titulo').textContent = '⚠️ Productos con Stock Bajo';
                     } else if (tipo === 'agotados') {
-                        productos = productos.filter(p => parseInt(p.stock) === 0);
+                        productos = productos.filter(p => parseFloat(p.stock) === 0);
                         document.getElementById('productos-titulo').textContent = '🚫 Productos Agotados';
                     } else if (tipo === 'stock-normal') {
-                        productos = productos.filter(p => parseInt(p.stock) > STOCK_BAJO_UMBRAL);
+                        productos = productos.filter(p => parseFloat(p.stock) > STOCK_BAJO_UMBRAL);
                         document.getElementById('productos-titulo').textContent = '✅ Productos con Stock Normal';
                     } else {
                         document.getElementById('productos-titulo').textContent = '📦 Todos los Productos';
@@ -1041,7 +1041,7 @@
             }
 
             productos.forEach(p => {
-                const stock = parseInt(p.stock) || 0;
+                const stock = parseFloat(p.stock) || 0;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${p.id}</strong></td>
@@ -1287,7 +1287,7 @@
             }
 
             productos.forEach(p => {
-                const stock = parseInt(p.stock) || 0;
+                const stock = parseFloat(p.stock) || 0;
                 let statusClass = 'in-stock';
                 let statusText = 'En Stock';
                 if (stock === 0) { statusClass = 'out-of-stock'; statusText = 'Agotado'; }
@@ -1315,7 +1315,7 @@
         function updateStats(productos) {
             let total = 0, normal = 0, bajo = 0, agotado = 0, valorTotal = 0;
             productos.forEach(p => {
-                const stock = parseInt(p.stock) || 0;
+                const stock = parseFloat(p.stock) || 0;
                 const precio = parseFloat(p.precio) || 0;
                 total++;
                 valorTotal += stock * precio;
