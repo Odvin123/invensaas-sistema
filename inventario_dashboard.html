@@ -851,7 +851,7 @@
 <div class="form-row">
     <div>
         <label>Stock <span id="stock-label" style="color:var(--text-light); font-weight:400; font-size:11px;">(solo al crear)</span></label>
-        <input type="number" id="product-stock" min="0" step="1" value="0" disabled>
+        <input type="number" id="product-stock" step="0.01" min="0" value="0">
         <small style="color:var(--text-light); font-size:10px;">Para modificar stock usa <strong>"Entrada"</strong></small>
     </div>
     <div>
@@ -1340,7 +1340,7 @@
                 proveedor_id: document.getElementById('product-proveedor').value,
                 categoria_id: document.getElementById('product-categoria').value,
                 descripcion: document.getElementById('product-descripcion').value.trim(),
-                stock: parseInt(document.getElementById('product-stock').value) || 0,
+                stock: parseFloat(document.getElementById('product-stock').value) || 0,
                 costo: parseFloat(document.getElementById('product-costo').value) || 0,
                 precio: parseFloat(document.getElementById('product-precio').value) || 0,
             };
