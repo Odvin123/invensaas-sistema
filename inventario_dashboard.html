@@ -1048,7 +1048,7 @@
                     <td>${p.descripcion || 'Sin descripción'}</td>
                     <td>${p.categoria_nombre || 'N/A'}</td>
                     <td>${p.proveedor_nombre || 'N/A'}</td>
-                    <td style="text-align:center;font-weight:600;">${stock}</td>
+                    <td style="text-align:center;font-weight:600;">${Number(stock).toFixed(2)}</td>
                     <td style="text-align:right;font-weight:600;color:var(--primary);">C$${parseFloat(p.precio).toFixed(2)}</td>
                     <td style="text-align:right;color:var(--text-light);">C$${parseFloat(p.costo).toFixed(2)}</td>
                     <td style="text-align:center;">
@@ -1298,7 +1298,7 @@
                     <td><strong>${p.id}</strong></td>
                     <td>${p.descripcion || 'Sin descripción'}</td>
                     <td>${p.categoria_nombre || 'N/A'}</td>
-                    <td style="text-align:center;font-weight:600;">${stock}</td>
+                    <td style="text-align:center;font-weight:600;">${Number(stock).toFixed(2)}</td>
                     <td style="text-align:right;font-weight:600;color:var(--primary);">C$${parseFloat(p.precio).toFixed(2)}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td style="text-align:center;">
