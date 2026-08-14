@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Política de Privacidad - InvenSaaS</title>
+    <link rel="icon" type="image/png" href="IM.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --secondary: #0f172a;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 48px 56px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: 900;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        .header .logo .icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .header .logo .text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .logo .text span {
+            color: var(--secondary);
+            -webkit-text-fill-color: var(--secondary);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-top: 12px;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 15px;
+            margin-top: 4px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 20px;
+            background: var(--light);
+            border-radius: 8px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            color: var(--secondary);
+        }
+
+        .content h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .content h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            color: var(--secondary);
+        }
+
+        .content p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .content ul {
+            margin: 12px 0 20px 24px;
+            color: var(--text-light);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .content ul li {
+            margin-bottom: 6px;
+        }
+
+        .content .highlight-box {
+            background: var(--light);
+            padding: 20px 24px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            margin: 16px 0;
+        }
+
+        .content .highlight-box p {
+            margin-bottom: 0;
+            color: var(--text);
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .footer-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        .last-updated {
+            text-align: right;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .container { padding: 24px 20px; }
+            .header h1 { font-size: 24px; }
+            .content h2 { font-size: 19px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <a href="index.html" class="logo">
+                <div class="icon"><i class="fas fa-cubes"></i></div>
+                <div class="text">Inven<span>SaaS</span></div>
+            </a>
+            <h1>Política de Privacidad</h1>
+            <p>Última actualización: 14 de agosto de 2026</p>
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Volver al inicio</a>
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="content">
+
+            <h2>1. Introducción</h2>
+            <p>
+                En <strong>InvenSaaS</strong>, nos tomamos muy en serio la privacidad y seguridad de sus datos. 
+                Esta Política de Privacidad explica qué información recopilamos, cómo la utilizamos y qué derechos 
+                tiene usted sobre sus datos personales.
+            </p>
+
+            <div class="highlight-box">
+                <p>
+                    <i class="fas fa-heart" style="color:var(--primary); margin-right:8px;"></i>
+                    <strong>Compromiso:</strong> Sus datos son suyos. No los vendemos, no los compartimos con 
+                    terceros sin su consentimiento y los protegemos con los más altos estándares de seguridad.
+                </p>
+            </div>
+
+            <h2>2. Información que Recopilamos</h2>
+            <h3>2.1. Información de Registro</h3>
+            <ul>
+                <li><strong>Nombre completo</strong> del usuario o administrador.</li>
+                <li><strong>Correo electrónico</strong> para comunicación y notificaciones.</li>
+                <li><strong>ID de empresa (Tenant ID)</strong> para identificación multi-tenant.</li>
+                <li><strong>Contraseña</strong> (almacenada de forma segura con hash).</li>
+            </ul>
+
+            <h3>2.2. Datos de Negocio</h3>
+            <ul>
+                <li><strong>Productos</strong>: nombre, descripción, stock, precio, costo.</li>
+                <li><strong>Proveedores</strong>: nombre, teléfono, correo de contacto.</li>
+                <li><strong>Clientes</strong>: nombre y registro de compras.</li>
+                <li><strong>Ventas</strong>: historial de transacciones, métodos de pago y montos.</li>
+                <li><strong>Movimientos de inventario</strong>: entradas, salidas y ajustes.</li>
+            </ul>
+
+            <h3>2.3. Datos Técnicos</h3>
+            <ul>
+                <li><strong>Dirección IP</strong> para seguridad y auditoría.</li>
+                <li><strong>Tipo de navegador</strong> y sistema operativo.</li>
+                <li><strong>Cookies</strong> para mantener la sesión activa.</li>
+            </ul>
+
+            <h2>3. Uso de la Información</h2>
+            <ul>
+                <li>Proveer y mantener el servicio de gestión de inventario.</li>
+                <li>Autenticar y autorizar el acceso a la plataforma.</li>
+                <li>Generar reportes y estadísticas de negocio.</li>
+                <li>Mejorar la experiencia del usuario y la funcionalidad del sistema.</li>
+                <li>Comunicarnos con usted sobre novedades, actualizaciones y soporte.</li>
+                <li>Cumplir con obligaciones legales y regulatorias.</li>
+            </ul>
+
+            <h2>4. Seguridad de los Datos</h2>
+            <p>
+                Implementamos medidas de seguridad técnicas y organizativas para proteger sus datos:
+            </p>
+            <ul>
+                <li><strong>Cifrado</strong> de datos en tránsito (SSL/TLS) y en reposo.</li>
+                <li><strong>Hash de contraseñas</strong> con bcrypt (nunca almacenamos contraseñas en texto plano).</li>
+                <li><strong>Autenticación JWT</strong> para sesiones seguras.</li>
+                <li><strong>Aislamiento multi-tenant</strong>: cada empresa solo accede a sus propios datos.</li>
+                <li><strong>Auditoría</strong> de accesos y movimientos sensibles.</li>
+            </ul>
+
+            <h2>5. Cookies</h2>
+            <p>
+                Utilizamos cookies para mantener su sesión activa y mejorar su experiencia. 
+                Las cookies son pequeños archivos que se almacenan en su navegador. 
+                Puede configurar su navegador para rechazar cookies, pero esto podría afectar 
+                la funcionalidad de la plataforma.
+            </p>
+
+            <h2>6. Compartición de Datos</h2>
+            <p>
+                InvenSaaS <strong>no vende, alquila ni comparte</strong> sus datos personales con terceros 
+                para fines de marketing. Solo compartimos datos cuando:
+            </p>
+            <ul>
+                <li>Es necesario para proveer el servicio (ej: procesamiento de pagos).</li>
+                <li>Estamos legalmente obligados a hacerlo.</li>
+                <li>Usted nos ha dado su consentimiento explícito.</li>
+            </ul>
+
+            <h2>7. Derechos del Usuario</h2>
+            <p>
+                Usted tiene derecho a:
+            </p>
+            <ul>
+                <li><strong>Acceder</strong> a sus datos personales en cualquier momento.</li>
+                <li><strong>Rectificar</strong> información incorrecta o desactualizada.</li>
+                <li><strong>Solicitar la eliminación</strong> de sus datos (cuando sea legalmente posible).</li>
+                <li><strong>Exportar</strong> sus datos en un formato estructurado.</li>
+                <li><strong>Oponerse</strong> al procesamiento de sus datos.</li>
+            </ul>
+            <p>
+                Para ejercer estos derechos, contáctenos a través de los medios indicados al final de esta política.
+            </p>
+
+            <h2>8. Retención de Datos</h2>
+            <p>
+                Conservamos sus datos mientras su cuenta esté activa o mientras sea necesario para cumplir con 
+                obligaciones legales o fiscales. Al cancelar su cuenta, eliminamos sus datos de manera segura, 
+                excepto cuando la ley requiera su conservación.
+            </p>
+
+            <h2>9. Menores de Edad</h2>
+            <p>
+                InvenSaaS no está dirigido a menores de 18 años. No recopilamos intencionalmente información 
+                de personas menores de edad. Si descubrimos que hemos recopilado datos de un menor, los eliminaremos 
+                inmediatamente.
+            </p>
+
+            <h2>10. Cambios a esta Política</h2>
+            <p>
+                Podemos actualizar esta Política de Privacidad ocasionalmente. Notificaremos los cambios 
+                significativos a través de la plataforma o por correo electrónico. Le recomendamos revisar 
+                esta página periódicamente.
+            </p>
+
+            <h2>11. Contacto</h2>
+            <p>
+                Si tiene preguntas, inquietudes o solicitudes sobre su privacidad, contáctenos:
+            </p>
+            <ul>
+                <li><i class="fas fa-envelope" style="color:var(--primary);"></i> <a href="mailto:odvinenriquerivera12345@gmail.com" style="color:var(--primary); text-decoration:none;">odvinenriquerivera12345@gmail.com</a></li>
+                <li><i class="fas fa-phone" style="color:var(--primary);"></i> <a href="https://wa.me/50558764830" style="color:var(--primary); text-decoration:none;">+505 5876 4830</a> (WhatsApp)</li>
+            </ul>
+
+            <div class="last-updated">
+                <i class="fas fa-clock"></i> Última revisión: 14 de agosto de 2026
+            </div>
+        </div>
+
+        <div class="footer-text">
+            &copy; 2026 InvenSaaS. Todos los derechos reservados. | 
+            <a href="privacidad.html">Política de Privacidad</a> | 
+            <a href="terminos.html">Términos y Condiciones</a>
+        </div>
+    </div>
+
+</body>
+</html>

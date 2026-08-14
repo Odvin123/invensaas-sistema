@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Términos y Condiciones - InvenSaaS</title>
+    <link rel="icon" type="image/png" href="IM.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --secondary: #0f172a;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 48px 56px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: 900;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        .header .logo .icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .header .logo .text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .logo .text span {
+            color: var(--secondary);
+            -webkit-text-fill-color: var(--secondary);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-top: 12px;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 15px;
+            margin-top: 4px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 20px;
+            background: var(--light);
+            border-radius: 8px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            color: var(--secondary);
+        }
+
+        .content h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .content h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            color: var(--secondary);
+        }
+
+        .content p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .content ul {
+            margin: 12px 0 20px 24px;
+            color: var(--text-light);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .content ul li {
+            margin-bottom: 6px;
+        }
+
+        .content .highlight-box {
+            background: var(--light);
+            padding: 20px 24px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            margin: 16px 0;
+        }
+
+        .content .highlight-box p {
+            margin-bottom: 0;
+            color: var(--text);
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .footer-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        .last-updated {
+            text-align: right;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .container { padding: 24px 20px; }
+            .header h1 { font-size: 24px; }
+            .content h2 { font-size: 19px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <a href="index.html" class="logo">
+                <div class="icon"><i class="fas fa-cubes"></i></div>
+                <div class="text">Inven<span>SaaS</span></div>
+            </a>
+            <h1>Términos y Condiciones</h1>
+            <p>Última actualización: 14 de agosto de 2026</p>
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Volver al inicio</a>
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="content">
+
+            <h2>1. Aceptación de los Términos</h2>
+            <p>
+                Al acceder y utilizar la plataforma <strong>InvenSaaS</strong> (en adelante "la Plataforma"), 
+                usted acepta cumplir con estos Términos y Condiciones. Si no está de acuerdo con alguna parte 
+                de estos términos, no utilice la Plataforma.
+            </p>
+
+            <h2>2. Descripción del Servicio</h2>
+            <p>
+                InvenSaaS es una plataforma de gestión de inventario multi-tenant que permite a empresas y 
+                emprendedores administrar productos, ventas, proveedores, clientes y generar reportes en tiempo real.
+            </p>
+
+            <h2>3. Registro y Cuenta de Usuario</h2>
+            <ul>
+                <li>Para utilizar la Plataforma, debe registrarse proporcionando información verídica y actualizada.</li>
+                <li>Usted es responsable de mantener la confidencialidad de sus credenciales de acceso.</li>
+                <li>Usted es responsable de todas las actividades que ocurran bajo su cuenta.</li>
+                <li>InvenSaaS se reserva el derecho de suspender o cancelar cuentas que incumplan estos términos.</li>
+            </ul>
+
+            <h2>4. Uso Aceptable</h2>
+            <ul>
+                <li>Utilizar la Plataforma exclusivamente para fines comerciales legítimos relacionados con su negocio.</li>
+                <li>No realizar actividades ilegales, fraudulentas o que infrinjan derechos de terceros.</li>
+                <li>No intentar acceder a datos de otros usuarios o empresas sin autorización.</li>
+                <li>No sobrecargar o dañar la infraestructura de la Plataforma.</li>
+            </ul>
+
+            <h2>5. Propiedad Intelectual</h2>
+            <p>
+                Todo el contenido, diseño, código fuente, marcas y logotipos de InvenSaaS son propiedad de sus 
+                desarrolladores y están protegidos por leyes de propiedad intelectual. No está permitido copiar, 
+                modificar o distribuir el software sin autorización expresa.
+            </p>
+
+            <h2>6. Datos y Privacidad</h2>
+            <p>
+                La información que usted ingresa en la Plataforma es de su propiedad. InvenSaaS no vende ni 
+                comparte sus datos con terceros sin su consentimiento explícito. Para más detalles, consulte nuestra 
+                <a href="privacidad.html">Política de Privacidad</a>.
+            </p>
+
+            <div class="highlight-box">
+                <p>
+                    <i class="fas fa-shield-alt" style="color:var(--primary); margin-right:8px;"></i>
+                    <strong>Compromiso con la seguridad:</strong> Sus datos están protegidos con cifrado y 
+                    almacenamiento seguro en servidores de alta disponibilidad.
+                </p>
+            </div>
+
+            <h2>7. Limitación de Responsabilidad</h2>
+            <p>
+                InvenSaaS se esfuerza por ofrecer un servicio confiable y continuo, pero no garantiza que la 
+                Plataforma esté libre de errores o interrupciones. En ningún caso InvenSaaS será responsable por 
+                daños indirectos, pérdidas de datos o lucro cesante derivado del uso de la Plataforma.
+            </p>
+
+            <h2>8. Cancelación y Terminación</h2>
+            <ul>
+                <li>Usted puede cancelar su cuenta en cualquier momento contactando a nuestro soporte.</li>
+                <li>InvenSaaS puede suspender o terminar su cuenta si se detecta un incumplimiento de estos términos.</li>
+                <li>Al finalizar, se eliminarán sus datos de acuerdo con nuestra política de privacidad.</li>
+            </ul>
+
+            <h2>9. Modificaciones a los Términos</h2>
+            <p>
+                InvenSaaS se reserva el derecho de actualizar estos términos en cualquier momento. Las 
+                modificaciones serán notificadas a través de la Plataforma y entrarán en vigor inmediatamente 
+                después de su publicación.
+            </p>
+
+            <h2>10. Contacto</h2>
+            <p>
+                Si tiene preguntas sobre estos Términos y Condiciones, puede contactarnos a través de:
+            </p>
+            <ul>
+                <li><i class="fas fa-envelope" style="color:var(--primary);"></i> <a href="mailto:odvinenriquerivera12345@gmail.com" style="color:var(--primary); text-decoration:none;">odvinenriquerivera12345@gmail.com</a></li>
+                <li><i class="fas fa-phone" style="color:var(--primary);"></i> <a href="https://wa.me/50558764830" style="color:var(--primary); text-decoration:none;">+505 5876 4830</a> (WhatsApp)</li>
+            </ul>
+
+            <div class="last-updated">
+                <i class="fas fa-clock"></i> Última revisión: 14 de agosto de 2026
+            </div>
+        </div>
+
+        <div class="footer-text">
+            &copy; 2026 InvenSaaS. Todos los derechos reservados. | 
+            <a href="privacidad.html">Política de Privacidad</a> | 
+            <a href="terminos.html">Términos y Condiciones</a>
+        </div>
+    </div>
+
+</body>
+</html>
