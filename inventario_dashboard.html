@@ -1468,7 +1468,8 @@
     
 function formatStock(value) {
     if (value === null || value === undefined) return '0.00';
-    const num = Number(value);
+    // Si es string, convertirlo a número
+    const num = typeof value === 'string' ? parseFloat(value) : Number(value);
     if (isNaN(num)) return '0.00';
     return num.toFixed(2);
 }
