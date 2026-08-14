@@ -492,186 +492,169 @@
 
     <script>
         // ============================================
-        // CONFIGURACIÓN
+        // EJECUCIÓN INMEDIATA
         // ============================================
-        const token = localStorage.getItem('token');
-        const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
-
-        console.log('🚀 Iniciando Historial de Facturas...');
-
-        // ============================================
-        // CARGAR FACTURAS - VERSIÓN SIMPLIFICADA
-        // ============================================
-        async function cargarFacturas() {
-            const tbody = document.getElementById('historial-tbody');
+        (function() {
+            console.log('🚀 EJECUCIÓN INMEDIATA - Historial de Facturas');
             
-            try {
-                // Mostrar loading
-                tbody.innerHTML = '<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando facturas...</td></tr>';
-
-                const response = await fetch(`${API_URL}/admin/ventas/reportes`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await response.json();
-                console.log('📦 Datos recibidos:', data);
-
-                // Verificar si hay ventas
-                if (data.success && data.ventas && data.ventas.length > 0) {
-                    // Limpiar tabla
-                    tbody.innerHTML = '';
-
-                    // Renderizar cada venta
-                    data.ventas.forEach(v => {
-                        const fecha = new Date(v.fecha_venta);
-                        const total = Number(v.total) || 0;
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td><strong>#${v.folio}</strong></td>
-                            <td>${fecha.toLocaleDateString('es-ES')} ${fecha.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})}</td>
-                            <td>${v.cliente_nombre || 'Público General'}</td>
-                            <td>${v.vendedor_nombre || 'Mostrador'}</td>
-                            <td style="text-align:right; font-weight:600; color:var(--primary);">C$${total.toFixed(2)}</td>
-                            <td><span class="status-badge completed">Completada</span></td>
-                            <td style="text-align:center;">
-                                <button class="btn-sm btn-view" onclick="verDetalle(${v.id})">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn-sm btn-print" onclick="reimprimirPorId(${v.id})">
-                                    <i class="fas fa-print"></i>
-                                </button>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-
-                    // Actualizar resumen
-                    document.getElementById('total-ventas-count').textContent = data.ventas.length;
-                    let totalMonto = 0;
-                    data.ventas.forEach(v => {
-                        totalMonto += Number(v.total) || 0;
-                    });
-                    document.getElementById('total-monto').textContent = `C$${totalMonto.toFixed(2)}`;
-
-                    console.log(`✅ ${data.ventas.length} facturas renderizadas`);
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="7" class="empty">📭 No hay facturas registradas.</td></tr>';
-                }
-            } catch (error) {
-                console.error('❌ Error:', error);
-                tbody.innerHTML = `<tr><td colspan="7" class="empty">❌ Error: ${error.message}</td></tr>`;
+            const token = localStorage.getItem('token');
+            const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
+            
+            console.log('🔑 Token:', token ? '✅ Existe' : '❌ No existe');
+            
+            if (!token) {
+                document.getElementById('historial-tbody').innerHTML = 
+                    '<tr><td colspan="7" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
+                return;
             }
-        }
 
-        // ============================================
-        // VER DETALLE
-        // ============================================
-        async function verDetalle(id) {
-            try {
-                const response = await fetch(`${API_URL}/admin/ventas/reportes`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
+            // ============================================
+            // FUNCIÓN PARA RENDERIZAR
+            // ============================================
+            async function renderizarFacturas() {
+                const tbody = document.getElementById('historial-tbody');
+                console.log('📋 Renderizando en tbody:', tbody);
+                
+                try {
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando facturas...</td></tr>';
 
-                if (data.success) {
-                    const venta = data.ventas.find(v => v.id === id);
-                    if (!venta) {
-                        alert('Venta no encontrada.');
-                        return;
-                    }
+                    const response = await fetch(`${API_URL}/admin/ventas/reportes`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
 
-                    window.ventaSeleccionada = venta;
+                    const data = await response.json();
+                    console.log('📦 Datos:', data);
 
-                    document.getElementById('detalle-folio').textContent = venta.folio;
-                    document.getElementById('detalle-fecha').textContent = new Date(venta.fecha_venta).toLocaleString('es-ES');
-                    document.getElementById('detalle-cliente').textContent = venta.cliente_nombre || 'Público General';
-                    document.getElementById('detalle-vendedor').textContent = venta.vendedor_nombre || 'Mostrador';
-                    document.getElementById('detalle-total').textContent = `C$${Number(venta.total).toFixed(2)}`;
-
-                    const tbody = document.getElementById('detalle-productos-tbody');
-                    tbody.innerHTML = '';
-
-                    if (venta.detalles && venta.detalles.length > 0) {
-                        venta.detalles.forEach(d => {
+                    if (data.success && data.ventas && data.ventas.length > 0) {
+                        tbody.innerHTML = '';
+                        
+                        data.ventas.forEach(v => {
+                            const fecha = new Date(v.fecha_venta);
+                            const total = Number(v.total) || 0;
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
-                                <td>${d.descripcion || 'Producto'}</td>
-                                <td style="text-align:center;">${d.cantidad || 0}</td>
-                                <td style="text-align:right;">C$${Number(d.precio_unitario).toFixed(2)}</td>
-                                <td style="text-align:right;">C$${Number(d.subtotal).toFixed(2)}</td>
+                                <td><strong>#${v.folio}</strong></td>
+                                <td>${fecha.toLocaleDateString('es-ES')} ${fecha.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})}</td>
+                                <td>${v.cliente_nombre || 'Público General'}</td>
+                                <td>${v.vendedor_nombre || 'Mostrador'}</td>
+                                <td style="text-align:right; font-weight:600; color:#6366f1;">C$${total.toFixed(2)}</td>
+                                <td><span style="background:#dcfce7; color:#16a34a; padding:4px 12px; border-radius:20px; font-size:12px;">Completada</span></td>
+                                <td style="text-align:center;">
+                                    <button onclick="verDetalle(${v.id})" style="padding:4px 10px; background:#f59e0b; color:white; border:none; border-radius:4px; cursor:pointer;">👁️</button>
+                                    <button onclick="reimprimirPorId(${v.id})" style="padding:4px 10px; background:#6366f1; color:white; border:none; border-radius:4px; cursor:pointer;">🖨️</button>
+                                </td>
                             `;
                             tbody.appendChild(tr);
                         });
+
+                        // Resumen
+                        document.getElementById('total-ventas-count').textContent = data.ventas.length;
+                        let totalMonto = 0;
+                        data.ventas.forEach(v => {
+                            totalMonto += Number(v.total) || 0;
+                        });
+                        document.getElementById('total-monto').textContent = `C$${totalMonto.toFixed(2)}`;
+                        
+                        console.log(`✅ ${data.ventas.length} facturas renderizadas`);
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="4" class="empty">Sin productos</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="7" class="empty">📭 No hay facturas registradas.</td></tr>';
                     }
-
-                    document.getElementById('detalleModal').style.display = 'block';
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    tbody.innerHTML = `<tr><td colspan="7" class="empty">❌ Error: ${error.message}</td></tr>`;
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error al cargar el detalle.');
-            }
-        }
-
-        function closeDetalleModal() {
-            document.getElementById('detalleModal').style.display = 'none';
-            window.ventaSeleccionada = null;
-        }
-
-        // ============================================
-        // REIMPRIMIR
-        // ============================================
-        function reimprimirFactura() {
-            if (!window.ventaSeleccionada) {
-                alert('No hay factura seleccionada.');
-                return;
             }
 
-            const v = window.ventaSeleccionada;
-            alert(`🧾 Factura #${v.folio}\nTotal: C$${Number(v.total).toFixed(2)}\nCliente: ${v.cliente_nombre || 'Público General'}\n\n(Reimpresión disponible)`);
-            closeDetalleModal();
-        }
+            // ============================================
+            // FUNCIONES GLOBALES (para los botones onclick)
+            // ============================================
+            window.verDetalle = async function(id) {
+                try {
+                    const response = await fetch(`${API_URL}/admin/ventas/reportes`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        const venta = data.ventas.find(v => v.id === id);
+                        if (!venta) return alert('Venta no encontrada.');
+                        
+                        window.ventaSeleccionada = venta;
+                        document.getElementById('detalle-folio').textContent = venta.folio;
+                        document.getElementById('detalle-fecha').textContent = new Date(venta.fecha_venta).toLocaleString('es-ES');
+                        document.getElementById('detalle-cliente').textContent = venta.cliente_nombre || 'Público General';
+                        document.getElementById('detalle-vendedor').textContent = venta.vendedor_nombre || 'Mostrador';
+                        document.getElementById('detalle-total').textContent = `C$${Number(venta.total).toFixed(2)}`;
+                        
+                        const tbody = document.getElementById('detalle-productos-tbody');
+                        tbody.innerHTML = '';
+                        if (venta.detalles && venta.detalles.length > 0) {
+                            venta.detalles.forEach(d => {
+                                const tr = document.createElement('tr');
+                                tr.innerHTML = `
+                                    <td>${d.descripcion || 'Producto'}</td>
+                                    <td style="text-align:center;">${d.cantidad || 0}</td>
+                                    <td style="text-align:right;">C$${Number(d.precio_unitario).toFixed(2)}</td>
+                                    <td style="text-align:right;">C$${Number(d.subtotal).toFixed(2)}</td>
+                                `;
+                                tbody.appendChild(tr);
+                            });
+                        } else {
+                            tbody.innerHTML = '<tr><td colspan="4" class="empty">Sin productos</td></tr>';
+                        }
+                        document.getElementById('detalleModal').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al cargar el detalle.');
+                }
+            };
 
-        function reimprimirPorId(id) {
-            verDetalle(id);
-        }
+            window.closeDetalleModal = function() {
+                document.getElementById('detalleModal').style.display = 'none';
+                window.ventaSeleccionada = null;
+            };
 
-        // ============================================
-        // FILTROS
-        // ============================================
-        function aplicarFiltros() {
-            cargarFacturas();
-        }
-
-        function recargar() {
-            document.getElementById('filtro-folio').value = '';
-            document.getElementById('filtro-cliente').value = '';
-            document.getElementById('filtro-inicio').value = '';
-            document.getElementById('filtro-fin').value = '';
-            cargarFacturas();
-        }
-
-        // ============================================
-        // CERRAR MODAL CON CLICK FUERA
-        // ============================================
-        window.onclick = function(event) {
-            if (event.target.id === 'detalleModal') {
+            window.reimprimirFactura = function() {
+                if (!window.ventaSeleccionada) {
+                    alert('No hay factura seleccionada.');
+                    return;
+                }
+                const v = window.ventaSeleccionada;
+                alert(`🧾 Factura #${v.folio}\nTotal: C$${Number(v.total).toFixed(2)}\nCliente: ${v.cliente_nombre || 'Público General'}`);
                 closeDetalleModal();
-            }
-        };
+            };
 
-        // ============================================
-        // INICIALIZAR
-        // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!token) {
-                alert('Sesión no válida. Redirigiendo...');
-                window.location.href = 'login.html';
-                return;
-            }
-            cargarFacturas();
-        });
+            window.reimprimirPorId = function(id) {
+                verDetalle(id);
+            };
+
+            window.aplicarFiltros = function() {
+                renderizarFacturas();
+            };
+
+            window.recargar = function() {
+                document.getElementById('filtro-folio').value = '';
+                document.getElementById('filtro-cliente').value = '';
+                document.getElementById('filtro-inicio').value = '';
+                document.getElementById('filtro-fin').value = '';
+                renderizarFacturas();
+            };
+
+            // ============================================
+            // CERRAR MODAL CON CLICK FUERA
+            // ============================================
+            window.onclick = function(event) {
+                if (event.target.id === 'detalleModal') {
+                    closeDetalleModal();
+                }
+            };
+
+            // ============================================
+            // EJECUTAR
+            // ============================================
+            renderizarFacturas();
+
+        })();
     </script>
 
 </body>
