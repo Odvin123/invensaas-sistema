@@ -136,8 +136,8 @@
                 <div style="display: flex; gap: 20px;">
                     <div style="flex: 1;">
                         <label for="cantidad_venta">Cantidad a Vender:</label>
-                        <input type="number" id="cantidad_venta" required min="0.01" step="0.01" value="1.00" oninput="validateStock()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif;">
-            </div>
+                        <input type="number" id="cantidad_venta" required min="0.01" step="any" value="1" oninput="validateStock()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; -moz-appearance:textfield;" 
+       onfocus="this.select()" inputmode="decimal">
                     <div style="flex: 1;">
                         <label for="existencia_stock">Existencia (Stock):</label>
                         <input type="text" id="existencia_stock" disabled style="background:var(--light);">
