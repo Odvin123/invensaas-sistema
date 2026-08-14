@@ -1,11 +1,6 @@
-// ============================================
-// ticket.js - Lógica de la Factura
-// ============================================
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔍 Buscando datos en localStorage...');
 
-    // ✅ LEER DE localStorage
     const ticketDataRaw = localStorage.getItem('ticketData');
     console.log('🔍 ticketData raw:', ticketDataRaw);
 
@@ -20,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ✅ SI NO HAY DATOS, MOSTRAR ERROR
     if (!ticketData || !ticketData.productos || ticketData.productos.length === 0) {
         document.body.innerHTML = `
             <div style="text-align:center;padding:40px;font-family:Inter,sans-serif;max-width:400px;margin:0 auto;">
@@ -39,19 +33,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // ============================================
-    // RENDERIZAR FACTURA EN PANTALLA
-    // ============================================
 
     console.log('📄 Renderizando factura con datos:', ticketData);
 
-    // Empresa
     document.getElementById('ticket-company').textContent = ticketData.nombreEmpresa || 'TU EMPRESA';
 
-    // Folio
     document.getElementById('ticket-folio').textContent = '#' + (ticketData.folio || '--');
 
-    // Fecha
     let fechaDisplay = '--';
     if (ticketData.fechaHora) {
         try {
@@ -93,18 +81,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.getElementById('ticket-fecha').textContent = fechaDisplay;
 
-    // Cliente
+    
     document.getElementById('ticket-cliente').textContent = ticketData.clienteNombre || 'PUBLICO EN GENERAL';
 
-    // Vendedor
+    
     document.getElementById('ticket-vendedor').textContent = ticketData.vendedorNombre || 'MOSTRADOR';
 
-    // Efectivo
     document.getElementById('ticket-efectivo').textContent = 'C$' + (ticketData.efectivo || ticketData.total || 0).toFixed(2);
 
-    // ============================================
-    // PRODUCTOS
-    // ============================================
+    
     const tbody = document.getElementById('ticket-items');
     tbody.innerHTML = '';
 
@@ -151,9 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Factura renderizada correctamente');
 });
 
-// ============================================
-// DESCARGAR FACTURA EN PDF
-// ============================================
 
 function downloadTicket() {
     // Obtener los datos
@@ -163,13 +145,9 @@ function downloadTicket() {
         return;
     }
 
-    // Crear el PDF
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
 
-    // ============================================
-    // DISEÑO DE LA FACTURA EN PDF
-    // ============================================
 
     const pageWidth = 210;
     const margin = 20;

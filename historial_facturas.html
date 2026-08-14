@@ -693,18 +693,66 @@
         };
 
         window.reimprimirFactura = function() {
-            if (!window.ventaSeleccionada) {
-                alert('No hay factura seleccionada.');
-                return;
-            }
-            const v = window.ventaSeleccionada;
-            alert(`🧾 Factura #${v.folio}\nTotal: C$${Number(v.total).toFixed(2)}\nCliente: ${v.cliente_nombre || 'Público General'}`);
-            closeDetalleModal();
-        };
-
-        window.reimprimirPorId = function(id) {
-            verDetalle(id);
-        };
+    if (!window.ventaSeleccionada) {
+        alert('No hay factura seleccionada.');
+        return;
+    }
+    
+    const v = window.ventaSeleccionada;
+    
+    // 🔥 CONSTRUIR LOS DATOS PARA EL TICKET
+    const productos = v.detalles || [];
+    const total = Number(v.total) || 0;
+    const clienteNombre = v.cliente_nombre || 'PUBLICO EN GENERAL';
+    const vendedorNombre = v.vendedor_nombre || 'MOSTRADOR';
+    const nombreEmpresa = localStorage.getItem('nombre_empresa') || 'TU EMPRESA';
+    
+    // 🔥 CALCULAR EFECTIVO (si no está disponible, usar el total)
+    const efectivo = Number(v.efectivo) || total;
+    
+    // 🔥 CONSTRUIR EL OBJETO TICKET
+    const ticketData = {
+        folio: v.folio || 0,
+        fechaHora: v.fecha_venta ? new Date(v.fecha_venta).toLocaleString('es-NI') : new Date().toLocaleString('es-NI'),
+        clienteNombre: clienteNombre,
+        vendedorNombre: vendedorNombre,
+        productos: productos.map(d => ({
+            id: d.producto_id || d.id || 'N/A',
+            descripcion: d.descripcion || 'Sin descripción',
+            cantidad: Number(d.cantidad) || 1,
+            precio: Number(d.precio_unitario) || 0,
+            importe: Number(d.subtotal) || (Number(d.cantidad) * Number(d.precio_unitario)) || 0
+        })),
+        total: total,
+        cambio: 0,
+        efectivo: efectivo,
+        nombreEmpresa: nombreEmpresa
+    };
+    
+    console.log('📄 Datos para reimpresión:', ticketData);
+    
+    // 🔥 GUARDAR EN LOCALSTORAGE
+    localStorage.setItem('ticketData', JSON.stringify(ticketData));
+    
+    // 🔥 ABRIR EL TICKET
+    window.open('ticket.html', '_blank', 'width=400,height=700,resizable,scrollbars');
+    
+    closeDetalleModal();
+};
+window.reimprimirPorId = function(id) {
+    // Buscar la venta en la caché
+    const venta = window.ventasCache.find(v => v.id === id);
+    if (!venta) {
+        alert('Venta no encontrada.');
+        return;
+    }
+    
+    // Establecer como venta seleccionada
+    window.ventaSeleccionada = venta;
+    
+    // Reimprimir
+    reimprimirFactura();
+};
 
         // ============================================
         // CERRAR MODAL CON CLICK FUERA
