@@ -1158,7 +1158,7 @@
 
                     document.getElementById('product-id').value = data.id;
                     document.getElementById('product-descripcion').value = data.descripcion || '';
-                    document.getElementById('product-stock').value = data.stock || 0;
+                    document.getElementById('product-stock').value = parseFloat(data.stock).toFixed(2) || 0;
                     document.getElementById('product-costo').value = parseFloat(data.costo).toFixed(2);
                     document.getElementById('product-precio').value = parseFloat(data.precio).toFixed(2);
                     document.getElementById('product-clave').value = data.id;
