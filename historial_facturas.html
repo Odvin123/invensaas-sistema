@@ -488,36 +488,45 @@
         let ventaSeleccionada = null;
 
         
-        async function cargarFacturas() {
-            const tbody = document.getElementById('historial-tbody');
-            tbody.innerHTML = '<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando facturas...</td></tr>';
+       async function cargarFacturas() {
+    const tbody = document.getElementById('historial-tbody');
+    tbody.innerHTML = '<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando facturas...</td></tr>';
 
-            try {
-                const response = await fetch(`${API_URL}/admin/ventas/reportes`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+    try {
+        console.log('🔍 Cargando facturas...');
+        console.log('🔑 Token:', token ? '✅ Sí' : '❌ No');
+        console.log('🌐 API_URL:', API_URL);
 
-                if (response.status === 401 || response.status === 403) {
-                    alert('Sesión expirada. Redirigiendo...');
-                    localStorage.clear();
-                    window.location.href = 'login.html';
-                    return;
-                }
+        const response = await fetch(`${API_URL}/admin/ventas/reportes`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-                const data = await response.json();
+        console.log('📡 Status:', response.status);
 
-                if (data.success) {
-                    ventasCache = data.ventas || [];
-                    renderFacturas(ventasCache);
-                    actualizarResumen(ventasCache);
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="7" class="empty">❌ Error al cargar facturas.</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                tbody.innerHTML = '<tr><td colspan="7" class="empty">❌ Error de conexión.</td></tr>';
-            }
+        if (response.status === 401 || response.status === 403) {
+            alert('Sesión expirada. Redirigiendo...');
+            localStorage.clear();
+            window.location.href = 'login.html';
+            return;
         }
+
+        const data = await response.json();
+        console.log('📦 Datos recibidos:', data);
+
+        if (data.success) {
+            ventasCache = data.ventas || [];
+            console.log('📊 Ventas encontradas:', ventasCache.length);
+            renderFacturas(ventasCache);
+            actualizarResumen(ventasCache);
+        } else {
+            console.error('❌ Error en la respuesta:', data.message);
+            tbody.innerHTML = `<tr><td colspan="7" class="empty">❌ ${data.message || 'Error al cargar facturas.'}</td></tr>`;
+        }
+    } catch (error) {
+        console.error('❌ Error en cargarFacturas:', error);
+        tbody.innerHTML = `<tr><td colspan="7" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
+    }
+}
 
         
         function renderFacturas(ventas) {
