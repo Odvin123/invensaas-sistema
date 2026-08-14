@@ -136,7 +136,7 @@
                 <div style="display: flex; gap: 20px;">
                     <div style="flex: 1;">
                         <label for="cantidad_venta">Cantidad a Vender:</label>
-<input type="number" id="cantidad_venta" required min="1" value="1" oninput="validateStock()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif;">        
+                        <input type="number" id="cantidad_venta" required min="0.01" step="0.01" value="1.00" oninput="validateStock()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif;">
             </div>
                     <div style="flex: 1;">
                         <label for="existencia_stock">Existencia (Stock):</label>
@@ -533,40 +533,39 @@
         }
 
         function selectProductForSale(productId) {
-            const producto = productosInventarioCache.find(p => p.id === productId);
-            if (!producto) return;
+    const producto = productosInventarioCache.find(p => p.id === productId);
+    if (!producto) return;
 
-            document.getElementById('selected_product_id').value = producto.id;
-            document.getElementById('selected_product_clave').value = producto.id;
-            document.getElementById('producto_nombre').value = producto.descripcion;
-            document.getElementById('existencia_stock').value = producto.stock;
-            document.getElementById('precio_unitario').value = `C$${parseFloat(producto.precio).toFixed(2)}`;
-            document.getElementById('cantidad_venta').value = 1;
+    document.getElementById('selected_product_id').value = producto.id;
+    document.getElementById('selected_product_clave').value = producto.id;
+    document.getElementById('producto_nombre').value = producto.descripcion;
+    document.getElementById('existencia_stock').value = parseFloat(producto.stock).toFixed(2);
+    document.getElementById('precio_unitario').value = `C$${parseFloat(producto.precio).toFixed(2)}`;
+    document.getElementById('cantidad_venta').value = '1.00';
 
-            closeBusquedaProductoModal();
-            validateStock();
+    closeBusquedaProductoModal();
+    validateStock();
+}
+
+      function validateStock() {
+    const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
+    const cantidadInput = document.getElementById('cantidad_venta');
+    let cantidad = parseFloat(cantidadInput.value) || 0;
+
+    if (isNaN(cantidad) || cantidad <= 0) {
+        cantidadInput.value = 1.00;
+        cantidad = 1.00;
+    }
+
+    if (stock !== '--' && stock < cantidad) {
+        alert(`Stock Insuficiente. Solo hay ${stock.toFixed(2)} unidades disponibles.`);
+        cantidadInput.value = stock > 0 ? stock.toFixed(2) : 1.00;
+        if (stock <= 0) {
+            alert("Este producto no tiene stock disponible.");
+            cantidadInput.value = 1.00;
         }
-
-        function validateStock() {
-            const stock = parseInt(document.getElementById('existencia_stock').value);
-            const cantidadInput = document.getElementById('cantidad_venta');
-            let cantidad = parseInt(cantidadInput.value);
-
-            if (isNaN(cantidad) || cantidad <= 0) {
-                cantidadInput.value = 1;
-                cantidad = 1;
-            }
-
-            if (stock !== '--' && stock < cantidad) {
-                alert(`Stock Insuficiente. Solo hay ${stock} unidades disponibles.`);
-                cantidadInput.value = stock > 0 ? stock : 1;
-                if (stock <= 0) {
-                    alert("Este producto no tiene stock disponible.");
-                    cantidadInput.value = 1;
-                }
-            }
-        }
-
+    }
+}
         function clearMovimientoInputs() {
             document.getElementById('selected_product_id').value = '';
             document.getElementById('selected_product_clave').value = '';
@@ -581,32 +580,40 @@
         // ============================================
 
         document.getElementById('movimientoVentasForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const productId = parseInt(document.getElementById('selected_product_id').value);
-            const cantidad = parseInt(document.getElementById('cantidad_venta').value);
-            const stock = parseInt(document.getElementById('existencia_stock').value);
-            const precioStr = document.getElementById('precio_unitario').value.replace('C$', '');
-            const precio = parseFloat(precioStr);
+    e.preventDefault();
+    const productId = parseInt(document.getElementById('selected_product_id').value);
+    const cantidad = parseFloat(document.getElementById('cantidad_venta').value) || 0;
+    const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
+    const precioStr = document.getElementById('precio_unitario').value.replace('C$', '');
+    const precio = parseFloat(precioStr) || 0;
 
-            if (!productId) { alert("Debe seleccionar un producto primero."); return; }
-            if (cantidad <= 0 || isNaN(cantidad)) { alert("La cantidad debe ser un número positivo."); return; }
+    if (!productId) { alert("Debe seleccionar un producto primero."); return; }
+    if (cantidad <= 0 || isNaN(cantidad)) { alert("La cantidad debe ser un número positivo."); return; }
 
-            const productoData = productosInventarioCache.find(p => p.id === productId);
-            if (!productoData) return;
+    const productoData = productosInventarioCache.find(p => p.id === productId);
+    if (!productoData) return;
 
-            const existingItem = ventaActual.find(item => item.id === productId);
-            const currentlyInSale = existingItem ? existingItem.cantidad : 0;
+    const existingItem = ventaActual.find(item => item.id === productId);
+    const currentlyInSale = existingItem ? existingItem.cantidad : 0;
 
-            if ((currentlyInSale + cantidad) > stock) {
-                alert(`Stock Insuficiente. Al añadir ${cantidad}, se superaría el stock disponible de ${stock}.`);
-                return;
-            }
+    if ((currentlyInSale + cantidad) > stock) {
+        alert(`Stock Insuficiente. Al añadir ${cantidad.toFixed(2)}, se superaría el stock disponible de ${stock.toFixed(2)}.`);
+        return;
+    }
 
-            addProductToSale(productoData, cantidad, precio);
-            closeMovimientoVentasModal();
-        });
+    addProductToSale(productoData, cantidad, precio);
+    closeMovimientoVentasModal();
+});
 
         function addProductToSale(producto, cantidad, precio) {
+             cantidad = parseFloat(cantidad) || 0;
+    precio = parseFloat(precio) || 0;
+
+    if (cantidad <= 0) {
+        alert("La cantidad debe ser mayor a 0.");
+        return;
+    }
+
             const importe = cantidad * precio;
 
             const existingItem = ventaActual.find(item => item.id === producto.id);
