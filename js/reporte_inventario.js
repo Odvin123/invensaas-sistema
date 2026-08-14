@@ -1,10 +1,15 @@
 // js/reporte_inventario.js
+console.log('🚀 ===== REPORTE INVENTARIO JS CARGADO =====');
+
 // ============================================
 // CONFIGURACIÓN
 // ============================================
 const token = localStorage.getItem('token');
 const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
 let movimientosCache = [];
+
+console.log('🔑 Token:', token ? '✅ Existe' : '❌ No existe');
+console.log('🌐 API_URL:', API_URL);
 
 // ============================================
 // ELEMENTOS DOM
@@ -13,6 +18,13 @@ const tbody = document.getElementById('movimientos-tbody');
 const totalEntradasEl = document.getElementById('total-entradas');
 const totalSalidasEl = document.getElementById('total-salidas');
 const balanceNetoEl = document.getElementById('balance-neto');
+
+console.log('📋 Elementos DOM:', {
+    tbody: tbody ? '✅ Existe' : '❌ No existe',
+    totalEntradasEl: totalEntradasEl ? '✅ Existe' : '❌ No existe',
+    totalSalidasEl: totalSalidasEl ? '✅ Existe' : '❌ No existe',
+    balanceNetoEl: balanceNetoEl ? '✅ Existe' : '❌ No existe'
+});
 
 // ============================================
 // FUNCIONES DE FORMATO
@@ -45,12 +57,15 @@ function formatDate(dateStr) {
 // CARGAR MOVIMIENTOS
 // ============================================
 async function loadMovimientos() {
+    console.log('🔍 loadMovimientos() ejecutándose...');
     tbody.innerHTML = '<tr><td colspan="8" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando movimientos...</td></tr>';
 
     try {
         const response = await fetch(`${API_URL}/admin/inventario/movimientos`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
+
+        console.log('📡 Status response:', response.status);
 
         if (response.status === 401 || response.status === 403) {
             alert('Sesión expirada. Redirigiendo...');
@@ -60,18 +75,25 @@ async function loadMovimientos() {
         }
 
         const data = await response.json();
+        console.log('📦 Data recibida:', data);
 
         if (data.success) {
             movimientosCache = data.movimientos || [];
             console.log('📦 Movimientos cargados:', movimientosCache.length);
+            
+            if (movimientosCache.length > 0) {
+                console.log('📋 Primer movimiento:', movimientosCache[0]);
+            }
+            
             renderMovimientos(movimientosCache);
             updateSummary(movimientosCache);
         } else {
+            console.log('❌ Error en la respuesta:', data);
             tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Error al cargar movimientos.</td></tr>';
         }
     } catch (error) {
-        console.error('Error:', error);
-        tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Error de conexión.</td></tr>';
+        console.error('❌ Error en loadMovimientos:', error);
+        tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Error de conexión: ' + error.message + '</td></tr>';
     }
 }
 
@@ -79,6 +101,7 @@ async function loadMovimientos() {
 // RENDERIZAR TABLA
 // ============================================
 function renderMovimientos(movimientos) {
+    console.log('🎨 renderMovimientos() ejecutándose con', movimientos.length, 'movimientos');
     tbody.innerHTML = '';
 
     if (!movimientos || movimientos.length === 0) {
@@ -86,7 +109,7 @@ function renderMovimientos(movimientos) {
         return;
     }
 
-    movimientos.forEach(m => {
+    movimientos.forEach((m, index) => {
         const tr = document.createElement('tr');
         const tipo = m.tipo || 'DESCONOCIDO';
         const cantidad = parseFloat(m.cantidad) || 0;
@@ -117,51 +140,27 @@ function renderMovimientos(movimientos) {
             <td>${m.referencia || '—'}</td>
         `;
         tbody.appendChild(tr);
+        
+        if (index === 0) {
+            console.log('✅ Primera fila renderizada:', tr);
+        }
     });
+    
+    console.log('✅ Tabla renderizada con', movimientos.length, 'filas');
 }
 
 // ============================================
-// ACTUALIZAR RESUMEN CON DIAGNÓSTICO
+// ACTUALIZAR RESUMEN
 // ============================================
 function updateSummary(movimientos) {
-    console.log('📊 ===== INICIO DEL RESUMEN =====');
-    console.log('📦 Total de movimientos:', movimientos.length);
+    console.log('📊 updateSummary() ejecutándose...');
     
-    // 🔥 Mostrar los primeros 3 movimientos para diagnosticar
-    if (movimientos.length > 0) {
-        console.log('📋 Primer movimiento:', movimientos[0]);
-        console.log('   - cantidad:', movimientos[0].cantidad);
-        console.log('   - tipo:', movimientos[0].tipo);
-        console.log('   - tipo de cantidad:', typeof movimientos[0].cantidad);
-    }
-
     let totalEntradas = 0;
     let totalSalidas = 0;
 
-    movimientos.forEach((m, index) => {
-        // 🔥 CONVERTIR A NÚMERO DE FORMA SEGURA
-        let cantidad = 0;
-        const raw = m.cantidad;
-        
-        if (raw !== undefined && raw !== null) {
-            // Si es string, limpiar y convertir
-            if (typeof raw === 'string') {
-                const limpia = raw.replace(/,/g, '.').trim();
-                cantidad = parseFloat(limpia);
-            } else {
-                cantidad = Number(raw);
-            }
-        }
-        
-        // Si no es número válido, usar 0
-        if (isNaN(cantidad)) cantidad = 0;
-
+    movimientos.forEach(m => {
+        const cantidad = parseFloat(m.cantidad) || 0;
         const tipo = m.tipo || '';
-
-        // 🔥 LOG POR MOVIMIENTO (solo los primeros 5 para no llenar la consola)
-        if (index < 5) {
-            console.log(`   ${index + 1}. ${tipo}: ${cantidad} (original: "${raw}")`);
-        }
 
         if (tipo === 'ENTRADA') {
             totalEntradas += cantidad;
@@ -172,18 +171,12 @@ function updateSummary(movimientos) {
 
     const balance = totalEntradas - totalSalidas;
 
-    console.log('📊 TOTALES CALCULADOS:');
-    console.log(`   ✅ Entradas: ${totalEntradas}`);
-    console.log(`   ❌ Salidas: ${totalSalidas}`);
-    console.log(`   ⚖️ Balance: ${balance}`);
-    console.log('📊 ===== FIN DEL RESUMEN =====');
+    console.log('📊 Totales:', { totalEntradas, totalSalidas, balance });
 
-    // Mostrar en pantalla
     totalEntradasEl.textContent = totalEntradas.toFixed(2);
     totalSalidasEl.textContent = totalSalidas.toFixed(2);
     balanceNetoEl.textContent = balance.toFixed(2);
 
-    // 🔥 Color del balance
     if (balance > 0) {
         balanceNetoEl.style.color = '#22c55e';
     } else if (balance < 0) {
@@ -264,11 +257,19 @@ document.getElementById('btn-exportar').addEventListener('click', exportCSV);
 // ============================================
 // INICIALIZAR
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
-    if (!token) {
-        alert('Sesión no válida. Redirigiendo...');
-        window.location.href = 'login.html';
-        return;
+console.log('🚀 Inicializando reporte_inventario.js...');
+
+if (!token) {
+    alert('Sesión no válida. Redirigiendo...');
+    window.location.href = 'login.html';
+} else {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ DOM listo, cargando movimientos...');
+            loadMovimientos();
+        });
+    } else {
+        console.log('✅ DOM ya listo, cargando movimientos...');
+        loadMovimientos();
     }
-    loadMovimientos();
-});
+}
