@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Facturas - InvenSaaS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/config.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --text: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --light: #f1f5f9;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --radius: 16px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* HEADER */
+        .page-header {
+            background: var(--white);
+            padding: 20px 28px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header h1 i { color: var(--primary); }
+
+        .page-header .btn-back {
+            padding: 10px 20px;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .page-header .btn-back:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* FILTROS */
+        .filters {
+            background: var(--white);
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .filters .group {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .filters .group label {
+            display: block;
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .filters .group input,
+        .filters .group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: var(--transition);
+            background: var(--light);
+        }
+
+        .filters .group input:focus,
+        .filters .group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+        }
+
+        .filters .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filters .actions .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filters .actions .btn-execute {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        .filters .actions .btn-execute:hover { transform: translateY(-2px); }
+
+        .filters .actions .btn-refresh {
+            background: var(--light);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+        .filters .actions .btn-refresh:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* TABLA */
+        .table-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .table-wrapper { overflow-x: auto; padding: 0 24px 24px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead th {
+            text-align: left;
+            padding: 10px 12px;
+            background: var(--light);
+            color: var(--text-light);
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tbody tr:hover td { background: rgba(99, 102, 241, 0.03); }
+
+        tbody .empty {
+            text-align: center;
+            color: var(--text-light);
+            padding: 40px;
+        }
+
+        .status-badge {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-badge.completed { background: #dcfce7; color: #16a34a; }
+        .status-badge.cancelled { background: #fee2e2; color: #dc2626; }
+        .status-badge.pending { background: #fef3c7; color: #d97706; }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-sm:hover { transform: translateY(-1px); }
+
+        .btn-print {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-print:hover {
+            background: #4f46e5;
+        }
+
+        .btn-view {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #d97706;
+        }
+
+        /* MODAL DETALLE */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--white);
+            margin: 5% auto;
+            padding: 28px;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content .close {
+            float: right;
+            font-size: 28px;
+            font-weight: 700;
+            color: #aaa;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-content .close:hover { color: var(--text); }
+
+        .modal-content h3 {
+            margin-bottom: 16px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-content h3 i { color: var(--primary); }
+
+        .modal-content .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .modal-content .detail-row .label {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .modal-content .detail-row .value {
+            font-weight: 600;
+        }
+
+        .modal-content .detail-products {
+            margin-top: 12px;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .modal-content .detail-products th {
+            text-align: left;
+            padding: 8px;
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-content .detail-products td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-content .total-grande {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: right;
+            margin-top: 12px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 16px;
+            }
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 16px;
+            }
+            .filters .group { min-width: auto; }
+            .filters .actions { justify-content: center; flex-wrap: wrap; }
+            .table-wrapper { padding: 0 12px 16px; }
+            table { font-size: 12px; }
+            thead th, tbody td { padding: 6px 8px; }
+            .modal-content { margin: 10% auto; padding: 20px; max-width: 95%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="page-header">
+            <h1><i class="fas fa-file-invoice"></i> Historial de Facturas</h1>
+            <a href="inventario_dashboard.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filters">
+            <div class="group">
+                <label><i class="fas fa-hashtag"></i> Folio</label>
+                <input type="text" id="filtro-folio" placeholder="Ej: 1, 2, 3...">
+            </div>
+            <div class="group">
+                <label><i class="fas fa-user"></i> Cliente</label>
+                <input type="text" id="filtro-cliente" placeholder="Nombre del cliente">
+            </div>
+            <div class="group">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
+                <input type="date" id="filtro-inicio">
+            </div>
+            <div class="group">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
+                <input type="date" id="filtro-fin">
+            </div>
+            <div class="actions">
+                <button class="btn btn-execute" onclick="aplicarFiltros()"><i class="fas fa-search"></i> Buscar</button>
+                <button class="btn btn-refresh" onclick="recargar()"><i class="fas fa-sync-alt"></i> Recargar</button>
+            </div>
+        </div>
+
+        <!-- TABLA -->
+        <div class="table-card">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Vendedor</th>
+                            <th style="text-align:right;">Total</th>
+                            <th>Estado</th>
+                            <th style="text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historial-tbody">
+                        <tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando facturas...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RESUMEN -->
+        <div class="summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px;">
+            <div class="card" style="background:var(--white); padding:18px 24px; border-radius:var(--radius); border:1px solid var(--border); text-align:center;">
+                <div class="label" style="font-size:12px; color:var(--text-light); font-weight:600;">Total Ventas</div>
+                <div class="value" id="total-ventas-count" style="font-size:28px; font-weight:900; color:var(--primary);">0</div>
+            </div>
+            <div class="card" style="background:var(--white); padding:18px 24px; border-radius:var(--radius); border:1px solid var(--border); text-align:center;">
+                <div class="label" style="font-size:12px; color:var(--text-light); font-weight:600;">Monto Total</div>
+                <div class="value" id="total-monto" style="font-size:28px; font-weight:900; color:var(--success);">C$0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLE -->
+    <div id="detalleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDetalleModal()">&times;</span>
+            <h3><i class="fas fa-file-invoice"></i> Detalle de Factura #<span id="detalle-folio">0</span></h3>
+            
+            <div id="detalle-info">
+                <div class="detail-row"><span class="label">Fecha:</span><span class="value" id="detalle-fecha">--</span></div>
+                <div class="detail-row"><span class="label">Cliente:</span><span class="value" id="detalle-cliente">--</span></div>
+                <div class="detail-row"><span class="label">Vendedor:</span><span class="value" id="detalle-vendedor">--</span></div>
+            </div>
+
+            <h4 style="margin-top:16px;">Productos</h4>
+            <table class="detail-products">
+                <thead>
+                    <tr><th>Producto</th><th style="text-align:center;">Cantidad</th><th style="text-align:right;">Precio</th><th style="text-align:right;">Subtotal</th></tr>
+                </thead>
+                <tbody id="detalle-productos-tbody">
+                    <tr><td colspan="4" class="empty">Sin productos</td></tr>
+                </tbody>
+            </table>
+
+            <div class="total-grande">Total: <span id="detalle-total">C$0.00</span></div>
+
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button class="btn-sm btn-print" onclick="reimprimirFactura()" style="padding:10px 20px; font-size:14px;">
+                    <i class="fas fa-print"></i> Reimprimir Factura
+                </button>
+                <button class="btn-sm btn-view" onclick="closeDetalleModal()" style="padding:10px 20px; font-size:14px; background:var(--text-light); color:white;">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        const token = localStorage.getItem('token');
+        const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
+        let ventasCache = [];
+        let ventaSeleccionada = null;
+
+        
+        async function cargarFacturas() {
+            const tbody = document.getElementById('historial-tbody');
+            tbody.innerHTML = '<tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando facturas...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_URL}/admin/ventas/reportes`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    alert('Sesión expirada. Redirigiendo...');
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    ventasCache = data.ventas || [];
+                    renderFacturas(ventasCache);
+                    actualizarResumen(ventasCache);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty">❌ Error al cargar facturas.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                tbody.innerHTML = '<tr><td colspan="7" class="empty">❌ Error de conexión.</td></tr>';
+            }
+        }
+
+        
+        function renderFacturas(ventas) {
+            const tbody = document.getElementById('historial-tbody');
+            tbody.innerHTML = '';
+
+            if (!ventas || ventas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty">📭 No hay facturas registradas.</td></tr>';
+                return;
+            }
+
+            ventas.forEach(v => {
+                const tr = document.createElement('tr');
+                const fecha = new Date(v.fecha_venta);
+                
+                let estado = 'completed';
+                let estadoTexto = 'Completada';
+
+                tr.innerHTML = `
+                    <td><strong>#${v.folio}</strong></td>
+                    <td>${fecha.toLocaleDateString('es-ES')} ${fecha.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'})}</td>
+                    <td>${v.cliente_nombre || 'Público General'}</td>
+                    <td>${v.vendedor_nombre || 'Mostrador'}</td>
+                    <td style="text-align:right; font-weight:600; color:var(--primary);">C$${parseFloat(v.total).toFixed(2)}</td>
+                    <td><span class="status-badge ${estado}">${estadoTexto}</span></td>
+                    <td style="text-align:center;">
+                        <button class="btn-sm btn-view" onclick="verDetalle(${v.id})" title="Ver detalle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-sm btn-print" onclick="reimprimirPorId(${v.id})" title="Reimprimir">
+                            <i class="fas fa-print"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+       
+        function actualizarResumen(ventas) {
+            document.getElementById('total-ventas-count').textContent = ventas.length;
+            
+            let totalMonto = 0;
+            ventas.forEach(v => {
+                totalMonto += parseFloat(v.total) || 0;
+            });
+            document.getElementById('total-monto').textContent = `C$${totalMonto.toFixed(2)}`;
+        }
+
+      
+        function aplicarFiltros() {
+            const folio = document.getElementById('filtro-folio').value.trim();
+            const cliente = document.getElementById('filtro-cliente').value.toLowerCase().trim();
+            const inicio = document.getElementById('filtro-inicio').value;
+            const fin = document.getElementById('filtro-fin').value;
+
+            let filtrados = ventasCache;
+
+            if (folio) {
+                filtrados = filtrados.filter(v => v.folio == folio);
+            }
+
+            if (cliente) {
+                filtrados = filtrados.filter(v => 
+                    (v.cliente_nombre || '').toLowerCase().includes(cliente)
+                );
+            }
+
+            if (inicio) {
+                const inicioDate = new Date(inicio);
+                filtrados = filtrados.filter(v => new Date(v.fecha_venta) >= inicioDate);
+            }
+
+            if (fin) {
+                const finDate = new Date(fin);
+                finDate.setHours(23, 59, 59);
+                filtrados = filtrados.filter(v => new Date(v.fecha_venta) <= finDate);
+            }
+
+            renderFacturas(filtrados);
+            actualizarResumen(filtrados);
+        }
+
+        function recargar() {
+            document.getElementById('filtro-folio').value = '';
+            document.getElementById('filtro-cliente').value = '';
+            document.getElementById('filtro-inicio').value = '';
+            document.getElementById('filtro-fin').value = '';
+            renderFacturas(ventasCache);
+            actualizarResumen(ventasCache);
+        }
+
+      
+        async function verDetalle(id) {
+            try {
+                const response = await fetch(`${API_URL}/admin/ventas/reportes`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const venta = data.ventas.find(v => v.id === id);
+                    if (!venta) {
+                        alert('Venta no encontrada.');
+                        return;
+                    }
+
+                    ventaSeleccionada = venta;
+
+                    document.getElementById('detalle-folio').textContent = venta.folio;
+                    document.getElementById('detalle-fecha').textContent = new Date(venta.fecha_venta).toLocaleString('es-ES');
+                    document.getElementById('detalle-cliente').textContent = venta.cliente_nombre || 'Público General';
+                    document.getElementById('detalle-vendedor').textContent = venta.vendedor_nombre || 'Mostrador';
+                    document.getElementById('detalle-total').textContent = `C$${parseFloat(venta.total).toFixed(2)}`;
+
+                    const tbody = document.getElementById('detalle-productos-tbody');
+                    tbody.innerHTML = '';
+
+                    if (venta.detalles && venta.detalles.length > 0) {
+                        venta.detalles.forEach(d => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${d.descripcion || 'Producto'}</td>
+                                <td style="text-align:center;">${d.cantidad || 0}</td>
+                                <td style="text-align:right;">C$${parseFloat(d.precio_unitario).toFixed(2)}</td>
+                                <td style="text-align:right;">C$${parseFloat(d.subtotal).toFixed(2)}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="4" class="empty">Sin productos</td></tr>';
+                    }
+
+                    document.getElementById('detalleModal').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar el detalle.');
+            }
+        }
+
+        function closeDetalleModal() {
+            document.getElementById('detalleModal').style.display = 'none';
+            ventaSeleccionada = null;
+        }
+
+        function reimprimirFactura() {
+            if (!ventaSeleccionada) {
+                alert('No hay factura seleccionada.');
+                return;
+            }
+
+            const v = ventaSeleccionada;
+            const productos = v.detalles || [];
+            const total = parseFloat(v.total) || 0;
+            const clienteNombre = v.cliente_nombre || 'PUBLICO EN GENERAL';
+            const vendedorNombre = v.vendedor_nombre || 'MOSTRADOR';
+
+            if (typeof generateTicket === 'function') {
+                generateTicket(
+                    v.folio,
+                    productos.map(d => ({
+                        id: d.producto_id || d.id,
+                        descripcion: d.descripcion || 'Producto',
+                        cantidad: d.cantidad || 0,
+                        precio: d.precio_unitario || 0,
+                        importe: d.subtotal || 0
+                    })),
+                    total,
+                    clienteNombre,
+                    vendedorNombre,
+                    0,
+                    total 
+                );
+            } else {
+                alert('Función de ticket no disponible.');
+            }
+
+            closeDetalleModal();
+        }
+
+        function reimprimirPorId(id) {
+            verDetalle(id).then(() => {
+                setTimeout(reimprimirFactura, 500);
+            });
+        }
+
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!token) {
+                alert('Sesión no válida. Redirigiendo...');
+                window.location.href = 'login.html';
+                return;
+            }
+            cargarFacturas();
+
+            window.onclick = function(event) {
+                if (event.target.id === 'detalleModal') {
+                    closeDetalleModal();
+                }
+            };
+        });
+    </script>
+
+</body>
+</html>
