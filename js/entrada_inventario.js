@@ -75,7 +75,7 @@ function renderBusquedaProductos(productos) {
     });
 }
 
-// 🔥 SELECT PRODUCTO - CON BOTONES + Y - Y INPUT TEXT
+// 🔥 SELECT PRODUCTO - CON BOTONES + Y - Y INPUT TEXT SIN VALIDACIÓN
 function selectProducto(id, descripcion) {
     const tbody = document.getElementById('productos-tbody');
     const emptyRow = tbody.querySelector('tr td[colspan]');
@@ -92,8 +92,8 @@ function selectProducto(id, descripcion) {
             <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
                 <button type="button" onclick="cambiarCantidad(this, -0.5)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#f1f5f9; cursor:pointer; font-size:16px; font-weight:bold;">−</button>
                 <input type="text" name="cantidad" value="1.00" class="cantidad-input" 
-                       inputmode="decimal"
                        placeholder="22.5" 
+                       autocomplete="off"
                        style="width:80px; padding:8px; border:2px solid #e2e8f0; border-radius:6px; text-align:center; font-size:14px;"
                        onfocus="this.select()" 
                        oninput="validarCantidadInput(this)">
@@ -115,15 +115,16 @@ function cambiarCantidad(button, incremento) {
     let valor = parseFloat(input.value) || 0;
     valor = Math.max(0.01, valor + incremento);
     input.value = valor.toFixed(2);
-    validarCantidadInput(input);
 }
 
-// 🔥 VALIDAR CANTIDAD (solo números y punto decimal)
+// 🔥 VALIDAR CANTIDAD - SOLO FILTRAR CARACTERES (SIN VALIDACIÓN DE NAVEGADOR)
 function validarCantidadInput(input) {
-    // Reemplazar comas por puntos
-    let value = input.value.replace(/,/g, '.');
+    let value = input.value;
     
-    // Solo permitir números, punto y un signo negativo
+    // Reemplazar comas por puntos
+    value = value.replace(/,/g, '.');
+    
+    // Eliminar todo excepto números y punto
     value = value.replace(/[^0-9.]/g, '');
     
     // Evitar múltiples puntos
@@ -137,21 +138,12 @@ function validarCantidadInput(input) {
         value = partes[0] + '.' + partes[1].substring(0, 2);
     }
     
-    // Si el valor está vacío o es solo un punto, poner 1.00
+    // Si está vacío o es solo punto, poner 1.00
     if (value === '' || value === '.') {
         value = '1.00';
     }
     
     input.value = value;
-    
-    // Validar que sea un número válido
-    const num = parseFloat(value);
-    if (isNaN(num) || num < 0) {
-        input.value = '1.00';
-    }
-    if (num === 0) {
-        input.value = '1.00';
-    }
 }
 
 function removeRow(button) {

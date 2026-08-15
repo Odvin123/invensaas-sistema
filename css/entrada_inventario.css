@@ -100,6 +100,10 @@ h1 {
     font-size: 1.1rem;
 }
 
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
 /* Tabla */
 .data-table {
     width: 100%;
@@ -126,6 +130,23 @@ h1 {
     padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.data-table .btn-select:hover {
+    background-color: #0056b3;
+}
+
+.data-table .btn-delete {
+    background-color: var(--danger);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.data-table .btn-delete:hover {
+    background-color: #c82333;
 }
 
 /* Modal */
@@ -156,10 +177,20 @@ h1 {
     cursor: pointer;
 }
 
+.close:hover {
+    color: var(--danger);
+}
+
 #filtro-producto {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
+}
+
+.cantidad-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
 }
