@@ -558,45 +558,39 @@
             }
         }
 
-        // ============================================
-        // RENDER TABLA
-        // ============================================
-        function renderTabla(productos) {
-            const tbody = document.getElementById('reporte-tbody');
-            tbody.innerHTML = '';
+       function renderTabla(productos) {
+    const tbody = document.getElementById('reporte-tbody');
+    tbody.innerHTML = '';
 
-            if (productos.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">No hay productos.</td></tr>';
-                return;
-            }
+    if (productos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">No hay productos.</td></tr>';
+        return;
+    }
 
-            // Mostrar solo los 20 primeros o todos
-            const mostrar = productos.slice(0, 50);
+    // 🔥 ORDENAR POR ID DESCENDENTE (más nuevo primero)
+    const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
 
-            mostrar.forEach(p => {
-                const tr = document.createElement('tr');
-                const margenColor = p.margen >= 30 ? 'text-success' : (p.margen >= 10 ? 'text-warning' : 'text-danger');
-                tr.innerHTML = `
-                    <td><strong>${p.id}</strong></td>
-                    <td>${p.descripcion || 'Sin descripción'}</td>
-                    <td>${p.categoria_nombre || 'N/A'}</td>
-                    <td class="text-right">${p.stock.toFixed(2)}</td>
-                    <td class="text-right">${formatCurrency(p.costo)}</td>
-                    <td class="text-right">${formatCurrency(p.precio)}</td>
-                    <td class="text-right">${formatCurrency(p.inversion)}</td>
-                    <td class="text-right">${formatCurrency(p.valorVenta)}</td>
-                    <td class="text-right ${p.ganancia >= 0 ? 'text-success' : 'text-danger'}">${formatCurrency(p.ganancia)}</td>
-                    <td class="text-right ${margenColor}">${p.margen.toFixed(1)}%</td>
-                `;
-                tbody.appendChild(tr);
-            });
+    // Mostrar todos los productos (sin límite)
+    productosOrdenados.forEach(p => {
+        const tr = document.createElement('tr');
+        const margenColor = p.margen >= 30 ? 'text-success' : (p.margen >= 10 ? 'text-warning' : 'text-danger');
+        tr.innerHTML = `
+            <td><strong>${p.id}</strong></td>
+            <td>${p.descripcion || 'Sin descripción'}</td>
+            <td>${p.categoria_nombre || 'N/A'}</td>
+            <td class="text-right">${Number(p.stock).toFixed(2)}</td>
+            <td class="text-right">${formatCurrency(p.costo)}</td>
+            <td class="text-right">${formatCurrency(p.precio)}</td>
+            <td class="text-right">${formatCurrency(p.inversion)}</td>
+            <td class="text-right">${formatCurrency(p.valorVenta)}</td>
+            <td class="text-right ${p.ganancia >= 0 ? 'text-success' : 'text-danger'}">${formatCurrency(p.ganancia)}</td>
+            <td class="text-right ${margenColor}">${Number(p.margen).toFixed(1)}%</td>
+        `;
+        tbody.appendChild(tr);
+    });
 
-            if (productos.length > 50) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="10" class="text-center text-muted" style="padding:10px;">Mostrando 50 de ${productos.length} productos</td>`;
-                tbody.appendChild(tr);
-            }
-        }
+    console.log(`✅ ${productosOrdenados.length} productos renderizados (ordenados por ID descendente)`);
+}
 
         // ============================================
         // RENDER GRÁFICOS
