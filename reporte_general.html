@@ -144,7 +144,7 @@
         .dashboard-header h1 i { color: var(--primary); margin-right: 10px; }
         .dashboard-header p { color: var(--text-light); font-size: 15px; }
 
-        /* FILTROS */
+        /* 🔥 NUEVA: BARRA DE FILTROS CON BÚSQUEDA */
         .filters-bar {
             background: var(--white);
             padding: 16px 24px;
@@ -449,7 +449,7 @@
             </button>
         </div>
 
-        <!-- FILTROS -->
+        <!-- 🔥 NUEVO: FILTROS CON BÚSQUEDA -->
         <div class="filters-bar">
             <div class="group">
                 <label><i class="fas fa-truck"></i> Proveedor</label>
@@ -589,7 +589,7 @@
         }
 
         // ============================================
-        // CARGAR PROVEEDORES
+        // CARGAR PROVEEDORES (para el filtro)
         // ============================================
         async function cargarProveedores() {
             try {
@@ -611,31 +611,95 @@
         }
 
         // ============================================
-        // PROCESAR PRODUCTOS
+        // CARGAR REPORTE
         // ============================================
-        function procesarProductos(productos) {
-            return productos.map(p => {
-                const stock = Number(p.stock) || 0;
-                const costo = Number(p.costo) || 0;
-                const precio = Number(p.precio) || 0;
-                const inversion = stock * costo;
-                const valorVenta = stock * precio;
-                const ganancia = valorVenta - inversion;
-                const margen = inversion > 0 ? (ganancia / inversion) * 100 : 0;
+        async function cargarReporte() {
+            const tbody = document.getElementById('reporte-tbody');
+            tbody.innerHTML = '<tr><td colspan="11" class="loading-state"><i class="fas fa-spinner"></i> Cargando reporte...</td></tr>';
 
-                return {
-                    ...p,
-                    stock,
-                    costo,
-                    precio,
-                    inversion,
-                    valorVenta,
-                    ganancia,
-                    margen,
-                    proveedor_nombre: p.proveedor_nombre || 'N/A',
-                    categoria_nombre: p.categoria_nombre || 'N/A'
-                };
-            });
+            try {
+                const response = await fetch(`${API_URL}/admin/productos`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    logout();
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted" style="padding:20px;">Error al cargar datos.</td></tr>';
+                    return;
+                }
+
+                let productos = data.productos || [];
+
+                // Procesar productos
+                productosCache = productos.map(p => {
+                    const stock = Number(p.stock) || 0;
+                    const costo = Number(p.costo) || 0;
+                    const precio = Number(p.precio) || 0;
+                    const inversion = stock * costo;
+                    const valorVenta = stock * precio;
+                    const ganancia = valorVenta - inversion;
+                    const margen = inversion > 0 ? (ganancia / inversion) * 100 : 0;
+
+                    return {
+                        ...p,
+                        stock,
+                        costo,
+                        precio,
+                        inversion,
+                        valorVenta,
+                        ganancia,
+                        margen,
+                        proveedor_nombre: p.proveedor_nombre || 'N/A',
+                        categoria_nombre: p.categoria_nombre || 'N/A'
+                    };
+                });
+
+                // Aplicar filtros
+                aplicarFiltros();
+
+            } catch (error) {
+                console.error('Error:', error);
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted" style="padding:20px;">Error de conexión.</td></tr>';
+            }
+        }
+
+        // ============================================
+        // FILTROS
+        // ============================================
+        function aplicarFiltros() {
+            const proveedorId = document.getElementById('filtro-proveedor').value;
+            const busqueda = document.getElementById('filtro-busqueda').value.toLowerCase().trim();
+
+            let filtrados = productosCache;
+
+            // Filtrar por proveedor
+            if (proveedorId !== 'TODOS') {
+                filtrados = filtrados.filter(p => p.proveedor_id == proveedorId);
+            }
+
+            // Filtrar por búsqueda (nombre del producto)
+            if (busqueda) {
+                filtrados = filtrados.filter(p => 
+                    p.descripcion && p.descripcion.toLowerCase().includes(busqueda)
+                );
+            }
+
+            productosFiltrados = filtrados;
+            renderizarReporte(filtrados);
+            actualizarStats(filtrados);
+            renderizarGraficos(filtrados);
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('filtro-proveedor').value = 'TODOS';
+            document.getElementById('filtro-busqueda').value = '';
+            aplicarFiltros();
         }
 
         // ============================================
@@ -653,6 +717,7 @@
 
             document.getElementById('productos-count').textContent = productos.length;
 
+            // 🔥 ORDENAR POR ID DESCENDENTE (más reciente primero)
             const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
 
             productosOrdenados.forEach(p => {
@@ -711,13 +776,14 @@
             document.getElementById('ganancia-potencial').textContent = formatCurrency(totalGanancia);
             document.getElementById('margen-ganancia').textContent = `${margenPromedio.toFixed(1)}%`;
 
+            // Mostrar nombre de empresa
             const nombreEmpresa = localStorage.getItem('nombre_empresa') || tenantId?.toUpperCase() || 'Mi Empresa';
             document.getElementById('company-name-display').textContent = nombreEmpresa;
             document.getElementById('avatar-initial').textContent = nombreEmpresa.charAt(0).toUpperCase();
         }
 
         // ============================================
-        // RENDERIZAR GRÁFICOS
+        // GRÁFICOS
         // ============================================
         function renderizarGraficos(productos) {
             // Destruir gráficos existentes
@@ -801,71 +867,6 @@
                         }
                     }
                 });
-            }
-        }
-
-        // ============================================
-        // FILTROS
-        // ============================================
-        function aplicarFiltros() {
-            const proveedorId = document.getElementById('filtro-proveedor').value;
-            const busqueda = document.getElementById('filtro-busqueda').value.toLowerCase().trim();
-
-            let filtrados = productosCache;
-
-            if (proveedorId !== 'TODOS') {
-                filtrados = filtrados.filter(p => p.proveedor_id == proveedorId);
-            }
-
-            if (busqueda) {
-                filtrados = filtrados.filter(p => 
-                    p.descripcion && p.descripcion.toLowerCase().includes(busqueda)
-                );
-            }
-
-            productosFiltrados = filtrados;
-            renderizarReporte(filtrados);
-            actualizarStats(filtrados);
-            renderizarGraficos(filtrados);
-        }
-
-        function limpiarFiltros() {
-            document.getElementById('filtro-proveedor').value = 'TODOS';
-            document.getElementById('filtro-busqueda').value = '';
-            aplicarFiltros();
-        }
-
-        // ============================================
-        // CARGAR REPORTE
-        // ============================================
-        async function cargarReporte() {
-            const tbody = document.getElementById('reporte-tbody');
-            tbody.innerHTML = '<tr><td colspan="11" class="loading-state"><i class="fas fa-spinner"></i> Cargando reporte...</td></tr>';
-
-            try {
-                const response = await fetch(`${API_URL}/admin/productos`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (response.status === 401 || response.status === 403) {
-                    logout();
-                    return;
-                }
-
-                const data = await response.json();
-
-                if (!data.success) {
-                    tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted" style="padding:20px;">Error al cargar datos.</td></tr>';
-                    return;
-                }
-
-                const productos = data.productos || [];
-                productosCache = procesarProductos(productos);
-                aplicarFiltros();
-
-            } catch (error) {
-                console.error('Error:', error);
-                tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted" style="padding:20px;">Error de conexión.</td></tr>';
             }
         }
 
