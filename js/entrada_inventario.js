@@ -1,4 +1,3 @@
-// js/entrada_inventario.js
 let token = localStorage.getItem('token');
 let productosCache = [];
 
@@ -11,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProductos();
 });
 
-// Cargar productos
 async function loadProductos() {
     try {
         const response = await fetch(`${API_URL}/admin/productos`, {
@@ -75,7 +73,7 @@ function renderBusquedaProductos(productos) {
     });
 }
 
-// 🔥 SELECCIONAR PRODUCTO CON INPUT TIPO TEXT
+// 🔥 SELECT PRODUCTO CON type="number" step="any"
 function selectProducto(id, descripcion) {
     const tbody = document.getElementById('productos-tbody');
     const emptyRow = tbody.querySelector('tr td[colspan]');
@@ -89,9 +87,9 @@ function selectProducto(id, descripcion) {
             ${descripcion}
         </td>
         <td>
-            <input type="text" name="cantidad" value="1" class="cantidad-input" 
-                   placeholder="Ej: 22.5" 
-                   oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')">
+            <input type="number" name="cantidad" value="1" class="cantidad-input" 
+                   step="any" min="0.01" lang="es"
+                   onfocus="this.select()" oninput="validarCantidadInput(this)">
         </td>
         <td>
             <button type="button" class="btn-delete" onclick="removeRow(this)">🗑️</button>
@@ -99,6 +97,17 @@ function selectProducto(id, descripcion) {
     `;
     tbody.appendChild(tr);
     closeBusquedaModal();
+}
+
+// ✅ VALIDAR CANTIDAD
+function validarCantidadInput(input) {
+    let val = parseFloat(input.value);
+    if (isNaN(val) || val < 0) {
+        input.value = '1';
+    }
+    if (val === 0) {
+        input.value = '1';
+    }
 }
 
 function removeRow(button) {
@@ -111,7 +120,7 @@ function removeRow(button) {
     }
 }
 
-// 🔥 ENVIAR ENTRADA CON DECIMALES
+// ✅ ENVIAR ENTRADA
 document.getElementById('btn-guardar').addEventListener('click', async () => {
     const tbody = document.getElementById('productos-tbody');
     const rows = tbody.querySelectorAll('tr:not(:has(td[colspan]))');
@@ -125,11 +134,10 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
     for (const row of rows) {
         const id = row.querySelector('[name="producto_id"]').value;
         const cantidadInput = row.querySelector('[name="cantidad"]');
-        // 🔥 Convertir a número con parseFloat
         const cantidad = parseFloat(cantidadInput.value) || 0;
         
         if (cantidad <= 0) {
-            alert(`⚠️ La cantidad "${cantidadInput.value}" no es válida.`);
+            alert(`⚠️ La cantidad debe ser mayor a 0.`);
             cantidadInput.focus();
             return;
         }
@@ -160,7 +168,6 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
 
         if (response.ok && result.success) {
             alert(`✅ Entrada registrada exitosamente con ${productos.length} producto(s).`);
-            // Limpiar formulario
             document.getElementById('referencia').value = '';
             document.getElementById('motivo').value = '';
             document.getElementById('productos-tbody').innerHTML = 
