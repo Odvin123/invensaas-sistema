@@ -535,7 +535,7 @@
 
                 // Actualizar stats
                 document.getElementById('total-productos').textContent = totalProductos;
-                document.getElementById('total-unidades').textContent = totalUnidades;
+                document.getElementById('total-unidades').textContent = totalUnidades.toFixed(2);
                 document.getElementById('valor-venta').textContent = formatCurrency(totalValorVenta);
                 document.getElementById('valor-costo').textContent = formatCurrency(totalInversion);
                 document.getElementById('ganancia-potencial').textContent = formatCurrency(totalGanancia);
