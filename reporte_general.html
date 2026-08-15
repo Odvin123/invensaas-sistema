@@ -14,9 +14,7 @@
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
             --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
-            --secondary: #0f172a;
             --text: #1e293b;
             --text-light: #64748b;
             --white: #ffffff;
@@ -28,7 +26,7 @@
             --radius: 16px;
             --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
             --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.15);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.3s ease;
         }
 
         body {
@@ -36,10 +34,7 @@
             background: var(--light);
             color: var(--text);
             min-height: 100vh;
-            padding: 24px;
         }
-
-        .container { max-width: 1440px; margin: 0 auto; }
 
         /* TOP BAR */
         .top-bar {
@@ -54,8 +49,6 @@
             z-index: 100;
             backdrop-filter: blur(8px);
             background: rgba(255,255,255,0.95);
-            border-radius: var(--radius) var(--radius) 0 0;
-            margin-bottom: 24px;
         }
 
         .top-bar .brand { display: flex; align-items: center; gap: 12px; }
@@ -67,8 +60,8 @@
             -webkit-text-fill-color: transparent;
         }
         .top-bar .brand .logo span {
-            color: var(--secondary);
-            -webkit-text-fill-color: var(--secondary);
+            color: var(--text);
+            -webkit-text-fill-color: var(--text);
         }
 
         .top-bar .user-info { display: flex; align-items: center; gap: 14px; }
@@ -134,7 +127,9 @@
 
         /* DASHBOARD */
         .dashboard {
-            padding: 0 32px 32px;
+            padding: 24px 32px;
+            max-width: 1440px;
+            margin: 0 auto;
         }
 
         .dashboard-header {
@@ -149,7 +144,7 @@
         .dashboard-header h1 i { color: var(--primary); margin-right: 10px; }
         .dashboard-header p { color: var(--text-light); font-size: 15px; }
 
-        /* FILTROS */
+        /* 🔥 FILTROS BAR - CON BÚSQUEDA */
         .filters-bar {
             background: var(--white);
             padding: 16px 24px;
@@ -227,36 +222,34 @@
         /* STATS */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
 
         .stat-card {
             background: var(--white);
-            padding: 18px 20px;
+            padding: 20px 24px;
             border-radius: var(--radius);
             border: 1px solid var(--border);
             transition: var(--transition);
             text-align: center;
         }
-
         .stat-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-4px);
             box-shadow: var(--shadow-hover);
         }
 
         .stat-card .stat-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            margin: 0 auto 8px;
+            font-size: 20px;
+            margin: 0 auto 10px;
         }
-
         .stat-card .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
         .stat-card .stat-icon.green { background: #dcfce7; color: #16a34a; }
         .stat-card .stat-icon.orange { background: #fef3c7; color: #d97706; }
@@ -264,22 +257,20 @@
         .stat-card .stat-icon.red { background: #fee2e2; color: #dc2626; }
 
         .stat-card .stat-number {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 900;
             line-height: 1.2;
             word-break: break-word;
         }
         .stat-card .stat-label {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-light);
             font-weight: 500;
-            margin-top: 2px;
         }
         .stat-card .stat-sub {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-light);
-            margin-top: 2px;
-            opacity: 0.7;
+            margin-top: 4px;
         }
 
         /* CHARTS */
@@ -342,12 +333,7 @@
         }
 
         .table-wrapper { overflow-x: auto; padding: 0 20px 20px; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
 
         thead th {
             text-align: left;
@@ -402,8 +388,7 @@
         }
 
         @media (max-width: 768px) {
-            body { padding: 16px; }
-            .dashboard { padding: 0 16px 16px; }
+            .dashboard { padding: 16px; }
             .top-bar {
                 flex-direction: column;
                 gap: 10px;
@@ -459,12 +444,12 @@
                 <h1><i class="fas fa-chart-pie"></i> Reporte General de Inventario</h1>
                 <p>Resumen financiero completo de tu inventario</p>
             </div>
-            <button class="btn-back" onclick="window.print()" style="background:var(--primary); color:white; border:none;">
+            <button class="btn btn-primary" onclick="window.print()" style="background:var(--primary-gradient); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">
                 <i class="fas fa-print"></i> Imprimir
             </button>
         </div>
 
-        <!-- FILTROS -->
+        <!-- 🔥 FILTROS CON BÚSQUEDA -->
         <div class="filters-bar">
             <div class="group">
                 <label><i class="fas fa-truck"></i> Proveedor</label>
@@ -582,8 +567,6 @@
         let productosCache = [];
         let productosFiltrados = [];
         let proveedoresCache = [];
-        let proveedorSeleccionado = 'TODOS';
-        let busquedaSeleccionada = '';
 
         // ============================================
         // CHARTS
@@ -600,6 +583,13 @@
                 sessionStorage.clear();
                 window.location.href = 'index.html';
             }
+        }
+
+        // ============================================
+        // FORMATO
+        // ============================================
+        function formatCurrency(value) {
+            return `C$${Number(value).toFixed(2)}`;
         }
 
         // ============================================
@@ -668,7 +658,9 @@
                         inversion,
                         valorVenta,
                         ganancia,
-                        margen
+                        margen,
+                        proveedor_nombre: p.proveedor_nombre || 'N/A',
+                        categoria_nombre: p.categoria_nombre || 'N/A'
                     };
                 });
 
@@ -695,7 +687,7 @@
                 filtrados = filtrados.filter(p => p.proveedor_id == proveedorId);
             }
 
-            // Filtrar por búsqueda (nombre del producto)
+            // Filtrar por búsqueda
             if (busqueda) {
                 filtrados = filtrados.filter(p => 
                     p.descripcion && p.descripcion.toLowerCase().includes(busqueda)
@@ -742,11 +734,11 @@
                     <td>${p.categoria_nombre || 'N/A'}</td>
                     <td>${p.proveedor_nombre || 'N/A'}</td>
                     <td style="text-align:right; font-size:12px;">${Number(p.stock).toFixed(2)}</td>
-                    <td style="text-align:right; font-size:12px;">C$${Number(p.costo).toFixed(2)}</td>
-                    <td style="text-align:right; font-size:12px;">C$${Number(p.precio).toFixed(2)}</td>
-                    <td style="text-align:right; font-size:12px;">C$${Number(p.inversion).toFixed(2)}</td>
-                    <td style="text-align:right; font-size:12px;">C$${Number(p.valorVenta).toFixed(2)}</td>
-                    <td style="text-align:right; font-size:12px; ${p.ganancia >= 0 ? 'color:#22c55e;' : 'color:#ef4444;'}">C$${Number(p.ganancia).toFixed(2)}</td>
+                    <td style="text-align:right; font-size:12px;">${formatCurrency(p.costo)}</td>
+                    <td style="text-align:right; font-size:12px;">${formatCurrency(p.precio)}</td>
+                    <td style="text-align:right; font-size:12px;">${formatCurrency(p.inversion)}</td>
+                    <td style="text-align:right; font-size:12px;">${formatCurrency(p.valorVenta)}</td>
+                    <td style="text-align:right; font-size:12px; ${p.ganancia >= 0 ? 'color:#22c55e;' : 'color:#ef4444;'}">${formatCurrency(p.ganancia)}</td>
                     <td style="text-align:right; font-size:12px; ${margenColor}">${Number(p.margen).toFixed(1)}%</td>
                 `;
                 tbody.appendChild(tr);
@@ -783,10 +775,15 @@
 
             document.getElementById('total-productos').textContent = totalProductos;
             document.getElementById('total-unidades').textContent = totalUnidades.toFixed(2);
-            document.getElementById('valor-venta').textContent = `C$${totalValorVenta.toFixed(2)}`;
-            document.getElementById('valor-costo').textContent = `C$${totalInversion.toFixed(2)}`;
-            document.getElementById('ganancia-potencial').textContent = `C$${totalGanancia.toFixed(2)}`;
+            document.getElementById('valor-venta').textContent = formatCurrency(totalValorVenta);
+            document.getElementById('valor-costo').textContent = formatCurrency(totalInversion);
+            document.getElementById('ganancia-potencial').textContent = formatCurrency(totalGanancia);
             document.getElementById('margen-ganancia').textContent = `${margenPromedio.toFixed(1)}%`;
+
+            // Mostrar nombre de empresa
+            const nombreEmpresa = localStorage.getItem('nombre_empresa') || tenantId?.toUpperCase() || 'Mi Empresa';
+            document.getElementById('company-name-display').textContent = nombreEmpresa;
+            document.getElementById('avatar-initial').textContent = nombreEmpresa.charAt(0).toUpperCase();
         }
 
         // ============================================
@@ -875,10 +872,6 @@
                 window.location.href = 'login.html';
                 return;
             }
-
-            const nombreEmpresa = localStorage.getItem('nombre_empresa') || tenantId.toUpperCase();
-            document.getElementById('company-name-display').textContent = nombreEmpresa;
-            document.getElementById('avatar-initial').textContent = nombreEmpresa.charAt(0).toUpperCase();
 
             cargarProveedores();
             cargarReporte();
