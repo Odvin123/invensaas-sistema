@@ -1919,7 +1919,9 @@ function formatStock(value) {
             renderBusquedaProductos(filtered);
         }
 
-       function seleccionarProductoEntrada(id, descripcion) {
+
+
+function seleccionarProductoEntrada(id, descripcion) {
     closeModal('buscar-producto');
 
     if (entradaProductos.find(p => p.id === id)) {
@@ -1955,12 +1957,16 @@ function actualizarCantidadEntrada(input, id) {
     if (item) item.cantidad = parseFloat(input.value) || 1;
 }
 
-        function actualizarCantidadEntrada(input, id) {
-            const cantidad = parseInt(input.value) || 1;
-            if (cantidad < 1) input.value = 1;
-            const item = entradaProductos.find(p => p.id === id);
-            if (item) item.cantidad = parseInt(input.value) || 1;
-        }
+function eliminarProductoEntrada(btn, id) {
+    const row = btn.closest('tr');
+    row.remove();
+    entradaProductos = entradaProductos.filter(p => p.id !== id);
+    const tbody = document.getElementById('entrada-productos-tbody');
+    if (tbody.children.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>';
+    }
+}
+
 
         function eliminarProductoEntrada(btn, id) {
             const row = btn.closest('tr');
