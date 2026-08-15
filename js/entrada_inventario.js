@@ -1,3 +1,4 @@
+// js/entrada_inventario.js
 let token = localStorage.getItem('token');
 let productosCache = [];
 
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProductos();
 });
 
+// Cargar productos
 async function loadProductos() {
     try {
         const response = await fetch(`${API_URL}/admin/productos`, {
@@ -18,6 +20,7 @@ async function loadProductos() {
         const data = await response.json();
         if (data.success) {
             productosCache = data.productos;
+            console.log('✅ Productos cargados:', productosCache.length);
         }
     } catch (error) {
         console.error('Error al cargar productos:', error);
@@ -73,7 +76,7 @@ function renderBusquedaProductos(productos) {
     });
 }
 
-// 🔥 SELECT PRODUCTO CON type="number" step="any"
+// 🔥 SELECT PRODUCTO - INPUT TEXT CON VALIDACIÓN
 function selectProducto(id, descripcion) {
     const tbody = document.getElementById('productos-tbody');
     const emptyRow = tbody.querySelector('tr td[colspan]');
@@ -87,9 +90,11 @@ function selectProducto(id, descripcion) {
             ${descripcion}
         </td>
         <td>
-            <input type="number" name="cantidad" value="1" class="cantidad-input" 
-                   step="any" min="0.01" lang="es"
-                   onfocus="this.select()" oninput="validarCantidadInput(this)">
+            <input type="text" name="cantidad" value="1" class="cantidad-input" 
+                   inputmode="decimal"
+                   placeholder="Ej: 22.5" 
+                   onfocus="this.select()"
+                   oninput="validarCantidadInput(this)">
         </td>
         <td>
             <button type="button" class="btn-delete" onclick="removeRow(this)">🗑️</button>
@@ -99,13 +104,38 @@ function selectProducto(id, descripcion) {
     closeBusquedaModal();
 }
 
-// ✅ VALIDAR CANTIDAD
+// ✅ VALIDAR CANTIDAD (solo números y punto decimal)
 function validarCantidadInput(input) {
-    let val = parseFloat(input.value);
-    if (isNaN(val) || val < 0) {
+    // Reemplazar comas por puntos
+    let value = input.value.replace(/,/g, '.');
+    
+    // Solo permitir números y un punto
+    value = value.replace(/[^0-9.]/g, '');
+    
+    // Evitar múltiples puntos
+    const partes = value.split('.');
+    if (partes.length > 2) {
+        value = partes[0] + '.' + partes.slice(1).join('');
+    }
+    
+    // Limitar a 2 decimales
+    if (partes.length === 2 && partes[1].length > 2) {
+        value = partes[0] + '.' + partes[1].substring(0, 2);
+    }
+    
+    // Si el valor está vacío o es solo un punto, poner 1
+    if (value === '' || value === '.') {
+        value = '1';
+    }
+    
+    input.value = value;
+    
+    // Validar que sea un número válido
+    const num = parseFloat(value);
+    if (isNaN(num) || num < 0) {
         input.value = '1';
     }
-    if (val === 0) {
+    if (num === 0) {
         input.value = '1';
     }
 }
@@ -134,10 +164,11 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
     for (const row of rows) {
         const id = row.querySelector('[name="producto_id"]').value;
         const cantidadInput = row.querySelector('[name="cantidad"]');
+        // 🔥 Convertir a número con parseFloat
         const cantidad = parseFloat(cantidadInput.value) || 0;
         
         if (cantidad <= 0) {
-            alert(`⚠️ La cantidad debe ser mayor a 0.`);
+            alert(`⚠️ La cantidad "${cantidadInput.value}" no es válida.`);
             cantidadInput.focus();
             return;
         }
@@ -148,7 +179,7 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
     const motivo = document.getElementById('motivo').value.trim();
 
     const data = { productos, referencia, motivo };
-    console.log('📦 Datos a enviar:', data);
+    console.log('📦 Datos a enviar:', JSON.stringify(data));
 
     const btn = document.getElementById('btn-guardar');
     btn.disabled = true;
@@ -168,6 +199,7 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
 
         if (response.ok && result.success) {
             alert(`✅ Entrada registrada exitosamente con ${productos.length} producto(s).`);
+            // Limpiar formulario
             document.getElementById('referencia').value = '';
             document.getElementById('motivo').value = '';
             document.getElementById('productos-tbody').innerHTML = 
