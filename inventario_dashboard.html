@@ -1939,9 +1939,9 @@ function seleccionarProductoEntrada(id, descripcion) {
     tr.innerHTML = `
         <td>${descripcion}</td>
         <td style="text-align:center;">
-            <input type="text" value="1" style="width:70px;padding:6px;border:2px solid var(--border);border-radius:6px;text-align:center;"
-                   onchange="actualizarCantidadEntrada(this, ${id})"
-                   oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')">
+            <input type="number" value="1" style="width:80px;padding:6px;border:2px solid var(--border);border-radius:6px;text-align:center;font-size:14px;"
+                   step="any" min="0.01" 
+                   onchange="actualizarCantidadEntrada(this, ${id})">
         </td>
         <td style="text-align:center;">
             <button class="btn-sm btn-delete" onclick="eliminarProductoEntrada(this, ${id})"><i class="fas fa-trash"></i></button>
@@ -1949,7 +1949,6 @@ function seleccionarProductoEntrada(id, descripcion) {
     `;
     tbody.appendChild(tr);
 }
-
 function actualizarCantidadEntrada(input, id) {
     let cantidad = parseFloat(input.value) || 1;
     if (cantidad < 0.01) input.value = 1;
