@@ -405,10 +405,17 @@
         </div>
 
         <!-- TABLA DETALLADA -->
-        <div class="table-card">
-            <div class="table-header">
-                <h3><i class="fas fa-list" style="color:var(--primary);"></i> Detalle por Producto</h3>
-            </div>
+        <div class="table-header">
+    <h3><i class="fas fa-list" style="color:var(--primary);"></i> Detalle por Producto</h3>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <i class="fas fa-search" style="color:var(--text-light);"></i>
+        <input type="text" id="filtro-busqueda-producto" 
+               placeholder="Buscar producto..." 
+               oninput="filtrarProductos()"
+               style="padding:8px 14px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:13px; width:200px; background:var(--light); transition:var(--transition);">
+        <span id="contador-filtro" style="font-size:12px; color:var(--text-light); font-weight:600;"></span>
+    </div>
+</div>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -456,108 +463,160 @@
             return Number(value).toFixed(2);
         }
 
-        // ============================================
-        // CARGAR REPORTE
-        // ============================================
-        async function cargarReporte() {
-            const tbody = document.getElementById('reporte-tbody');
-            tbody.innerHTML = '<tr><td colspan="10" class="loading-state"><i class="fas fa-spinner"></i> Cargando reporte...</td></tr>';
+let productosOriginales = [];
 
-            try {
-                const response = await fetch(`${API_URL}/admin/productos`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+function filtrarProductos() {
+    const busqueda = document.getElementById('filtro-busqueda-producto').value.toLowerCase().trim();
+    const tbody = document.getElementById('reporte-tbody');
+    const contador = document.getElementById('contador-filtro');
+    
+    if (!productosOriginales || productosOriginales.length === 0) {
+        return;
+    }
+    
+    let filtrados = productosOriginales;
+    
+    if (busqueda) {
+        filtrados = productosOriginales.filter(p => 
+            p.descripcion && p.descripcion.toLowerCase().includes(busqueda)
+        );
+    }
+    
+    contador.textContent = `${filtrados.length} de ${productosOriginales.length}`;
+    
+    renderizarTablaFiltrada(filtrados);
+}
 
-                if (response.status === 401 || response.status === 403) {
-                    logout();
-                    return;
-                }
+function renderizarTablaFiltrada(productos) {
+    const tbody = document.getElementById('reporte-tbody');
+    tbody.innerHTML = '';
 
-                const data = await response.json();
+    if (!productos || productos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">No se encontraron productos que coincidan con la búsqueda.</td></tr>';
+        return;
+    }
 
-                if (!data.success) {
-                    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">Error al cargar datos.</td></tr>';
-                    return;
-                }
+    const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
 
-                const productos = data.productos || [];
+    productosOrdenados.forEach(p => {
+        const tr = document.createElement('tr');
+        const margenColor = p.margen >= 30 ? 'text-success' : (p.margen >= 10 ? 'text-warning' : 'text-danger');
+        
+        tr.innerHTML = `
+            <td style="text-align:center; font-weight:600; font-size:12px;">${p.id}</td>
+            <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px;" title="${p.descripcion || 'Sin descripción'}">${p.descripcion || 'Sin descripción'}</td>
+            <td style="font-size:12px;">${p.categoria_nombre || 'N/A'}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">${Number(p.stock).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">C$${Number(p.costo).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">C$${Number(p.precio).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">C$${Number(p.inversion).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">C$${Number(p.valorVenta).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace; ${p.ganancia >= 0 ? 'color:#22c55e;' : 'color:#ef4444;'}">C$${Number(p.ganancia).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace; ${margenColor}">${Number(p.margen).toFixed(1)}%</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+       async function cargarReporte() {
+    const tbody = document.getElementById('reporte-tbody');
+    tbody.innerHTML = '<tr><td colspan="10" class="loading-state"><i class="fas fa-spinner"></i> Cargando reporte...</td></tr>';
 
-                if (productos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">No hay productos registrados.</td></tr>';
-                    return;
-                }
+    try {
+        const response = await fetch(`${API_URL}/admin/productos`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-                // Calcular estadísticas
-                let totalProductos = 0;
-                let totalUnidades = 0;
-                let totalValorVenta = 0;
-                let totalInversion = 0;
-                let totalGanancia = 0;
-                let totalMargen = 0;
-                let productosConMargen = 0;
-
-                // Ordenar por inversión (stock * costo) descendente
-                const productosOrdenados = productos.map(p => {
-                    const stock = Number(p.stock) || 0;
-                    const costo = Number(p.costo) || 0;
-                    const precio = Number(p.precio) || 0;
-                    const inversion = stock * costo;
-                    const valorVenta = stock * precio;
-                    const ganancia = valorVenta - inversion;
-                    const margen = inversion > 0 ? (ganancia / inversion) * 100 : 0;
-
-                    return {
-                        ...p,
-                        stock,
-                        costo,
-                        precio,
-                        inversion,
-                        valorVenta,
-                        ganancia,
-                        margen
-                    };
-                }).sort((a, b) => b.inversion - a.inversion);
-
-                // Calcular totales
-                productosOrdenados.forEach(p => {
-                    totalProductos++;
-                    totalUnidades += p.stock;
-                    totalValorVenta += p.valorVenta;
-                    totalInversion += p.inversion;
-                    totalGanancia += p.ganancia;
-                    if (p.inversion > 0) {
-                        totalMargen += p.margen;
-                        productosConMargen++;
-                    }
-                });
-
-                const margenPromedio = productosConMargen > 0 ? totalMargen / productosConMargen : 0;
-
-                // Actualizar stats
-                document.getElementById('total-productos').textContent = totalProductos;
-                document.getElementById('total-unidades').textContent = totalUnidades.toFixed(2);
-                document.getElementById('valor-venta').textContent = formatCurrency(totalValorVenta);
-                document.getElementById('valor-costo').textContent = formatCurrency(totalInversion);
-                document.getElementById('ganancia-potencial').textContent = formatCurrency(totalGanancia);
-                document.getElementById('margen-ganancia').textContent = `${margenPromedio.toFixed(1)}%`;
-
-                // Mostrar nombre de empresa
-                const nombreEmpresa = localStorage.getItem('nombre_empresa') || tenantId?.toUpperCase() || 'Mi Empresa';
-                document.getElementById('company-name-display').textContent = nombreEmpresa;
-                document.getElementById('avatar-initial').textContent = nombreEmpresa.charAt(0).toUpperCase();
-
-                // Renderizar tabla
-                renderTabla(productosOrdenados);
-
-                // Renderizar gráficos
-                renderGraficos(productosOrdenados);
-
-            } catch (error) {
-                console.error('Error:', error);
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">Error de conexión.</td></tr>';
-            }
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            return;
         }
 
+        const data = await response.json();
+
+        if (!data.success) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">Error al cargar datos.</td></tr>';
+            return;
+        }
+
+        const productos = data.productos || [];
+
+        if (productos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">No hay productos registrados.</td></tr>';
+            return;
+        }
+
+        const productosProcesados = productos.map(p => {
+            const stock = Number(p.stock) || 0;
+            const costo = Number(p.costo) || 0;
+            const precio = Number(p.precio) || 0;
+            const inversion = stock * costo;
+            const valorVenta = stock * precio;
+            const ganancia = valorVenta - inversion;
+            const margen = inversion > 0 ? (ganancia / inversion) * 100 : 0;
+
+            return {
+                ...p,
+                stock,
+                costo,
+                precio,
+                inversion,
+                valorVenta,
+                ganancia,
+                margen,
+                proveedor_nombre: p.proveedor_nombre || 'N/A',
+                categoria_nombre: p.categoria_nombre || 'N/A'
+            };
+        });
+
+        productosOriginales = [...productosProcesados];
+        productosCache = productosProcesados;
+
+        const productosOrdenados = [...productosProcesados].sort((a, b) => b.id - a.id);
+
+        // Calcular estadísticas
+        let totalProductos = 0;
+        let totalUnidades = 0;
+        let totalValorVenta = 0;
+        let totalInversion = 0;
+        let totalGanancia = 0;
+        let totalMargen = 0;
+        let productosConMargen = 0;
+
+        productosProcesados.forEach(p => {
+            totalProductos++;
+            totalUnidades += p.stock;
+            totalValorVenta += p.valorVenta;
+            totalInversion += p.inversion;
+            totalGanancia += p.ganancia;
+            if (p.inversion > 0) {
+                totalMargen += p.margen;
+                productosConMargen++;
+            }
+        });
+
+        const margenPromedio = productosConMargen > 0 ? totalMargen / productosConMargen : 0;
+
+        document.getElementById('total-productos').textContent = totalProductos;
+        document.getElementById('total-unidades').textContent = totalUnidades.toFixed(2);
+        document.getElementById('valor-venta').textContent = formatCurrency(totalValorVenta);
+        document.getElementById('valor-costo').textContent = formatCurrency(totalInversion);
+        document.getElementById('ganancia-potencial').textContent = formatCurrency(totalGanancia);
+        document.getElementById('margen-ganancia').textContent = `${margenPromedio.toFixed(1)}%`;
+
+        const nombreEmpresa = localStorage.getItem('nombre_empresa') || tenantId?.toUpperCase() || 'Mi Empresa';
+        document.getElementById('company-name-display').textContent = nombreEmpresa;
+        document.getElementById('avatar-initial').textContent = nombreEmpresa.charAt(0).toUpperCase();
+
+        renderizarTablaFiltrada(productosOrdenados);
+        document.getElementById('contador-filtro').textContent = `${productosOrdenados.length} de ${productosOrdenados.length}`;
+
+        renderGraficos(productosOrdenados);
+
+    } catch (error) {
+        console.error('Error:', error);
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">Error de conexión.</td></tr>';
+    }
+}
        function renderTabla(productos) {
     const tbody = document.getElementById('reporte-tbody');
     tbody.innerHTML = '';
