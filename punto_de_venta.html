@@ -6,469 +6,268 @@
     <title>Punto de Venta - InvenSaaS</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/punto_de_venta.css" />
     <script src="js/config.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
-            --text: #1e293b;
-            --text-light: #64748b;
-            --white: #ffffff;
-            --light: #f1f5f9;
-            --border: #e2e8f0;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --radius: 16px;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-            --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.15);
-            --transition: all 0.3s ease;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--light);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        /* TOP BAR */
-        .top-bar {
-            background: var(--white);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .top-bar .brand { display: flex; align-items: center; gap: 12px; }
-        .top-bar .brand .logo {
-            font-size: 22px;
-            font-weight: 900;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .top-bar .brand .logo span { color: var(--text); -webkit-text-fill-color: var(--text); }
-
-        .top-bar .info { display: flex; align-items: center; gap: 14px; font-size: 13px; color: var(--text-light); }
-        .top-bar .info .badge { background: var(--light); padding: 6px 16px; border-radius: 20px; font-weight: 600; }
-        .top-bar .info .badge i { color: var(--primary); margin-right: 6px; }
-
-        .close-btn {
-            background: var(--danger);
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 18px;
-            transition: var(--transition);
-        }
-        .close-btn:hover { transform: scale(1.05); }
-
-        /* QUICK MENU */
-        .quick-menu {
-            padding: 8px 24px;
-            background: var(--light);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .quick-menu .btn {
-            padding: 6px 14px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            background: var(--white);
-            color: var(--text-light);
-            border: 1px solid var(--border);
-        }
-        .quick-menu .btn:hover { border-color: var(--primary); color: var(--primary); }
-
-        /* MAIN */
-        .pos-main {
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 20px;
-            padding: 20px 24px;
-            max-width: 1400px;
-            margin: 0 auto;
-            min-height: calc(100vh - 160px);
-        }
-
-        /* 🔥 BUSCADOR RÁPIDO */
-        .search-area {
-            background: var(--white);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 16px 20px;
-            margin-bottom: 16px;
-            position: relative;
-        }
-
-        .search-area .search-input-wrap {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .search-area .search-input-wrap input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-size: 16px;
-            font-family: 'Inter', sans-serif;
-            transition: var(--transition);
-            background: var(--light);
-        }
-
-        .search-area .search-input-wrap input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--white);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
-        }
-
-        .search-area .search-input-wrap .hint {
-            font-size: 12px;
-            color: var(--text-light);
-            white-space: nowrap;
-        }
-
-        /* 🔥 RESULTADOS DE BÚSQUEDA */
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--white);
-            border-radius: 0 0 var(--radius) var(--radius);
-            border: 1px solid var(--border);
-            border-top: none;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-            box-shadow: var(--shadow-hover);
-        }
-
-        .search-results.show { display: block; }
-
-        .search-results .result-item {
-            padding: 10px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            border-bottom: 1px solid var(--border);
-            transition: var(--transition);
-        }
-
-        .search-results .result-item:hover,
-        .search-results .result-item.selected {
-            background: rgba(99, 102, 241, 0.06);
-        }
-
-        .search-results .result-item .name { font-weight: 600; font-size: 14px; }
-        .search-results .result-item .stock { font-size: 12px; color: var(--text-light); }
-        .search-results .result-item .price { font-weight: 700; color: var(--primary); font-size: 14px; }
-        .search-results .result-item .stock-badge {
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .stock-badge.in-stock { background: #dcfce7; color: #16a34a; }
-        .stock-badge.low-stock { background: #fef3c7; color: #d97706; }
-        .stock-badge.out-of-stock { background: #fee2e2; color: #dc2626; }
-
-        /* 🔥 CANTIDAD RÁPIDA */
-        .cantidad-rapida {
-            display: none;
-            padding: 12px 16px;
-            background: var(--light);
-            border-radius: 10px;
-            margin-top: 10px;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .cantidad-rapida.show { display: flex; }
-
-        .cantidad-rapida label { font-weight: 600; font-size: 14px; }
-        .cantidad-rapida input {
-            width: 100px;
-            padding: 8px 12px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 16px;
-            text-align: center;
-            font-family: 'Inter', sans-serif;
-        }
-        .cantidad-rapida input:focus { outline: none; border-color: var(--primary); }
-        .cantidad-rapida .btn-add {
-            padding: 8px 20px;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .cantidad-rapida .btn-add:hover { transform: translateY(-2px); }
-        .cantidad-rapida .btn-cancel {
-            padding: 8px 16px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* TABLA */
-        .table-wrap {
-            background: var(--white);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-
-        .table-wrap table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        .table-wrap th {
-            padding: 10px 12px;
-            background: var(--light);
-            color: var(--text-light);
-            font-weight: 700;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid var(--border);
-            text-align: left;
-        }
-
-        .table-wrap th.text-right { text-align: right; }
-        .table-wrap td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        .table-wrap td.text-right { text-align: right; }
-        .table-wrap tr:hover td { background: rgba(99, 102, 241, 0.03); }
-        .table-wrap .empty { text-align: center; color: var(--text-light); padding: 40px; }
-
-        /* SIDEBAR */
-        .pos-sidebar {
-            background: var(--white);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            height: fit-content;
-        }
-
-        .pos-sidebar .total {
-            text-align: center;
-            padding: 12px;
-            background: var(--light);
-            border-radius: 12px;
-        }
-        .pos-sidebar .total .label { font-size: 13px; color: var(--text-light); font-weight: 600; }
-        .pos-sidebar .total .amount { font-size: 32px; font-weight: 900; color: var(--primary); }
-
-        .pos-sidebar .btn-cobrar {
-            padding: 14px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 18px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .pos-sidebar .btn-cobrar:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(34,197,94,0.3); }
-
-        .pos-sidebar .actions-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .pos-sidebar .actions-row .btn {
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .pos-sidebar .actions-row .btn-danger { background: #fee2e2; color: var(--danger); }
-        .pos-sidebar .actions-row .btn-danger:hover { background: #fecaca; }
-        .pos-sidebar .actions-row .btn-warning { background: #fef3c7; color: #d97706; }
-        .pos-sidebar .actions-row .btn-warning:hover { background: #fde68a; }
-
-        .pos-footer {
-            padding: 12px 24px;
-            background: var(--white);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            color: var(--text-light);
-        }
-
-        .pos-footer .footer-data { font-weight: 700; color: var(--text); cursor: pointer; }
-
-        @media (max-width: 992px) {
-            .pos-main { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 768px) {
-            .top-bar { flex-direction: column; gap: 10px; padding: 12px 16px; }
-            .pos-main { padding: 12px 16px; }
-            .search-area .search-input-wrap { flex-direction: column; align-items: stretch; }
-            .search-area .search-input-wrap .hint { text-align: center; }
-            .pos-sidebar .actions-row { grid-template-columns: 1fr; }
-            .pos-footer { flex-direction: column; gap: 8px; text-align: center; }
-        }
-    </style>
 </head>
 <body>
 
-    <!-- TOP BAR -->
-    <header class="top-bar">
-        <div class="brand">
-            <span class="logo">Inven<span>SaaS</span></span>
-            <span style="font-size:12px; background:var(--primary); color:white; padding:2px 12px; border-radius:20px;">POS</span>
-        </div>
-        <div class="info">
-            <span class="badge"><i class="fas fa-building"></i> <span id="empresa-nombre">Cargando...</span></span>
-            <span class="badge"><i class="fas fa-hashtag"></i> Folio: <span id="folio-number">1</span></span>
-            <a href="inventario_dashboard.html" class="close-btn" title="Regresar"><i class="fas fa-times"></i></a>
-        </div>
-    </header>
-
-    <!-- QUICK MENU -->
-    <nav class="quick-menu">
-        <button class="btn" onclick="openWindow('vendedores.html')"><i class="fas fa-user-tie"></i> Vendedores (F2)</button>
-        <button class="btn" onclick="openWindow('clientes.html')"><i class="fas fa-users"></i> Clientes (F3)</button>
-        <button class="btn" onclick="handleCorteCaja()"><i class="fas fa-cash-register"></i> Corte caja (F6)</button>
-        <button class="btn" onclick="clearSale()"><i class="fas fa-times-circle"></i> Cancelar NV (F9)</button>
-        <button class="btn" onclick="abrirModalCliente()"><i class="fas fa-user-edit"></i> Cliente actual</button>
-    </nav>
-
-    <!-- MAIN -->
-    <main class="pos-main">
-
-        <!-- COLUMNA IZQUIERDA -->
-        <div>
-
-            <!-- 🔥 BUSCADOR RÁPIDO -->
-            <div class="search-area">
-                <div class="search-input-wrap">
-                    <input type="text" id="buscar-producto" placeholder="Escribe el nombre del producto..." 
-                           oninput="buscarProductos(this.value)" 
-                           onkeydown="manejarTeclasBusqueda(event)" 
-                           autofocus>
-                    <span class="hint">⬆⬇ Enter para seleccionar</span>
-                </div>
-
-                <!-- Resultados -->
-                <div class="search-results" id="resultados-busqueda"></div>
-
-                <!-- Cantidad rápida -->
-                <div class="cantidad-rapida" id="cantidad-rapida">
-                    <label>Cantidad:</label>
-                    <input type="number" id="cantidad-input" value="1" step="any" min="0.01" onfocus="this.select()">
-                    <button class="btn-add" onclick="agregarCantidad()"><i class="fas fa-plus"></i> Añadir</button>
-                    <button class="btn-cancel" onclick="cancelarCantidad()">Cancelar</button>
-                </div>
+    <div class="pos-container">
+        <!-- ============================================
+        HEADER
+        ============================================ -->
+        <header class="pos-header">
+            <div class="brand">
+                <span class="logo">Inven<span>SaaS</span></span>
+                <span style="font-size:12px; background:var(--primary); color:white; padding:2px 12px; border-radius:20px;">POS</span>
             </div>
+            <div class="info">
+                <span class="badge"><i class="fas fa-building"></i> <span id="empresa-nombre">Cargando...</span></span>
+                <span class="badge"><i class="fas fa-hashtag"></i> Folio: <span id="folio-number">1</span></span>
+                <a href="inventario_dashboard.html" class="close-btn" title="Regresar al Panel">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- ============================================
+        QUICK MENU
+        ============================================ -->
+        <nav class="pos-quick-menu">
+            <button class="btn" onclick="openWindow('vendedores.html')"><i class="fas fa-user-tie"></i> Vendedores (F2)</button>
+            <button class="btn" onclick="openWindow('clientes.html')"><i class="fas fa-users"></i> Clientes (F3)</button>
+            <button class="btn" onclick="handleCorteCaja()"><i class="fas fa-cash-register"></i> Corte caja (F6)</button>
+            <button class="btn" onclick="handleCancelarNV()"><i class="fas fa-times-circle"></i> Cancelar NV (F9)</button>
+        </nav>
+
+        <!-- ============================================
+        INPUT AREA
+        ============================================ -->
+        <section class="pos-input-area">
+            <label><i class="fas fa-tag"></i> VENTA DE PRODUCTOS</label>
+            <div class="input-group">
+                <input type="text" id="barcode-input" placeholder="Escanear Código o Buscar Producto">
+                <button class="btn-search" onclick="openMovimientoVentasModal()"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="factura-check">
+                <input type="checkbox" id="check-factura">
+                <label for="check-factura"><i class="fas fa-file-invoice"></i> Factura</label>
+            </div>
+        </section>
+
+        <!-- ============================================
+        MAIN CONTENT
+        ============================================ -->
+        <div class="pos-main">
 
             <!-- TABLA -->
-            <div class="table-wrap">
+            <div class="pos-table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>CANT.</th>
-                            <th>PRODUCTO</th>
-                            <th class="text-right">PRECIO</th>
-                            <th class="text-right">IMPORTE</th>
+                            <th style="width:10%;">CANT.</th>
+                            <th style="width:15%;">CÓDIGO</th>
+                            <th style="width:35%;">PRODUCTO</th>
+                            <th style="width:20%; text-align:right;">PRECIO UNI.</th>
+                            <th style="width:20%; text-align:right;">IMPORTE</th>
                         </tr>
                     </thead>
                     <tbody id="pos-tbody">
-                        <tr><td colspan="4" class="empty"><i class="fas fa-search"></i> Busca productos para agregar</td></tr>
+                        <tr><td colspan="5" class="empty"><i class="fas fa-search"></i> Presione 🔍 para añadir productos.</td></tr>
                     </tbody>
                 </table>
             </div>
 
-        </div>
+            <!-- SIDEBAR -->
+            <div class="pos-sidebar">
+                <div class="total">
+                    <div class="label">TOTAL</div>
+                    <div class="amount" id="total-amount">C$0.00</div>
+                </div>
 
-        <!-- SIDEBAR -->
-        <div class="pos-sidebar">
-            <div class="total">
-                <div class="label">TOTAL</div>
-                <div class="amount" id="total-amount">C$0.00</div>
+                <!-- 🔥 BOTÓN COBRAR CORREGIDO -->
+                <button class="btn-cobrar" id="btnCobrar" type="button">
+                    <i class="fas fa-cash-register"></i> Cobrar (F8)
+                </button>
+
+                <div class="actions-row">
+                    <button class="btn btn-danger" onclick="removeItemFromSale()"><i class="fas fa-trash"></i> Eliminar (Supr)</button>
+                    <button class="btn btn-warning" onclick="clearSale()"><i class="fas fa-eraser"></i> Borrar (F7)</button>
+                </div>
             </div>
+        </div>
 
-            <button class="btn-cobrar" onclick="handleCobrar()" id="btnCobrar">
-                <i class="fas fa-cash-register"></i> Cobrar (F8)
-            </button>
+        <!-- ============================================
+        FOOTER
+        ============================================ -->
+        <footer class="pos-footer">
+            <div>
+                <span>Cliente: <span class="footer-data" id="footer-cliente" ondblclick="openClienteSelectionModal()">PUBLICO EN GENERAL</span></span>
+                <span style="margin-left:20px;">Vendedor: <span class="footer-data" id="footer-vendedor" ondblclick="openVendedorSelectionModal()">MOSTRADOR</span></span>
+            </div>
+            <div class="datetime">
+                <span id="current-date">--</span>
+                <span id="current-time">--</span>
+            </div>
+        </footer>
+    </div>
 
-            <div class="actions-row">
-                <button class="btn btn-danger" onclick="removeLastItem()"><i class="fas fa-trash"></i> Eliminar</button>
-                <button class="btn btn-warning" onclick="clearSale()"><i class="fas fa-eraser"></i> Borrar</button>
+    <!-- ============================================
+    MODALES
+    ============================================ -->
+
+    <!-- Modal: Agregar Producto -->
+    <div id="movimientoVentasModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="close" onclick="closeMovimientoVentasModal()">&times;</span>
+            <h3><i class="fas fa-box"></i> Agregar Producto a Venta</h3>
+            <form id="movimientoVentasForm">
+                <label for="clasificacion">Clasificación:</label>
+                <select id="clasificacion" required onchange="filterProductsByClasificacion()">
+                    <option value="TODOS">TODOS</option>
+                </select>
+
+                <label for="producto_nombre">Producto:</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="producto_nombre" placeholder="Nombre o Descripción del Producto" disabled>
+                    <button type="button" class="btn" style="background:var(--primary); color:white; padding:10px 16px; border:none; border-radius:8px; cursor:pointer;" onclick="openBusquedaProductoModal()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+
+                <div style="display: flex; gap: 20px;">
+                    <div style="flex: 1;">
+                        <label for="cantidad_venta">Cantidad a Vender:</label>
+                        <input type="number" id="cantidad_venta" required min="0.01" step="any" value="1" oninput="validateStock()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; -moz-appearance:textfield;" 
+                               onfocus="this.select()" inputmode="decimal">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="existencia_stock">Existencia (Stock):</label>
+                        <input type="text" id="existencia_stock" disabled style="background:var(--light);">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="precio_unitario">Precio (C$):</label>
+                        <input type="text" id="precio_unitario" disabled style="background:var(--light);">
+                    </div>
+                </div>
+
+                <input type="hidden" id="selected_product_id">
+                <input type="hidden" id="selected_product_clave">
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px;">
+                    <i class="fas fa-plus"></i> Añadir a la Venta
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Búsqueda de Producto -->
+    <div id="busquedaProductoModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <span class="close" onclick="closeBusquedaProductoModal()">&times;</span>
+            <h3><i class="fas fa-search"></i> Búsqueda de Producto</h3>
+            <input type="text" id="filtro_descripcion" placeholder="Filtrar por nombre o descripción" oninput="filterBusquedaProductos()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; margin-bottom:15px; font-family:'Inter',sans-serif;">
+
+            <div style="max-height: 400px; overflow-y: auto; margin-bottom: 15px;">
+                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left; padding:8px;">Clave</th>
+                            <th style="text-align:left; padding:8px;">Descripción</th>
+                            <th style="text-align:center; padding:8px;">Stock</th>
+                            <th style="text-align:right; padding:8px;">Precio (C$)</th>
+                            <th style="text-align:left; padding:8px;">Proveedor</th>
+                            <th style="text-align:center; padding:8px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="busqueda-tbody">
+                        <tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-light);">Cargando inventario...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
 
-    </main>
+    <!-- Modal: Caja de Cobro -->
+    <div id="cajaModal" class="modal">
+        <div class="modal-content" style="max-width: 450px; text-align: center;">
+            <span class="close" onclick="closeCajaModal()">&times;</span>
+            <h3><i class="fas fa-cash-register" style="color:var(--primary);"></i> Caja de Cobro</h3>
 
-    <!-- FOOTER -->
-    <footer class="pos-footer">
-        <div>
-            <span>Cliente: <span class="footer-data" id="footer-cliente" onclick="abrirModalCliente()">PUBLICO EN GENERAL</span></span>
-            <span style="margin-left:20px;">Vendedor: <span class="footer-data" id="footer-vendedor">MOSTRADOR</span></span>
+            <h1 style="color: var(--secondary); font-size:24px; margin-top:10px;">Total a Pagar:</h1>
+            <h2 id="caja-total-a-pagar" style="color: var(--primary); font-size: 2.5rem; margin-top: 5px;">C$0.00</h2>
+            <p id="total-letras" style="font-size: 0.8rem; color: var(--text-light);">--</p>
+
+            <form id="cajaForm" style="margin-top: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="font-weight:600; font-size:13px; display:block; text-align:left;">Efectivo (C$)</label>
+                        <input type="number" id="pago-efectivo" value="0.00" step="0.01" min="0" oninput="calcularCambio()" style="width:100%; padding:8px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; font-size:13px; display:block; text-align:left;">Tarjeta (C$)</label>
+                        <input type="number" id="pago-tarjeta" value="0.00" step="0.01" min="0" oninput="calcularCambio()" style="width:100%; padding:8px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; font-size:13px; display:block; text-align:left;">Transferencia (C$)</label>
+                        <input type="number" id="pago-transferencia" value="0.00" step="0.01" min="0" oninput="calcularCambio()" style="width:100%; padding:8px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; font-size:13px; display:block; text-align:left;">Crédito (C$)</label>
+                        <input type="number" id="pago-credito" value="0.00" step="0.01" min="0" oninput="calcularCambio()" style="width:100%; padding:8px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif;">
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 20px; font-size:18px;">Cambio:</h3>
+                <h2 id="caja-monto-cambio" style="color: var(--success); font-size: 2rem;">C$0.00</h2>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn" onclick="closeCajaModal()" style="flex:1; background:var(--danger); color:white; padding:12px; border:none; border-radius:8px; font-weight:700; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="finalizarVentaDesdeCaja()" style="flex:1; padding:12px; border:none; border-radius:8px; font-weight:700; cursor:pointer;">
+                        <i class="fas fa-check"></i> Aceptar
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="datetime">
-            <span id="current-date">--</span>
-            <span id="current-time">--</span>
-        </div>
-    </footer>
+    </div>
 
-    <!-- MODAL CLIENTE -->
-    <div id="clienteModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);">
-        <div style="background:white; margin:10% auto; padding:28px; border-radius:16px; width:90%; max-width:400px; box-shadow:0 24px 48px rgba(0,0,0,0.2);">
-            <span onclick="cerrarModalCliente()" style="float:right; font-size:28px; font-weight:700; cursor:pointer;">&times;</span>
-            <h3 style="margin-bottom:16px;"><i class="fas fa-user"></i> Seleccionar Cliente</h3>
-            <input type="text" id="buscar-cliente" placeholder="Buscar cliente..." style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; margin-bottom:12px;">
-            <div id="lista-clientes" style="max-height:300px; overflow-y:auto;"></div>
+    <!-- Modal: Selección de Cliente -->
+    <div id="clienteSelectionModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close" onclick="closeClienteSelectionModal()">&times;</span>
+            <h3><i class="fas fa-user"></i> Seleccionar Cliente</h3>
+            <input type="text" id="filtro-cliente-pos" placeholder="Filtrar por nombre o ID" oninput="filterClientesPOS()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; margin-bottom:15px; font-family:'Inter',sans-serif;">
+
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                    <thead>
+                        <tr><th style="text-align:left; padding:8px;">ID</th><th style="text-align:left; padding:8px;">Nombre</th><th style="text-align:center; padding:8px;">Acción</th></tr>
+                    </thead>
+                    <tbody id="clientes-tbody">
+                        <tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-light);">Cargando clientes...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Selección de Vendedor -->
+    <div id="vendedorSelectionModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close" onclick="closeVendedorSelectionModal()">&times;</span>
+            <h3><i class="fas fa-user-tie"></i> Seleccionar Vendedor</h3>
+            <input type="text" id="filtro-vendedor-pos" placeholder="Filtrar por nombre o ID" oninput="filterVendedoresPOS()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; margin-bottom:15px; font-family:'Inter',sans-serif;">
+
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                    <thead>
+                        <tr><th style="text-align:left; padding:8px;">ID</th><th style="text-align:left; padding:8px;">Nombre</th><th style="text-align:center; padding:8px;">Acción</th></tr>
+                    </thead>
+                    <tbody id="vendedores-tbody">
+                        <tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-light);">Cargando vendedores...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -476,347 +275,705 @@
         // ============================================
         // CONFIGURACIÓN
         // ============================================
-        const token = localStorage.getItem('token');
-        const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
+        let token = localStorage.getItem('token');
+        let tenantId = localStorage.getItem('tenant_id');
 
         let ventaActual = [];
-        let productosCache = [];
-        let productosFiltrados = [];
-        let productoSeleccionado = null;
-        let clientesCache = [];
-        let indiceSeleccionado = -1;
+        let productosInventarioCache = [];
+        let categoriasCache = [];
+        let proveedoresCache = [];
+        let clientesCachePOS = [];
+        let vendedoresCachePOS = [];
+
+        const defaultCliente = 'PUBLICO EN GENERAL';
+        const defaultVendedor = 'MOSTRADOR';
 
         // ============================================
-        // ELEMENTOS DOM
-        // ============================================
-        const tbody = document.getElementById('pos-tbody');
-        const totalAmount = document.getElementById('total-amount');
-        const buscarInput = document.getElementById('buscar-producto');
-        const resultadosDiv = document.getElementById('resultados-busqueda');
-        const cantidadRapida = document.getElementById('cantidad-rapida');
-        const cantidadInput = document.getElementById('cantidad-input');
-
-        // ============================================
-        // FUNCIONES PRINCIPALES
+        // FUNCIONES DE CARGA
         // ============================================
 
-        async function loadProductos() {
+        async function fetchData(endpoint) {
             try {
-                const response = await fetch(`${API_URL}/admin/productos`, {
+                const response = await fetch(`${API_URL}/admin/${endpoint}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                if (!response.ok) return [];
                 const data = await response.json();
-                if (data.success) {
-                    productosCache = data.productos || [];
-                }
-            } catch (e) { console.error('Error cargando productos:', e); }
+                return data[endpoint] || [];
+            } catch (error) {
+                console.error(`Error al cargar ${endpoint}:`, error);
+                return [];
+            }
         }
 
-        async function loadClientes() {
-            try {
-                const response = await fetch(`${API_URL}/admin/clientes`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                if (data.success) {
-                    clientesCache = data.clientes || [];
-                }
-            } catch (e) { console.error('Error cargando clientes:', e); }
+        function loadState() {
+            const currentCliente = localStorage.getItem('currentClienteName') || defaultCliente;
+            const currentVendedor = localStorage.getItem('currentVendedorName') || defaultVendedor;
+
+            document.getElementById('footer-cliente').textContent = currentCliente;
+            document.getElementById('footer-vendedor').textContent = currentVendedor;
+
+            if (!localStorage.getItem('currentClienteId')) localStorage.setItem('currentClienteId', 1);
+            if (!localStorage.getItem('currentVendedorId')) localStorage.setItem('currentVendedorId', 1);
         }
 
-        function buscarProductos(texto) {
-            const search = texto.toLowerCase().trim();
-            const resultados = document.getElementById('resultados-busqueda');
-            const cantidadRapidaDiv = document.getElementById('cantidad-rapida');
+        // ============================================
+        // CLIENTES Y VENDEDORES - MODALES
+        // ============================================
 
-            // Ocultar cantidad rápida
-            cantidadRapidaDiv.classList.remove('show');
-            productoSeleccionado = null;
+        function openClienteSelectionModal() {
+            if (!token) { alert('Sesión no válida.'); return; }
+            document.getElementById('clienteSelectionModal').style.display = 'block';
+            if (clientesCachePOS.length === 0) loadClientesForPOS();
+            else renderClientesForPOS(clientesCachePOS);
+        }
 
-            if (search.length < 2) {
-                resultados.classList.remove('show');
+        function closeClienteSelectionModal() {
+            document.getElementById('clienteSelectionModal').style.display = 'none';
+        }
+
+        function openVendedorSelectionModal() {
+            if (!token) { alert('Sesión no válida.'); return; }
+            document.getElementById('vendedorSelectionModal').style.display = 'block';
+            if (vendedoresCachePOS.length === 0) loadVendedoresForPOS();
+            else renderVendedoresForPOS(vendedoresCachePOS);
+        }
+
+        function closeVendedorSelectionModal() {
+            document.getElementById('vendedorSelectionModal').style.display = 'none';
+        }
+
+        async function loadClientesForPOS() {
+            clientesCachePOS = await fetchData('clientes');
+            renderClientesForPOS(clientesCachePOS);
+        }
+
+        async function loadVendedoresForPOS() {
+            vendedoresCachePOS = await fetchData('vendedores');
+            renderVendedoresForPOS(vendedoresCachePOS);
+        }
+
+        function renderClientesForPOS(clientes) {
+            const tbody = document.getElementById('clientes-tbody');
+            tbody.innerHTML = '';
+            if (clientes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-light);">No hay clientes registrados.</td></tr>';
                 return;
             }
-
-            productosFiltrados = productosCache.filter(p =>
-                p.descripcion.toLowerCase().includes(search)
-            ).slice(0, 8);
-
-            if (productosFiltrados.length === 0) {
-                resultados.innerHTML = '<div class="result-item" style="color:var(--text-light); justify-content:center;">No se encontraron productos</div>';
-                resultados.classList.add('show');
-                return;
-            }
-
-            let html = '';
-            productosFiltrados.forEach((p, index) => {
-                const stock = Number(p.stock) || 0;
-                let stockClass = 'in-stock';
-                let stockText = 'Stock: ' + stock.toFixed(2);
-                if (stock === 0) { stockClass = 'out-of-stock'; stockText = 'Agotado'; }
-                else if (stock < 5) { stockClass = 'low-stock'; }
-
-                html += `
-                    <div class="result-item ${index === indiceSeleccionado ? 'selected' : ''}" 
-                         onclick="seleccionarProducto(${p.id})"
-                         onmouseenter="indiceSeleccionado = ${index}">
-                        <div>
-                            <div class="name">${p.descripcion}</div>
-                            <div class="stock">${stockText}</div>
-                        </div>
-                        <div>
-                            <div class="price">C$${Number(p.precio).toFixed(2)}</div>
-                            <span class="stock-badge ${stockClass}">${stock > 0 ? 'Disponible' : 'Agotado'}</span>
-                        </div>
-                    </div>
+            clientes.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${c.id}</td>
+                    <td>${c.nombre}</td>
+                    <td style="text-align:center;">
+                        <button class="btn" style="background:var(--primary); color:white; padding:4px 12px; border:none; border-radius:6px; cursor:pointer;" onclick="selectClientFromModal('${c.nombre.replace(/'/g, "\\'")}', ${c.id})">Seleccionar</button>
+                    </td>
                 `;
+                tbody.appendChild(tr);
             });
-
-            resultados.innerHTML = html;
-            resultados.classList.add('show');
-            indiceSeleccionado = -1;
         }
 
-        function seleccionarProducto(id) {
-            const producto = productosCache.find(p => p.id === id);
+        function renderVendedoresForPOS(vendedores) {
+            const tbody = document.getElementById('vendedores-tbody');
+            tbody.innerHTML = '';
+            if (vendedores.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-light);">No hay vendedores registrados.</td></tr>';
+                return;
+            }
+            vendedores.forEach(v => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${v.id}</td>
+                    <td>${v.nombre}</td>
+                    <td style="text-align:center;">
+                        <button class="btn" style="background:var(--primary); color:white; padding:4px 12px; border:none; border-radius:6px; cursor:pointer;" onclick="selectVendedorFromModal('${v.nombre.replace(/'/g, "\\'")}', ${v.id})">Seleccionar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterClientesPOS() {
+            const filtro = document.getElementById('filtro-cliente-pos').value.toLowerCase();
+            const clientesFiltrados = clientesCachePOS.filter(c =>
+                c.nombre.toLowerCase().includes(filtro) || c.id.toString().includes(filtro)
+            );
+            renderClientesForPOS(clientesFiltrados);
+        }
+
+        function filterVendedoresPOS() {
+            const filtro = document.getElementById('filtro-vendedor-pos').value.toLowerCase();
+            const vendedoresFiltrados = vendedoresCachePOS.filter(v =>
+                v.nombre.toLowerCase().includes(filtro) || v.id.toString().includes(filtro)
+            );
+            renderVendedoresForPOS(vendedoresFiltrados);
+        }
+
+        function selectClientFromModal(name, id) {
+            localStorage.setItem('currentClienteName', name);
+            localStorage.setItem('currentClienteId', id);
+            document.getElementById('footer-cliente').textContent = name;
+            closeClienteSelectionModal();
+        }
+
+        function selectVendedorFromModal(name, id) {
+            localStorage.setItem('currentVendedorName', name);
+            localStorage.setItem('currentVendedorId', id);
+            document.getElementById('footer-vendedor').textContent = name;
+            closeVendedorSelectionModal();
+        }
+
+        // ============================================
+        // PRODUCTOS - MODALES
+        // ============================================
+
+        function openMovimientoVentasModal() {
+            if (!token) { alert('Sesión no válida.'); window.location.href = 'login.html'; return; }
+            document.getElementById('movimientoVentasModal').style.display = 'block';
+            loadCategoriasAndInitBusqueda();
+        }
+
+        function closeMovimientoVentasModal() {
+            document.getElementById('movimientoVentasModal').style.display = 'none';
+            document.getElementById('movimientoVentasForm').reset();
+            clearMovimientoInputs();
+        }
+
+        function openBusquedaProductoModal() {
+            document.getElementById('busquedaProductoModal').style.display = 'block';
+            filterProductsByClasificacion(true);
+            document.getElementById('filtro_descripcion').value = '';
+            document.getElementById('filtro_descripcion').focus();
+        }
+
+        function closeBusquedaProductoModal() {
+            document.getElementById('busquedaProductoModal').style.display = 'none';
+        }
+
+        async function loadCategoriasAndInitBusqueda() {
+            await Promise.all([loadCategoriasPDV(), loadInventarioPDV(), loadProveedoresPDV()]);
+            renderClasificaciones();
+        }
+
+        async function loadCategoriasPDV() {
+            categoriasCache = await fetchData('categorias');
+        }
+
+        async function loadInventarioPDV() {
+            productosInventarioCache = await fetchData('productos');
+            if (document.getElementById('busquedaProductoModal').style.display === 'block') {
+                renderBusquedaProductos(productosInventarioCache);
+            }
+        }
+
+        async function loadProveedoresPDV() {
+            proveedoresCache = await fetchData('proveedores');
+        }
+
+        function renderClasificaciones() {
+            const select = document.getElementById('clasificacion');
+            select.innerHTML = '<option value="TODOS">TODOS</option>';
+            categoriasCache.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+            });
+        }
+
+        function filterProductsByClasificacion(isInitialLoad = false) {
+            const clasificacionId = document.getElementById('clasificacion').value;
+            if (!isInitialLoad) clearMovimientoInputs();
+
+            let productosFiltrados = productosInventarioCache;
+            if (clasificacionId !== 'TODOS') {
+                productosFiltrados = productosInventarioCache.filter(p => p.categoria_id == clasificacionId);
+            }
+
+            if (document.getElementById('busquedaProductoModal').style.display === 'block') {
+                renderBusquedaProductos(productosFiltrados);
+            }
+        }
+
+        function filterBusquedaProductos() {
+            const filtro = document.getElementById('filtro_descripcion').value.toLowerCase();
+            const clasificacionId = document.getElementById('clasificacion').value;
+
+            let productosBase = productosInventarioCache;
+            if (clasificacionId !== 'TODOS') {
+                productosBase = productosBase.filter(p => p.categoria_id == clasificacionId);
+            }
+
+            const productosFiltrados = productosBase.filter(p =>
+                p.descripcion.toLowerCase().includes(filtro) || p.id.toString().includes(filtro)
+            );
+
+            renderBusquedaProductos(productosFiltrados);
+        }
+
+        function renderBusquedaProductos(productos) {
+            const tbody = document.getElementById('busqueda-tbody');
+            tbody.innerHTML = '';
+
+            if (productos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-light);">No se encontraron productos.</td></tr>';
+                return;
+            }
+
+            productos.forEach(p => {
+                const proveedor = proveedoresCache.find(prov => prov.id === p.proveedor_id);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${p.id}</td>
+                    <td>${p.descripcion}</td>
+                    <td style="text-align:center;">${p.stock}</td>
+                    <td style="text-align:right;">C$${parseFloat(p.precio).toFixed(2)}</td>
+                    <td>${proveedor ? proveedor.nombre : 'N/A'}</td>
+                    <td style="text-align:center;">
+                        <button class="btn" style="background:var(--success); color:white; padding:4px 12px; border:none; border-radius:6px; cursor:pointer;" onclick="selectProductForSale(${p.id})">Seleccionar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function selectProductForSale(productId) {
+            const producto = productosInventarioCache.find(p => p.id === productId);
             if (!producto) return;
 
-            const stock = Number(producto.stock) || 0;
-            if (stock === 0) {
-                alert('⚠️ Producto agotado.');
+            document.getElementById('selected_product_id').value = producto.id;
+            document.getElementById('selected_product_clave').value = producto.id;
+            document.getElementById('producto_nombre').value = producto.descripcion;
+            document.getElementById('existencia_stock').value = parseFloat(producto.stock).toFixed(2);
+            document.getElementById('precio_unitario').value = `C$${parseFloat(producto.precio).toFixed(2)}`;
+            document.getElementById('cantidad_venta').value = '1.00';
+
+            closeBusquedaProductoModal();
+            validateStock();
+        }
+
+        function validateStock() {
+            const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
+            const cantidadInput = document.getElementById('cantidad_venta');
+            let cantidad = parseFloat(cantidadInput.value) || 0;
+
+            if (isNaN(cantidad) || cantidad <= 0) {
+                cantidadInput.value = 1.00;
+                cantidad = 1.00;
+            }
+
+            if (stock !== '--' && stock < cantidad) {
+                alert(`Stock Insuficiente. Solo hay ${stock.toFixed(2)} unidades disponibles.`);
+                cantidadInput.value = stock > 0 ? stock.toFixed(2) : 1.00;
+                if (stock <= 0) {
+                    alert("Este producto no tiene stock disponible.");
+                    cantidadInput.value = 1.00;
+                }
+            }
+        }
+
+        function clearMovimientoInputs() {
+            document.getElementById('selected_product_id').value = '';
+            document.getElementById('selected_product_clave').value = '';
+            document.getElementById('producto_nombre').value = '';
+            document.getElementById('existencia_stock').value = '--';
+            document.getElementById('precio_unitario').value = 'C$0.00';
+            document.getElementById('cantidad_venta').value = '1';
+        }
+
+        // ============================================
+        // VENTA ACTUAL
+        // ============================================
+
+        document.getElementById('movimientoVentasForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const productId = parseInt(document.getElementById('selected_product_id').value);
+            const cantidad = parseFloat(document.getElementById('cantidad_venta').value) || 0;
+            const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
+            const precioStr = document.getElementById('precio_unitario').value.replace('C$', '');
+            const precio = parseFloat(precioStr) || 0;
+
+            if (!productId) { alert("Debe seleccionar un producto primero."); return; }
+            if (cantidad <= 0 || isNaN(cantidad)) { alert("La cantidad debe ser un número positivo."); return; }
+
+            const productoData = productosInventarioCache.find(p => p.id === productId);
+            if (!productoData) return;
+
+            const existingItem = ventaActual.find(item => item.id === productId);
+            const currentlyInSale = existingItem ? existingItem.cantidad : 0;
+
+            if ((currentlyInSale + cantidad) > stock) {
+                alert(`Stock Insuficiente. Al añadir ${cantidad.toFixed(2)}, se superaría el stock disponible de ${stock.toFixed(2)}.`);
                 return;
             }
 
-            productoSeleccionado = producto;
-            document.getElementById('resultados-busqueda').classList.remove('show');
-            document.getElementById('cantidad-rapida').classList.add('show');
-            cantidadInput.value = 1;
-            cantidadInput.focus();
-            cantidadInput.select();
-        }
+            addProductToSale(productoData, cantidad, precio);
+            closeMovimientoVentasModal();
+        });
 
-        function agregarCantidad() {
-            if (!productoSeleccionado) return;
+        function addProductToSale(producto, cantidad, precio) {
+            cantidad = parseFloat(cantidad) || 0;
+            precio = parseFloat(precio) || 0;
 
-            const cantidad = parseFloat(cantidadInput.value) || 0;
             if (cantidad <= 0) {
-                alert('⚠️ Ingresa una cantidad válida.');
+                alert("La cantidad debe ser mayor a 0.");
                 return;
             }
 
-            const stock = Number(productoSeleccionado.stock) || 0;
-            const existing = ventaActual.find(item => item.id === productoSeleccionado.id);
-            const totalEnVenta = existing ? existing.cantidad : 0;
+            const importe = cantidad * precio;
 
-            if ((totalEnVenta + cantidad) > stock) {
-                alert(`⚠️ Stock insuficiente. Disponible: ${stock.toFixed(2)}`);
-                return;
-            }
+            const existingItem = ventaActual.find(item => item.id === producto.id);
 
-            addProductToSale(productoSeleccionado, cantidad);
-            cancelarCantidad();
-            buscarInput.value = '';
-            buscarInput.focus();
-        }
-
-        function cancelarCantidad() {
-            document.getElementById('cantidad-rapida').classList.remove('show');
-            productoSeleccionado = null;
-            buscarInput.focus();
-        }
-
-        function addProductToSale(producto, cantidad) {
-            const existing = ventaActual.find(item => item.id === producto.id);
-            if (existing) {
-                existing.cantidad += cantidad;
-                existing.importe = existing.cantidad * existing.precio;
+            if (existingItem) {
+                existingItem.cantidad += cantidad;
+                existingItem.importe = existingItem.cantidad * existingItem.precio;
             } else {
                 ventaActual.push({
                     id: producto.id,
+                    clave: producto.id,
                     descripcion: producto.descripcion,
                     cantidad: cantidad,
-                    precio: Number(producto.precio) || 0,
-                    importe: cantidad * (Number(producto.precio) || 0)
+                    precio: precio,
+                    importe: importe
                 });
             }
-            renderVenta();
+
+            renderVentaActual();
         }
 
-        function renderVenta() {
+        function removeItemFromSale() {
+            if (ventaActual.length > 0) {
+                ventaActual.pop();
+                renderVentaActual();
+            } else {
+                alert("No hay elementos para eliminar.");
+            }
+        }
+
+        function clearSale() {
+            if (confirm("¿Está seguro de borrar toda la venta actual?")) {
+                ventaActual = [];
+                renderVentaActual();
+            }
+        }
+
+        function renderVentaActual() {
+            const tbody = document.getElementById('pos-tbody');
             tbody.innerHTML = '';
-            let total = 0;
+            let totalVenta = 0;
 
             if (ventaActual.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="empty"><i class="fas fa-search"></i> Busca productos para agregar</td></tr>';
-                totalAmount.textContent = 'C$0.00';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty"><i class="fas fa-search"></i> Presione 🔍 para añadir productos.</td></tr>';
+                document.getElementById('total-amount').textContent = 'C$0.00';
                 return;
             }
 
             ventaActual.forEach(item => {
-                total += item.importe;
+                totalVenta += item.importe;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${item.cantidad}</td>
+                    <td>${item.clave}</td>
                     <td>${item.descripcion}</td>
-                    <td class="text-right">C$${item.precio.toFixed(2)}</td>
-                    <td class="text-right">C$${item.importe.toFixed(2)}</td>
+                    <td style="text-align:right;">C$${item.precio.toFixed(2)}</td>
+                    <td style="text-align:right;">C$${item.importe.toFixed(2)}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            totalAmount.textContent = `C$${total.toFixed(2)}`;
-        }
-
-        function removeLastItem() {
-            if (ventaActual.length === 0) return;
-            ventaActual.pop();
-            renderVenta();
-        }
-
-        function clearSale() {
-            if (ventaActual.length === 0) return;
-            if (!confirm('¿Borrar toda la venta?')) return;
-            ventaActual = [];
-            renderVenta();
-            buscarInput.focus();
+            document.getElementById('total-amount').textContent = `C$${totalVenta.toFixed(2)}`;
         }
 
         // ============================================
-        // MANEJO DE TECLAS
+        // CAJA - COBRO
         // ============================================
-        function manejarTeclasBusqueda(event) {
-            const resultados = document.getElementById('resultados-busqueda');
-            const items = resultados.querySelectorAll('.result-item');
 
-            if (event.key === 'ArrowDown') {
-                event.preventDefault();
-                indiceSeleccionado = Math.min(indiceSeleccionado + 1, items.length - 1);
-                actualizarSeleccion(items);
-            } else if (event.key === 'ArrowUp') {
-                event.preventDefault();
-                indiceSeleccionado = Math.max(indiceSeleccionado - 1, 0);
-                actualizarSeleccion(items);
-            } else if (event.key === 'Enter') {
-                event.preventDefault();
-                if (productoSeleccionado && document.getElementById('cantidad-rapida').classList.contains('show')) {
-                    agregarCantidad();
-                } else if (indiceSeleccionado >= 0 && items[indiceSeleccionado]) {
-                    items[indiceSeleccionado].click();
-                }
-            } else if (event.key === 'Escape') {
-                resultados.classList.remove('show');
-                cancelarCantidad();
-                buscarInput.value = '';
-            }
+        function openCajaModal(total, clienteNombre, vendedorNombre) {
+            document.getElementById('cajaModal').style.display = 'block';
+            document.getElementById('pago-efectivo').value = total.toFixed(2);
+            document.getElementById('caja-total-a-pagar').textContent = `C$${total.toFixed(2)}`;
+            document.getElementById('total-letras').textContent = numeroALetras(total);
+            calcularCambio();
+
+            window.currentClienteNombre = clienteNombre;
+            window.currentVendedorNombre = vendedorNombre;
         }
 
-        function actualizarSeleccion(items) {
-            items.forEach((item, index) => {
-                item.classList.toggle('selected', index === indiceSeleccionado);
-            });
-            if (indiceSeleccionado >= 0 && items[indiceSeleccionado]) {
-                const id = items[indiceSeleccionado].getAttribute('onclick')?.match(/\d+/)?.[0];
-                if (id) productoSeleccionado = productosCache.find(p => p.id == id);
-            }
+        function closeCajaModal() {
+            document.getElementById('cajaModal').style.display = 'none';
+            document.getElementById('cajaForm').reset();
         }
 
-        // ============================================
-        // CLIENTES
-        // ============================================
-        function abrirModalCliente() {
-            document.getElementById('clienteModal').style.display = 'block';
-            renderClientes();
-            document.getElementById('buscar-cliente').value = '';
-            document.getElementById('buscar-cliente').focus();
+        function calcularCambio() {
+            const totalVentaStr = document.getElementById('total-amount').textContent.replace('C$', '');
+            const totalVenta = parseFloat(totalVentaStr);
+
+            const efectivo = parseFloat(document.getElementById('pago-efectivo').value) || 0;
+            const tarjeta = parseFloat(document.getElementById('pago-tarjeta').value) || 0;
+            const transferencia = parseFloat(document.getElementById('pago-transferencia').value) || 0;
+            const credito = parseFloat(document.getElementById('pago-credito').value) || 0;
+
+            const totalPagado = efectivo + tarjeta + transferencia + credito;
+            const cambio = totalPagado - totalVenta;
+
+            const cambioDisplay = document.getElementById('caja-monto-cambio');
+            cambioDisplay.textContent = `C$${cambio.toFixed(2)}`;
+            cambioDisplay.style.color = cambio >= 0 ? 'var(--success)' : 'var(--danger)';
         }
 
-        function cerrarModalCliente() {
-            document.getElementById('clienteModal').style.display = 'none';
-        }
-
-        function renderClientes() {
-            const container = document.getElementById('lista-clientes');
-            const filtro = document.getElementById('buscar-cliente').value.toLowerCase();
-            const clientes = clientesCache.filter(c => c.nombre.toLowerCase().includes(filtro));
-
-            if (clientes.length === 0) {
-                container.innerHTML = '<div style="padding:20px; color:var(--text-light); text-align:center;">No hay clientes</div>';
-                return;
-            }
-
-            let html = '';
-            clientes.forEach(c => {
-                html += `
-                    <div style="padding:10px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                        <span>${c.nombre}</span>
-                        <button onclick="seleccionarCliente('${c.nombre}')" style="padding:4px 12px; background:var(--primary); color:white; border:none; border-radius:6px; cursor:pointer;">Seleccionar</button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function seleccionarCliente(nombre) {
-            document.getElementById('footer-cliente').textContent = nombre;
-            localStorage.setItem('currentClienteName', nombre);
-            cerrarModalCliente();
-        }
-
-        // ============================================
-        // COBRAR
-        // ============================================
         function handleCobrar() {
+            console.log('💰 handleCobrar() ejecutado');
+            
             if (ventaActual.length === 0) {
-                alert('No hay productos para cobrar.');
+                alert("No hay productos en la venta para cobrar.");
                 return;
             }
 
-            const total = ventaActual.reduce((sum, item) => sum + item.importe, 0);
-            const cliente = document.getElementById('footer-cliente').textContent;
-            const vendedor = document.getElementById('footer-vendedor').textContent;
+            const clienteActualNombre = localStorage.getItem('currentClienteName') || 'PUBLICO EN GENERAL';
+            const vendedorActualNombre = localStorage.getItem('currentVendedorName') || 'MOSTRADOR';
 
-            // Mostrar resumen rápido
-            const confirmar = confirm(
-                `📋 Resumen de venta:\n` +
-                `Cliente: ${cliente}\n` +
-                `Vendedor: ${vendedor}\n` +
-                `Total: C$${total.toFixed(2)}\n\n` +
-                `¿Confirmar venta?`
-            );
+            const totalVentaStr = document.getElementById('total-amount').textContent.replace('C$', '');
+            const totalVenta = parseFloat(totalVentaStr);
 
-            if (!confirmar) return;
+            console.log('📊 Total a cobrar:', totalVenta);
+            console.log('👤 Cliente:', clienteActualNombre);
+            console.log('👤 Vendedor:', vendedorActualNombre);
 
-            // Aquí iría la lógica de guardar la venta
-            alert(`✅ Venta registrada por C$${total.toFixed(2)}`);
-            ventaActual = [];
-            renderVenta();
+            openCajaModal(totalVenta, clienteActualNombre, vendedorActualNombre);
+        }
+
+        async function finalizarVentaDesdeCaja() {
+            const totalVentaStr = document.getElementById('total-amount').textContent.replace('C$', '');
+            const totalVenta = parseFloat(totalVentaStr);
+
+            const efectivo = parseFloat(document.getElementById('pago-efectivo').value) || 0;
+            const tarjeta = parseFloat(document.getElementById('pago-tarjeta').value) || 0;
+            const transferencia = parseFloat(document.getElementById('pago-transferencia').value) || 0;
+            const credito = parseFloat(document.getElementById('pago-credito').value) || 0;
+
+            const totalPagado = efectivo + tarjeta + transferencia + credito;
+
+            if (totalPagado < totalVenta) {
+                alert(`¡ERROR! Falta pagar C$${(totalVenta - totalPagado).toFixed(2)}. Complete el pago.`);
+                return;
+            }
+
+            const pagos = [];
+            if (efectivo > 0) pagos.push({ metodo: 'Efectivo', monto: efectivo });
+            if (tarjeta > 0) pagos.push({ metodo: 'Tarjeta', monto: tarjeta });
+            if (transferencia > 0) pagos.push({ metodo: 'Transferencia', monto: transferencia });
+            if (credito > 0) pagos.push({ metodo: 'Credito', monto: credito });
+
+            if (pagos.length === 0) {
+                alert("Debe ingresar al menos un pago para finalizar la venta.");
+                return;
+            }
+
+            const btnAceptar = document.querySelector('#cajaModal .btn-primary');
+            btnAceptar.disabled = true;
+
+            try {
+                const ventaData = {
+                    cliente_id: parseInt(localStorage.getItem('currentClienteId')) || 1,
+                    vendedor_id: parseInt(localStorage.getItem('currentVendedorId')) || 1,
+                    es_factura: document.getElementById('check-factura').checked,
+                    detalles: ventaActual.map(item => ({
+                        producto_id: item.id,
+                        cantidad: item.cantidad,
+                        precio_unitario: item.precio
+                    })),
+                    pagos: pagos
+                };
+
+                const response = await fetch(`${API_URL}/admin/ventas`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(ventaData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert(`¡ÉXITO! Venta #${result.folio} registrada. Cambio: C$${result.cambio}`);
+
+                    const clienteNombre = window.currentClienteNombre || localStorage.getItem('currentClienteName') || 'PUBLICO EN GENERAL';
+                    const vendedorNombre = window.currentVendedorNombre || localStorage.getItem('currentVendedorName') || 'MOSTRADOR';
+
+                    generateTicket(
+                        result.folio,
+                        ventaActual,
+                        totalVenta,
+                        clienteNombre,
+                        vendedorNombre,
+                        result.cambio,
+                        efectivo
+                    );
+
+                    ventaActual = [];
+                    renderVentaActual();
+                    closeCajaModal();
+                    loadInventarioPDV();
+
+                } else {
+                    alert('Error al registrar la venta: ' + (result.message || 'Error desconocido.'));
+                }
+            } catch (error) {
+                alert('Error de conexión o de red al procesar la venta.');
+                console.error('Error:', error);
+            } finally {
+                btnAceptar.disabled = false;
+            }
+        }
+
+        // ============================================
+        // TICKET
+        // ============================================
+
+        function generateTicket(folio, productos, total, clienteNombre, vendedorNombre, cambio, efectivo) {
+            console.log('🔍 generateTicket llamado con:');
+            console.log('  folio:', folio);
+            console.log('  productos:', productos);
+            console.log('  total:', total);
+            console.log('  clienteNombre:', clienteNombre);
+            console.log('  vendedorNombre:', vendedorNombre);
+            console.log('  cambio:', cambio);
+            console.log('  efectivo:', efectivo);
+
+            const now = new Date();
+            const fechaHora = now.toLocaleString('es-NI');
+            const nombreEmpresa = localStorage.getItem('nombre_empresa') || 'TU EMPRESA';
+
+            if (!productos || productos.length === 0) {
+                alert('⚠️ No hay productos para generar la factura.');
+                return;
+            }
+
+            const ticketData = {
+                folio: folio || 0,
+                fechaHora: fechaHora,
+                clienteNombre: clienteNombre || 'PUBLICO EN GENERAL',
+                vendedorNombre: vendedorNombre || 'MOSTRADOR',
+                productos: productos.map(p => ({
+                    id: p.id || p.clave || 'N/A',
+                    descripcion: p.descripcion || 'Sin descripción',
+                    cantidad: p.cantidad || 1,
+                    precio: p.precio || 0,
+                    importe: (p.cantidad || 1) * (p.precio || 0)
+                })),
+                total: total || 0,
+                cambio: cambio || 0,
+                efectivo: efectivo || total || 0,
+                nombreEmpresa: nombreEmpresa
+            };
+
+            console.log('📄 Datos a guardar:', ticketData);
+
+            localStorage.setItem('ticketData', JSON.stringify(ticketData));
+
+            const saved = localStorage.getItem('ticketData');
+            console.log('✅ Datos guardados en localStorage:', saved ? 'SÍ' : 'NO');
+
+            window.open('ticket.html', '_blank', 'width=400,height=700,resizable,scrollbars');
         }
 
         // ============================================
         // UTILIDADES
         // ============================================
-        function openWindow(url) { window.open(url, '_blank', 'width=800,height=600,scrollbars=yes'); }
-        function handleCorteCaja() { alert('Función de corte de caja en desarrollo'); }
+
+        function numeroALetras(num) {
+            if (num === 0) return 'CERO';
+            return num.toFixed(2).replace('.', ' con ') + ' córdobas';
+        }
+
         function updateDateTime() {
             const now = new Date();
-            document.getElementById('current-date').textContent = now.toLocaleDateString('es-NI');
-            document.getElementById('current-time').textContent = now.toLocaleTimeString('es-NI');
+            const dateStr = now.toLocaleDateString('es-NI', {
+                day: '2-digit', month: '2-digit', year: 'numeric'
+            });
+            const timeStr = now.toLocaleTimeString('es-NI', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+
+            document.getElementById('current-date').textContent = dateStr;
+            document.getElementById('current-time').textContent = timeStr;
         }
+
+        function openWindow(url) {
+            window.open(url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
+        }
+
+        function handleCorteCaja() {
+            alert('Función de corte de caja no implementada.');
+        }
+
+        function handleCancelarNV() {
+            if (confirm("¿Cancelar venta actual?")) {
+                ventaActual = [];
+                renderVentaActual();
+            }
+        }
+
+        // ============================================
+        // 🔥 EVENTO COBRAR CORREGIDO
+        // ============================================
+
+        (function() {
+            function setupCobrarButton() {
+                const btnCobrar = document.getElementById('btnCobrar');
+                if (!btnCobrar) {
+                    console.error('❌ Botón Cobrar no encontrado');
+                    return;
+                }
+
+                // Crear un nuevo botón para evitar eventos duplicados
+                const newBtn = document.createElement('button');
+                newBtn.className = btnCobrar.className;
+                newBtn.id = 'btnCobrar';
+                newBtn.type = 'button';
+                newBtn.innerHTML = btnCobrar.innerHTML;
+
+                // Reemplazar el botón viejo con el nuevo
+                btnCobrar.parentNode.replaceChild(newBtn, btnCobrar);
+
+                // Agregar eventos
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🟢 Botón Cobrar click (nuevo)');
+                    handleCobrar();
+                });
+
+                newBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🟢 Botón Cobrar touchstart');
+                    handleCobrar();
+                });
+
+                console.log('✅ Botón Cobrar configurado correctamente');
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setupCobrarButton);
+            } else {
+                setupCobrarButton();
+            }
+        })();
 
         // ============================================
         // INICIALIZACIÓN
         // ============================================
+
         document.addEventListener('DOMContentLoaded', async () => {
             if (!token) {
-                alert('Sesión no válida. Redirigiendo...');
+                alert('Sesión no válida. Redirigiendo al login.');
                 window.location.href = 'login.html';
                 return;
             }
 
-            await loadProductos();
-            await loadClientes();
+            loadState();
 
-            const nombreEmpresa = localStorage.getItem('nombre_empresa') || 'Mi Empresa';
+            const nombreEmpresa = localStorage.getItem('nombre_empresa') || 'TU EMPRESA';
             document.getElementById('empresa-nombre').textContent = nombreEmpresa;
 
             try {
@@ -825,38 +982,43 @@
                 });
                 const folioData = await folioRes.json();
                 document.getElementById('folio-number').textContent = folioData.success ? folioData.folio : '1';
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error('Error al cargar folio:', e);
+                document.getElementById('folio-number').textContent = '1';
+            }
 
             updateDateTime();
             setInterval(updateDateTime, 1000);
-            renderVenta();
+            renderVentaActual();
 
-            // Cerrar modal al hacer clic fuera
-            document.getElementById('clienteModal').addEventListener('click', function(e) {
-                if (e.target === this) cerrarModalCliente();
-            });
+            document.querySelector('.btn-search').addEventListener('click', openMovimientoVentasModal);
 
-            // Buscar cliente en tiempo real
-            document.getElementById('buscar-cliente').addEventListener('input', renderClientes);
-
-            // Atajos de teclado
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'F8' && !e.target.closest('input')) {
+            document.getElementById('barcode-input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
                     e.preventDefault();
-                    handleCobrar();
-                }
-                if (e.key === 'F9' && !e.target.closest('input')) {
-                    e.preventDefault();
-                    clearSale();
-                }
-                if (e.key === 'Delete' && !e.target.closest('input')) {
-                    e.preventDefault();
-                    removeLastItem();
+                    openMovimientoVentasModal();
                 }
             });
 
-            // Enfoque automático
-            setTimeout(() => buscarInput.focus(), 100);
+            await loadCategoriasAndInitBusqueda();
+        });
+
+        // Atajos de teclado
+        document.addEventListener('keydown', function(event) {
+            const tagName = event.target.tagName.toLowerCase();
+            const isInput = (tagName === 'input' || tagName === 'textarea');
+
+            if (event.code === 'F2' && !isInput) { event.preventDefault(); openWindow('vendedores.html'); }
+            else if (event.code === 'F3' && !isInput) { event.preventDefault(); openWindow('clientes.html'); }
+            else if (event.code === 'F6' && !isInput) { event.preventDefault(); handleCorteCaja(); }
+            else if (event.code === 'F7' && !isInput && ventaActual.length > 0) { event.preventDefault(); clearSale(); }
+            else if (event.code === 'F8' && !isInput) { event.preventDefault(); handleCobrar(); }
+            else if (event.code === 'F9' && !isInput) { event.preventDefault(); handleCancelarNV(); }
+            else if (event.key === 'Delete' && !isInput) { event.preventDefault(); removeItemFromSale(); }
+            else if (event.code === 'Enter' && event.target.id === 'barcode-input') {
+                event.preventDefault();
+                openMovimientoVentasModal();
+            }
         });
     </script>
 
