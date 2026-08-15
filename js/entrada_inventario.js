@@ -65,7 +65,7 @@ function renderBusquedaProductos(productos) {
         tr.innerHTML = `
             <td>${p.id}</td>
             <td>${p.descripcion}</td>
-            <td>${p.stock}</td>
+            <td>${Number(p.stock).toFixed(2)}</td>
             <td>
                 <button class="btn-select" onclick="selectProducto(${p.id}, '${p.descripcion.replace(/'/g, "\\'")}')">
                     Seleccionar
@@ -76,7 +76,7 @@ function renderBusquedaProductos(productos) {
     });
 }
 
-// Seleccionar producto → añade fila a la tabla principal
+// ✅ SELECCIONAR PRODUCTO → AÑADE FILA CON DECIMALES
 function selectProducto(id, descripcion) {
     const tbody = document.getElementById('productos-tbody');
     const emptyRow = tbody.querySelector('tr td[colspan]');
@@ -90,7 +90,8 @@ function selectProducto(id, descripcion) {
             ${descripcion}
         </td>
         <td>
-            <input type="number" name="cantidad" value="1" min="1" class="cantidad-input" 
+            🔥 INPUT CON DECIMALES
+            <input type="number" name="cantidad" value="1" min="0.01" step="any" class="cantidad-input" 
                    oninput="validateCantidad(this)">
         </td>
         <td>
@@ -101,9 +102,19 @@ function selectProducto(id, descripcion) {
     closeBusquedaModal();
 }
 
+// ✅ VALIDAR CANTIDAD CON DECIMALES
 function validateCantidad(input) {
-    let val = parseInt(input.value);
-    if (isNaN(val) || val < 1) input.value = 1;
+    let val = parseFloat(input.value);
+    if (isNaN(val) || val < 0.01) {
+        input.value = 1;
+    }
+    // Limitar a 2 decimales
+    if (input.value.includes('.')) {
+        const partes = input.value.split('.');
+        if (partes[1] && partes[1].length > 2) {
+            input.value = parseFloat(input.value).toFixed(2);
+        }
+    }
 }
 
 function removeRow(button) {
@@ -116,7 +127,6 @@ function removeRow(button) {
     }
 }
 
-// Enviar entrada
 document.getElementById('btn-guardar').addEventListener('click', async () => {
     const tbody = document.getElementById('productos-tbody');
     const rows = tbody.querySelectorAll('tr:not(:has(td[colspan]))');
@@ -129,18 +139,23 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
     const productos = [];
     for (const row of rows) {
         const id = row.querySelector('[name="producto_id"]').value;
-        const cantidad = parseInt(row.querySelector('[name="cantidad"]').value);
-        if (cantidad <= 0) {
+        const cantidad = parseFloat(row.querySelector('[name="cantidad"]').value);
+        if (isNaN(cantidad) || cantidad <= 0) {
             alert('⚠️ La cantidad debe ser mayor a 0.');
             return;
         }
-        productos.push({ producto_id: parseInt(id), cantidad });
+        productos.push({ producto_id: parseInt(id), cantidad: cantidad });
     }
 
     const referencia = document.getElementById('referencia').value.trim();
     const motivo = document.getElementById('motivo').value.trim();
 
     const data = { productos, referencia, motivo };
+    console.log('📦 Datos a enviar:', data);
+
+    const btn = document.getElementById('btn-guardar');
+    btn.disabled = true;
+    btn.textContent = '⏳ Registrando...';
 
     try {
         const response = await fetch(`${API_URL}/admin/inventario/entradas`, {
@@ -155,7 +170,7 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            alert('✅ Entrada registrada exitosamente.');
+            alert(`✅ Entrada registrada exitosamente con ${productos.length} producto(s).`);
             // Limpiar formulario
             document.getElementById('referencia').value = '';
             document.getElementById('motivo').value = '';
@@ -167,5 +182,15 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
     } catch (error) {
         alert('❌ Error de conexión con el servidor.');
         console.error('Error:', error);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Registrar Entrada';
     }
 });
+
+// Cerrar modal al hacer clic fuera
+window.onclick = function(event) {
+    if (event.target.id === 'busquedaModal') {
+        closeBusquedaModal();
+    }
+};
