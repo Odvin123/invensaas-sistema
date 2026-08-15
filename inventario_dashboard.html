@@ -1919,33 +1919,41 @@ function formatStock(value) {
             renderBusquedaProductos(filtered);
         }
 
-        function seleccionarProductoEntrada(id, descripcion) {
-            closeModal('buscar-producto');
+       function seleccionarProductoEntrada(id, descripcion) {
+    closeModal('buscar-producto');
 
-            if (entradaProductos.find(p => p.id === id)) {
-                alert('⚠️ Este producto ya está en la lista.');
-                return;
-            }
+    if (entradaProductos.find(p => p.id === id)) {
+        alert('⚠️ Este producto ya está en la lista.');
+        return;
+    }
 
-            entradaProductos.push({ id, descripcion, cantidad: 1 });
+    entradaProductos.push({ id, descripcion, cantidad: 1 });
 
-            const tbody = document.getElementById('entrada-productos-tbody');
-            if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+    const tbody = document.getElementById('entrada-productos-tbody');
+    if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
 
-            const tr = document.createElement('tr');
-            tr.dataset.productoId = id;
-            tr.innerHTML = `
-                <td>${descripcion}</td>
-                <td style="text-align:center;">
-                    <input type="number" value="1" min="1" style="width:70px;padding:6px;border:2px solid var(--border);border-radius:6px;text-align:center;"
-                           onchange="actualizarCantidadEntrada(this, ${id})">
-                </td>
-                <td style="text-align:center;">
-                    <button class="btn-sm btn-delete" onclick="eliminarProductoEntrada(this, ${id})"><i class="fas fa-trash"></i></button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        }
+    const tr = document.createElement('tr');
+    tr.dataset.productoId = id;
+    tr.innerHTML = `
+        <td>${descripcion}</td>
+        <td style="text-align:center;">
+            <input type="text" value="1" style="width:70px;padding:6px;border:2px solid var(--border);border-radius:6px;text-align:center;"
+                   onchange="actualizarCantidadEntrada(this, ${id})"
+                   oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')">
+        </td>
+        <td style="text-align:center;">
+            <button class="btn-sm btn-delete" onclick="eliminarProductoEntrada(this, ${id})"><i class="fas fa-trash"></i></button>
+        </td>
+    `;
+    tbody.appendChild(tr);
+}
+
+function actualizarCantidadEntrada(input, id) {
+    let cantidad = parseFloat(input.value) || 1;
+    if (cantidad < 0.01) input.value = 1;
+    const item = entradaProductos.find(p => p.id === id);
+    if (item) item.cantidad = parseFloat(input.value) || 1;
+}
 
         function actualizarCantidadEntrada(input, id) {
             const cantidad = parseInt(input.value) || 1;
