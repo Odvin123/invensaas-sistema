@@ -869,21 +869,31 @@
                 });
             }
         }
-
         // ============================================
-        // INICIALIZAR
-        // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!token || !tenantId) {
-                alert('Sesión no válida. Redirigiendo...');
-                localStorage.clear();
-                window.location.href = 'login.html';
-                return;
-            }
+// INICIALIZACIÓN - EJECUCIÓN DIRECTA
+// ============================================
+function iniciarReporte() {
+    console.log('🚀 Iniciando reporte general...');
+    
+    if (!token || !tenantId) {
+        alert('Sesión no válida. Redirigiendo...');
+        localStorage.clear();
+        window.location.href = 'login.html';
+        return;
+    }
 
-            cargarProveedores();
-            cargarReporte();
-        });
+    cargarProveedores();
+    cargarReporte();
+}
+
+// Ejecutar inmediatamente
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciarReporte);
+} else {
+    iniciarReporte();
+}
+        
+    
     </script>
 
 </body>
