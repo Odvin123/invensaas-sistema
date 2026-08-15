@@ -1,3 +1,4 @@
+// js/entrada_inventario.js
 let token = localStorage.getItem('token');
 let productosCache = [];
 
@@ -7,11 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'login.html';
         return;
     }
-
     loadProductos();
 });
 
-// Cargar productos (para el modal)
+// Cargar productos
 async function loadProductos() {
     try {
         const response = await fetch(`${API_URL}/admin/productos`, {
@@ -26,7 +26,6 @@ async function loadProductos() {
     }
 }
 
-// Abrir modal de búsqueda
 function addProductoRow() {
     openBusquedaModal();
 }
@@ -76,7 +75,7 @@ function renderBusquedaProductos(productos) {
     });
 }
 
-// ✅ SELECCIONAR PRODUCTO → AÑADE FILA CON DECIMALES
+// 🔥 SELECCIONAR PRODUCTO CON INPUT TIPO TEXT
 function selectProducto(id, descripcion) {
     const tbody = document.getElementById('productos-tbody');
     const emptyRow = tbody.querySelector('tr td[colspan]');
@@ -90,9 +89,9 @@ function selectProducto(id, descripcion) {
             ${descripcion}
         </td>
         <td>
-            🔥 INPUT CON DECIMALES
-            <input type="number" name="cantidad" value="1" min="0.01" step="any" class="cantidad-input" 
-                   oninput="validateCantidad(this)">
+            <input type="text" name="cantidad" value="1" class="cantidad-input" 
+                   placeholder="Ej: 22.5" 
+                   oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')">
         </td>
         <td>
             <button type="button" class="btn-delete" onclick="removeRow(this)">🗑️</button>
@@ -100,21 +99,6 @@ function selectProducto(id, descripcion) {
     `;
     tbody.appendChild(tr);
     closeBusquedaModal();
-}
-
-// ✅ VALIDAR CANTIDAD CON DECIMALES
-function validateCantidad(input) {
-    let val = parseFloat(input.value);
-    if (isNaN(val) || val < 0.01) {
-        input.value = 1;
-    }
-    // Limitar a 2 decimales
-    if (input.value.includes('.')) {
-        const partes = input.value.split('.');
-        if (partes[1] && partes[1].length > 2) {
-            input.value = parseFloat(input.value).toFixed(2);
-        }
-    }
 }
 
 function removeRow(button) {
@@ -127,6 +111,7 @@ function removeRow(button) {
     }
 }
 
+// 🔥 ENVIAR ENTRADA CON DECIMALES
 document.getElementById('btn-guardar').addEventListener('click', async () => {
     const tbody = document.getElementById('productos-tbody');
     const rows = tbody.querySelectorAll('tr:not(:has(td[colspan]))');
@@ -139,9 +124,13 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
     const productos = [];
     for (const row of rows) {
         const id = row.querySelector('[name="producto_id"]').value;
-        const cantidad = parseFloat(row.querySelector('[name="cantidad"]').value);
-        if (isNaN(cantidad) || cantidad <= 0) {
-            alert('⚠️ La cantidad debe ser mayor a 0.');
+        const cantidadInput = row.querySelector('[name="cantidad"]');
+        // 🔥 Convertir a número con parseFloat
+        const cantidad = parseFloat(cantidadInput.value) || 0;
+        
+        if (cantidad <= 0) {
+            alert(`⚠️ La cantidad "${cantidadInput.value}" no es válida.`);
+            cantidadInput.focus();
             return;
         }
         productos.push({ producto_id: parseInt(id), cantidad: cantidad });
