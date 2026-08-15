@@ -75,7 +75,7 @@ function renderBusquedaProductos(productos) {
     });
 }
 
-// 🔥 SELECT PRODUCTO - INPUT TIPO TEXTO CON DECIMALES
+// 🔥 SELECT PRODUCTO - CON BOTONES + Y - Y INPUT TEXT
 function selectProducto(id, descripcion) {
     const tbody = document.getElementById('productos-tbody');
     const emptyRow = tbody.querySelector('tr td[colspan]');
@@ -89,12 +89,16 @@ function selectProducto(id, descripcion) {
             ${descripcion}
         </td>
         <td>
-            <input type="text" name="cantidad" value="1.00" class="cantidad-input" 
-                   inputmode="decimal"
-                   placeholder="Ej: 22.5" 
-                   style="width:100%; padding:8px; border:2px solid #e2e8f0; border-radius:6px; text-align:center; font-size:14px;"
-                   onfocus="this.select()" 
-                   oninput="validarCantidadInput(this)">
+            <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                <button type="button" onclick="cambiarCantidad(this, -0.5)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#f1f5f9; cursor:pointer; font-size:16px; font-weight:bold;">−</button>
+                <input type="text" name="cantidad" value="1.00" class="cantidad-input" 
+                       inputmode="decimal"
+                       placeholder="22.5" 
+                       style="width:80px; padding:8px; border:2px solid #e2e8f0; border-radius:6px; text-align:center; font-size:14px;"
+                       onfocus="this.select()" 
+                       oninput="validarCantidadInput(this)">
+                <button type="button" onclick="cambiarCantidad(this, 0.5)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#f1f5f9; cursor:pointer; font-size:16px; font-weight:bold;">+</button>
+            </div>
         </td>
         <td>
             <button type="button" class="btn-delete" onclick="removeRow(this)">🗑️</button>
@@ -104,12 +108,22 @@ function selectProducto(id, descripcion) {
     closeBusquedaModal();
 }
 
+// 🔥 CAMBIAR CANTIDAD CON BOTONES
+function cambiarCantidad(button, incremento) {
+    const row = button.closest('tr');
+    const input = row.querySelector('[name="cantidad"]');
+    let valor = parseFloat(input.value) || 0;
+    valor = Math.max(0.01, valor + incremento);
+    input.value = valor.toFixed(2);
+    validarCantidadInput(input);
+}
+
 // 🔥 VALIDAR CANTIDAD (solo números y punto decimal)
 function validarCantidadInput(input) {
     // Reemplazar comas por puntos
     let value = input.value.replace(/,/g, '.');
     
-    // Solo permitir números y un punto
+    // Solo permitir números, punto y un signo negativo
     value = value.replace(/[^0-9.]/g, '');
     
     // Evitar múltiples puntos
