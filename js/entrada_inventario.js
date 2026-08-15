@@ -75,7 +75,7 @@ function renderBusquedaProductos(productos) {
     });
 }
 
-// 🔥 SELECT PRODUCTO - CON BOTONES + y - Y INPUT TEXT
+// 🔥 SELECT PRODUCTO - INPUT TIPO TEXTO CON DECIMALES
 function selectProducto(id, descripcion) {
     const tbody = document.getElementById('productos-tbody');
     const emptyRow = tbody.querySelector('tr td[colspan]');
@@ -89,14 +89,12 @@ function selectProducto(id, descripcion) {
             ${descripcion}
         </td>
         <td>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <button type="button" onclick="cambiarCantidad(this, -0.5)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#f1f5f9; cursor:pointer; font-size:16px; font-weight:bold;">−</button>
-                <input type="text" name="cantidad" value="1" class="cantidad-input" 
-                       style="width:80px; text-align:center; padding:8px; border:2px solid #e2e8f0; border-radius:8px; font-size:16px;"
-                       onfocus="this.select()"
-                       oninput="validarCantidadInput(this)">
-                <button type="button" onclick="cambiarCantidad(this, 0.5)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#f1f5f9; cursor:pointer; font-size:16px; font-weight:bold;">+</button>
-            </div>
+            <input type="text" name="cantidad" value="1.00" class="cantidad-input" 
+                   inputmode="decimal"
+                   placeholder="Ej: 22.5" 
+                   style="width:100%; padding:8px; border:2px solid #e2e8f0; border-radius:6px; text-align:center; font-size:14px;"
+                   onfocus="this.select()" 
+                   oninput="validarCantidadInput(this)">
         </td>
         <td>
             <button type="button" class="btn-delete" onclick="removeRow(this)">🗑️</button>
@@ -106,22 +104,12 @@ function selectProducto(id, descripcion) {
     closeBusquedaModal();
 }
 
-// 🔥 CAMBIAR CANTIDAD CON BOTONES
-function cambiarCantidad(button, incremento) {
-    const row = button.closest('tr');
-    const input = row.querySelector('[name="cantidad"]');
-    let valor = parseFloat(input.value) || 0;
-    valor = Math.max(0.01, valor + incremento);
-    input.value = valor.toFixed(2);
-    validarCantidadInput(input);
-}
-
 // 🔥 VALIDAR CANTIDAD (solo números y punto decimal)
 function validarCantidadInput(input) {
     // Reemplazar comas por puntos
     let value = input.value.replace(/,/g, '.');
     
-    // Solo permitir números, punto y un signo negativo
+    // Solo permitir números y un punto
     value = value.replace(/[^0-9.]/g, '');
     
     // Evitar múltiples puntos
@@ -135,9 +123,9 @@ function validarCantidadInput(input) {
         value = partes[0] + '.' + partes[1].substring(0, 2);
     }
     
-    // Si el valor está vacío o es solo un punto, poner 1
+    // Si el valor está vacío o es solo un punto, poner 1.00
     if (value === '' || value === '.') {
-        value = '1';
+        value = '1.00';
     }
     
     input.value = value;
@@ -145,10 +133,10 @@ function validarCantidadInput(input) {
     // Validar que sea un número válido
     const num = parseFloat(value);
     if (isNaN(num) || num < 0) {
-        input.value = '1';
+        input.value = '1.00';
     }
     if (num === 0) {
-        input.value = '1';
+        input.value = '1.00';
     }
 }
 
@@ -176,7 +164,6 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
     for (const row of rows) {
         const id = row.querySelector('[name="producto_id"]').value;
         const cantidadInput = row.querySelector('[name="cantidad"]');
-        // 🔥 Convertir a número con parseFloat
         const cantidad = parseFloat(cantidadInput.value) || 0;
         
         if (cantidad <= 0) {
@@ -211,7 +198,6 @@ document.getElementById('btn-guardar').addEventListener('click', async () => {
 
         if (response.ok && result.success) {
             alert(`✅ Entrada registrada exitosamente con ${productos.length} producto(s).`);
-            // Limpiar formulario
             document.getElementById('referencia').value = '';
             document.getElementById('motivo').value = '';
             document.getElementById('productos-tbody').innerHTML = 
