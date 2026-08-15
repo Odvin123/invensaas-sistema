@@ -221,205 +221,71 @@
         .chart-card h3 i { color: var(--primary); }
         .chart-card .chart-container { position: relative; height: 220px; }
 
-        /* ============================================
-           TABLA MEJORADA - DISEÑO MODERNO
-        ============================================ */
+        /* TABLA */
         .table-card {
             background: var(--white);
             border-radius: var(--radius);
             border: 1px solid var(--border);
             overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .table-card:hover {
-            box-shadow: var(--shadow-hover);
         }
 
         .table-card .table-header {
-            padding: 16px 24px;
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            border-bottom: 2px solid var(--border);
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
-
         .table-card .table-header h3 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
-            color: var(--text);
-            display: flex;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .table-card .table-header h3 i {
-            color: var(--primary);
-            font-size: 18px;
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
         }
 
-        .table-wrapper {
-            overflow-x: auto;
-            padding: 0 20px 20px;
-        }
+        .table-wrapper { overflow-x: auto; padding: 0 20px 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        /* ENCABEZADO CON GRADIENTE MORADO */
         thead th {
             text-align: left;
-            padding: 12px 14px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
+            padding: 10px 12px;
+            background: var(--light);
+            color: var(--text-light);
             font-weight: 700;
             font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            border-bottom: none;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            white-space: nowrap;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
         }
 
-        thead th:first-child {
-            border-radius: 8px 0 0 0;
-        }
-
-        thead th:last-child {
-            border-radius: 0 8px 0 0;
-        }
-
-        thead th.text-right {
-            text-align: right;
-        }
-
-        /* FILAS CON EFECTO ZEBRA */
         tbody td {
-            padding: 10px 14px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-            font-size: 13px;
-            color: var(--text);
-            transition: var(--transition);
         }
-
-        tbody tr {
-            transition: var(--transition);
-        }
-
-        tbody tr:hover td {
-            background: rgba(99, 102, 241, 0.06);
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #fafbfc;
-        }
-
-        tbody tr:nth-child(even):hover td {
-            background: rgba(99, 102, 241, 0.08);
-        }
-
-        /* ESTILOS PARA CELDAS ESPECÍFICAS */
-        tbody td:first-child {
-            font-weight: 700;
-            color: var(--primary-dark);
-            font-size: 14px;
-            text-align: center;
-        }
-
-        /* Categoría con badge */
-        tbody td .product-category {
-            display: inline-block;
-            padding: 2px 12px;
-            background: #ede9fe;
-            color: #7c3aed;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        /* Números */
-        tbody td.numeric {
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            text-align: right;
-            font-weight: 600;
-        }
-
-        /* Colores para ganancia */
-        .profit-positive {
-            color: var(--success) !important;
-            font-weight: 700;
-        }
-
-        .profit-negative {
-            color: var(--danger) !important;
-            font-weight: 700;
-        }
-
-        /* Colores para margen */
-        .margin-high {
-            color: var(--success) !important;
-            font-weight: 700;
-        }
-
-        .margin-medium {
-            color: var(--warning) !important;
-            font-weight: 700;
-        }
-
-        .margin-low {
-            color: var(--danger) !important;
-            font-weight: 700;
-        }
-
-        /* BUSCADOR MEJORADO */
-        #filtro-busqueda-producto {
-            padding: 8px 16px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            width: 220px;
-            background: var(--white);
-            transition: var(--transition);
-        }
-
-        #filtro-busqueda-producto:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
-            background: var(--white);
-        }
-
-        #filtro-busqueda-producto::placeholder {
-            color: var(--text-light);
-            font-size: 12px;
-        }
-
-        /* CONTADOR DE FILTRO */
-        #contador-filtro {
-            font-size: 12px;
-            color: var(--text-light);
-            font-weight: 600;
-            background: var(--light);
-            padding: 4px 12px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
+        tbody tr:hover { background: rgba(99, 102, 241, 0.03); }
 
         .text-right { text-align: right; }
         .text-center { text-align: center; }
@@ -445,25 +311,6 @@
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .top-bar { flex-direction: column; gap: 10px; padding: 12px 16px; }
             .dashboard-header { flex-direction: column; align-items: flex-start; }
-            .table-card .table-header {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 16px;
-            }
-            #filtro-busqueda-producto {
-                width: 100%;
-            }
-            .table-wrapper {
-                padding: 0 12px 16px;
-            }
-            thead th {
-                font-size: 9px;
-                padding: 8px 6px;
-            }
-            tbody td {
-                padding: 6px 8px;
-                font-size: 11px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -492,13 +339,12 @@
     DASHBOARD
     ============================================ -->
     <main class="dashboard">
-
         <div class="dashboard-header">
             <div>
                 <h1><i class="fas fa-chart-pie"></i> Reporte General de Inventario</h1>
                 <p>Resumen financiero completo de tu inventario</p>
             </div>
-            <button class="btn btn-primary" onclick="window.print()" style="background:var(--primary-gradient); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">
+            <button class="btn btn-primary" onclick="window.print()">
                 <i class="fas fa-print"></i> Imprimir
             </button>
         </div>
@@ -559,32 +405,31 @@
         </div>
 
         <!-- TABLA DETALLADA -->
-        <div class="table-card">
-            <div class="table-header">
-                <h3><i class="fas fa-list" style="color:var(--primary);"></i> Detalle por Producto</h3>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <i class="fas fa-search" style="color:var(--text-light);"></i>
-                    <input type="text" id="filtro-busqueda-producto" 
-                           placeholder="Buscar producto..." 
-                           oninput="filtrarProductos()"
-                           style="padding:8px 14px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:13px; width:200px; background:var(--light); transition:var(--transition);">
-                    <span id="contador-filtro" style="font-size:12px; color:var(--text-light); font-weight:600;"></span>
-                </div>
-            </div>
+        <div class="table-header">
+    <h3><i class="fas fa-list" style="color:var(--primary);"></i> Detalle por Producto</h3>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <i class="fas fa-search" style="color:var(--text-light);"></i>
+        <input type="text" id="filtro-busqueda-producto" 
+               placeholder="Buscar producto..." 
+               oninput="filtrarProductos()"
+               style="padding:8px 14px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:13px; width:200px; background:var(--light); transition:var(--transition);">
+        <span id="contador-filtro" style="font-size:12px; color:var(--text-light); font-weight:600;"></span>
+    </div>
+</div>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th style="text-align:center;">ID</th>
+                            <th>ID</th>
                             <th>Producto</th>
                             <th>Categoría</th>
-                            <th style="text-align:right;">Stock</th>
-                            <th style="text-align:right;">Costo</th>
-                            <th style="text-align:right;">Precio</th>
-                            <th style="text-align:right;">Inversión</th>
-                            <th style="text-align:right;">Valor Venta</th>
-                            <th style="text-align:right;">Ganancia</th>
-                            <th style="text-align:right;">Margen</th>
+                            <th class="text-right">Stock</th>
+                            <th class="text-right">Costo</th>
+                            <th class="text-right">Precio</th>
+                            <th class="text-right">Inversión</th>
+                            <th class="text-right">Valor Venta</th>
+                            <th class="text-right">Ganancia</th>
+                            <th class="text-right">Margen</th>
                         </tr>
                     </thead>
                     <tbody id="reporte-tbody">
@@ -593,27 +438,15 @@
                 </table>
             </div>
         </div>
-
     </main>
 
+    <!-- ============================================
+    JAVASCRIPT
+    ============================================ -->
     <script>
-        // ============================================
-        // CONFIGURACIÓN
-        // ============================================
         const token = localStorage.getItem('token');
         const tenantId = localStorage.getItem('tenant_id');
-        const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
 
-        let productosOriginales = [];
-        let productosCache = [];
-        let productosFiltrados = [];
-        let proveedoresCache = [];
-        let topInversionChart = null;
-        let categoryValueChart = null;
-
-        // ============================================
-        // LOGOUT
-        // ============================================
         function logout() {
             if (confirm('¿Cerrar sesión?')) {
                 localStorage.clear();
@@ -622,235 +455,241 @@
             }
         }
 
-        // ============================================
-        // FORMATO
-        // ============================================
         function formatCurrency(value) {
             return `C$${Number(value).toFixed(2)}`;
         }
 
-        // ============================================
-        // FILTRO DE BÚSQUEDA EN TIEMPO REAL
-        // ============================================
-        function filtrarProductos() {
-            const busqueda = document.getElementById('filtro-busqueda-producto').value.toLowerCase().trim();
-            const tbody = document.getElementById('reporte-tbody');
-            const contador = document.getElementById('contador-filtro');
-            
-            if (!productosOriginales || productosOriginales.length === 0) {
-                return;
-            }
-            
-            let filtrados = productosOriginales;
-            
-            if (busqueda) {
-                filtrados = productosOriginales.filter(p => 
-                    p.descripcion && p.descripcion.toLowerCase().includes(busqueda)
-                );
-            }
-            
-            // Actualizar contador
-            contador.textContent = `${filtrados.length} de ${productosOriginales.length}`;
-            
-            // Renderizar los productos filtrados
-            renderizarTablaFiltrada(filtrados);
+        function formatNumber(value) {
+            return Number(value).toFixed(2);
         }
 
-        // ============================================
-        // RENDERIZAR TABLA CON FILTRO
-        // ============================================
-        function renderizarTablaFiltrada(productos) {
-            const tbody = document.getElementById('reporte-tbody');
-            tbody.innerHTML = '';
+let productosOriginales = [];
 
-            if (!productos || productos.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:30px; color:var(--text-light);">🔍 No se encontraron productos que coincidan con la búsqueda.</td></tr>';
-                return;
-            }
+function filtrarProductos() {
+    const busqueda = document.getElementById('filtro-busqueda-producto').value.toLowerCase().trim();
+    const tbody = document.getElementById('reporte-tbody');
+    const contador = document.getElementById('contador-filtro');
+    
+    if (!productosOriginales || productosOriginales.length === 0) {
+        return;
+    }
+    
+    let filtrados = productosOriginales;
+    
+    if (busqueda) {
+        filtrados = productosOriginales.filter(p => 
+            p.descripcion && p.descripcion.toLowerCase().includes(busqueda)
+        );
+    }
+    
+    contador.textContent = `${filtrados.length} de ${productosOriginales.length}`;
+    
+    renderizarTablaFiltrada(filtrados);
+}
 
-            const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
+function renderizarTablaFiltrada(productos) {
+    const tbody = document.getElementById('reporte-tbody');
+    tbody.innerHTML = '';
 
-            productosOrdenados.forEach(p => {
-                const tr = document.createElement('tr');
-                
-                let margenClass = 'margin-medium';
-                if (p.margen >= 30) margenClass = 'margin-high';
-                else if (p.margen < 10) margenClass = 'margin-low';
+    if (!productos || productos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">No se encontraron productos que coincidan con la búsqueda.</td></tr>';
+        return;
+    }
 
-                tr.innerHTML = `
-                    <td>${p.id}</td>
-                    <td>
-                        <span style="font-weight:600; color:var(--text);">${p.descripcion || 'Sin descripción'}</span>
-                    </td>
-                    <td><span class="product-category">${p.categoria_nombre || 'N/A'}</span></td>
-                    <td class="numeric">${Number(p.stock).toFixed(2)}</td>
-                    <td class="numeric" style="color:var(--primary);">C$${Number(p.costo).toFixed(2)}</td>
-                    <td class="numeric" style="color:var(--primary);">C$${Number(p.precio).toFixed(2)}</td>
-                    <td class="numeric" style="color:var(--primary);">C$${Number(p.inversion).toFixed(2)}</td>
-                    <td class="numeric" style="color:var(--primary);">C$${Number(p.valorVenta).toFixed(2)}</td>
-                    <td class="numeric ${p.ganancia >= 0 ? 'profit-positive' : 'profit-negative'}">C$${Number(p.ganancia).toFixed(2)}</td>
-                    <td class="numeric ${margenClass}">${Number(p.margen).toFixed(1)}%</td>
-                `;
-                tbody.appendChild(tr);
-            });
+    const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
 
-            console.log(`✅ ${productosOrdenados.length} productos renderizados`);
+    productosOrdenados.forEach(p => {
+        const tr = document.createElement('tr');
+        const margenColor = p.margen >= 30 ? 'text-success' : (p.margen >= 10 ? 'text-warning' : 'text-danger');
+        
+        tr.innerHTML = `
+            <td style="text-align:center; font-weight:600; font-size:12px;">${p.id}</td>
+            <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px;" title="${p.descripcion || 'Sin descripción'}">${p.descripcion || 'Sin descripción'}</td>
+            <td style="font-size:12px;">${p.categoria_nombre || 'N/A'}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">${Number(p.stock).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">C$${Number(p.costo).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">C$${Number(p.precio).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">C$${Number(p.inversion).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace;">C$${Number(p.valorVenta).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace; ${p.ganancia >= 0 ? 'color:#22c55e;' : 'color:#ef4444;'}">C$${Number(p.ganancia).toFixed(2)}</td>
+            <td style="text-align:right; font-size:11px; font-family:monospace; ${margenColor}">${Number(p.margen).toFixed(1)}%</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+       async function cargarReporte() {
+    const tbody = document.getElementById('reporte-tbody');
+    tbody.innerHTML = '<tr><td colspan="10" class="loading-state"><i class="fas fa-spinner"></i> Cargando reporte...</td></tr>';
+
+    try {
+        const response = await fetch(`${API_URL}/admin/productos`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            return;
         }
 
-        // ============================================
-        // CARGAR REPORTE
-        // ============================================
-        async function cargarReporte() {
-            const tbody = document.getElementById('reporte-tbody');
-            tbody.innerHTML = '<tr><td colspan="10" class="loading-state"><i class="fas fa-spinner"></i> Cargando reporte...</td></tr>';
+        const data = await response.json();
 
-            try {
-                const response = await fetch(`${API_URL}/admin/productos`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (response.status === 401 || response.status === 403) {
-                    logout();
-                    return;
-                }
-
-                const data = await response.json();
-
-                if (!data.success) {
-                    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">Error al cargar datos.</td></tr>';
-                    return;
-                }
-
-                const productos = data.productos || [];
-
-                if (productos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">No hay productos registrados.</td></tr>';
-                    return;
-                }
-
-                // Procesar productos
-                const productosProcesados = productos.map(p => {
-                    const stock = Number(p.stock) || 0;
-                    const costo = Number(p.costo) || 0;
-                    const precio = Number(p.precio) || 0;
-                    const inversion = stock * costo;
-                    const valorVenta = stock * precio;
-                    const ganancia = valorVenta - inversion;
-                    const margen = inversion > 0 ? (ganancia / inversion) * 100 : 0;
-
-                    return {
-                        ...p,
-                        stock,
-                        costo,
-                        precio,
-                        inversion,
-                        valorVenta,
-                        ganancia,
-                        margen,
-                        proveedor_nombre: p.proveedor_nombre || 'N/A',
-                        categoria_nombre: p.categoria_nombre || 'N/A'
-                    };
-                });
-
-                // Guardar para el filtro
-                productosOriginales = [...productosProcesados];
-                productosCache = productosProcesados;
-
-                // Ordenar y renderizar
-                const productosOrdenados = [...productosProcesados].sort((a, b) => b.id - a.id);
-
-                // Calcular estadísticas
-                let totalProductos = 0;
-                let totalUnidades = 0;
-                let totalValorVenta = 0;
-                let totalInversion = 0;
-                let totalGanancia = 0;
-                let totalMargen = 0;
-                let productosConMargen = 0;
-
-                productosProcesados.forEach(p => {
-                    totalProductos++;
-                    totalUnidades += p.stock;
-                    totalValorVenta += p.valorVenta;
-                    totalInversion += p.inversion;
-                    totalGanancia += p.ganancia;
-                    if (p.inversion > 0) {
-                        totalMargen += p.margen;
-                        productosConMargen++;
-                    }
-                });
-
-                const margenPromedio = productosConMargen > 0 ? totalMargen / productosConMargen : 0;
-
-                document.getElementById('total-productos').textContent = totalProductos;
-                document.getElementById('total-unidades').textContent = totalUnidades.toFixed(2);
-                document.getElementById('valor-venta').textContent = formatCurrency(totalValorVenta);
-                document.getElementById('valor-costo').textContent = formatCurrency(totalInversion);
-                document.getElementById('ganancia-potencial').textContent = formatCurrency(totalGanancia);
-                document.getElementById('margen-ganancia').textContent = `${margenPromedio.toFixed(1)}%`;
-
-                const nombreEmpresa = localStorage.getItem('nombre_empresa') || tenantId?.toUpperCase() || 'Mi Empresa';
-                document.getElementById('company-name-display').textContent = nombreEmpresa;
-                document.getElementById('avatar-initial').textContent = nombreEmpresa.charAt(0).toUpperCase();
-
-                // Renderizar tabla
-                renderizarTablaFiltrada(productosOrdenados);
-                document.getElementById('contador-filtro').textContent = `${productosOrdenados.length} de ${productosOrdenados.length}`;
-
-                // Renderizar gráficos
-                renderGraficos(productosOrdenados);
-
-            } catch (error) {
-                console.error('Error:', error);
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">Error de conexión.</td></tr>';
-            }
+        if (!data.success) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">Error al cargar datos.</td></tr>';
+            return;
         }
+
+        const productos = data.productos || [];
+
+        if (productos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">No hay productos registrados.</td></tr>';
+            return;
+        }
+
+        const productosProcesados = productos.map(p => {
+            const stock = Number(p.stock) || 0;
+            const costo = Number(p.costo) || 0;
+            const precio = Number(p.precio) || 0;
+            const inversion = stock * costo;
+            const valorVenta = stock * precio;
+            const ganancia = valorVenta - inversion;
+            const margen = inversion > 0 ? (ganancia / inversion) * 100 : 0;
+
+            return {
+                ...p,
+                stock,
+                costo,
+                precio,
+                inversion,
+                valorVenta,
+                ganancia,
+                margen,
+                proveedor_nombre: p.proveedor_nombre || 'N/A',
+                categoria_nombre: p.categoria_nombre || 'N/A'
+            };
+        });
+
+        productosOriginales = [...productosProcesados];
+        productosCache = productosProcesados;
+
+        const productosOrdenados = [...productosProcesados].sort((a, b) => b.id - a.id);
+
+        // Calcular estadísticas
+        let totalProductos = 0;
+        let totalUnidades = 0;
+        let totalValorVenta = 0;
+        let totalInversion = 0;
+        let totalGanancia = 0;
+        let totalMargen = 0;
+        let productosConMargen = 0;
+
+        productosProcesados.forEach(p => {
+            totalProductos++;
+            totalUnidades += p.stock;
+            totalValorVenta += p.valorVenta;
+            totalInversion += p.inversion;
+            totalGanancia += p.ganancia;
+            if (p.inversion > 0) {
+                totalMargen += p.margen;
+                productosConMargen++;
+            }
+        });
+
+        const margenPromedio = productosConMargen > 0 ? totalMargen / productosConMargen : 0;
+
+        document.getElementById('total-productos').textContent = totalProductos;
+        document.getElementById('total-unidades').textContent = totalUnidades.toFixed(2);
+        document.getElementById('valor-venta').textContent = formatCurrency(totalValorVenta);
+        document.getElementById('valor-costo').textContent = formatCurrency(totalInversion);
+        document.getElementById('ganancia-potencial').textContent = formatCurrency(totalGanancia);
+        document.getElementById('margen-ganancia').textContent = `${margenPromedio.toFixed(1)}%`;
+
+        const nombreEmpresa = localStorage.getItem('nombre_empresa') || tenantId?.toUpperCase() || 'Mi Empresa';
+        document.getElementById('company-name-display').textContent = nombreEmpresa;
+        document.getElementById('avatar-initial').textContent = nombreEmpresa.charAt(0).toUpperCase();
+
+        renderizarTablaFiltrada(productosOrdenados);
+        document.getElementById('contador-filtro').textContent = `${productosOrdenados.length} de ${productosOrdenados.length}`;
+
+        renderGraficos(productosOrdenados);
+
+    } catch (error) {
+        console.error('Error:', error);
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">Error de conexión.</td></tr>';
+    }
+}
+       function renderTabla(productos) {
+    const tbody = document.getElementById('reporte-tbody');
+    tbody.innerHTML = '';
+
+    if (productos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted" style="padding:20px;">No hay productos.</td></tr>';
+        return;
+    }
+
+    // 🔥 ORDENAR POR ID DESCENDENTE (más nuevo primero)
+    const productosOrdenados = [...productos].sort((a, b) => b.id - a.id);
+
+    // Mostrar todos los productos (sin límite)
+    productosOrdenados.forEach(p => {
+        const tr = document.createElement('tr');
+        const margenColor = p.margen >= 30 ? 'text-success' : (p.margen >= 10 ? 'text-warning' : 'text-danger');
+        tr.innerHTML = `
+            <td><strong>${p.id}</strong></td>
+            <td>${p.descripcion || 'Sin descripción'}</td>
+            <td>${p.categoria_nombre || 'N/A'}</td>
+            <td class="text-right">${Number(p.stock).toFixed(2)}</td>
+            <td class="text-right">${formatCurrency(p.costo)}</td>
+            <td class="text-right">${formatCurrency(p.precio)}</td>
+            <td class="text-right">${formatCurrency(p.inversion)}</td>
+            <td class="text-right">${formatCurrency(p.valorVenta)}</td>
+            <td class="text-right ${p.ganancia >= 0 ? 'text-success' : 'text-danger'}">${formatCurrency(p.ganancia)}</td>
+            <td class="text-right ${margenColor}">${Number(p.margen).toFixed(1)}%</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    console.log(`✅ ${productosOrdenados.length} productos renderizados (ordenados por ID descendente)`);
+}
 
         // ============================================
         // RENDER GRÁFICOS
         // ============================================
-        function renderGraficos(productos) {
-            // Destruir gráficos existentes
-            if (topInversionChart) {
-                topInversionChart.destroy();
-                topInversionChart = null;
-            }
-            if (categoryValueChart) {
-                categoryValueChart.destroy();
-                categoryValueChart = null;
-            }
+        let topInversionChart = null;
+        let categoryValueChart = null;
 
+        function renderGraficos(productos) {
             // Top 5 por inversión
             const top5 = productos.slice(0, 5);
             const labels = top5.map(p => p.descripcion && p.descripcion.length > 20 ? p.descripcion.substring(0, 18) + '…' : (p.descripcion || 'Sin nombre'));
             const data = top5.map(p => p.inversion);
             const colors = ['#6366f1', '#8b5cf6', '#3b82f6', '#22c55e', '#f59e0b'];
 
-            const ctx1 = document.getElementById('topInversionChart');
-            if (ctx1) {
-                topInversionChart = new Chart(ctx1, {
-                    type: 'bar',
-                    data: {
-                        labels: labels.length > 0 ? labels : ['Sin datos'],
-                        datasets: [{
-                            label: 'Inversión (C$)',
-                            data: data.length > 0 ? data : [0],
-                            backgroundColor: colors.slice(0, data.length || 1),
-                            borderRadius: 6
-                        }]
+            const ctx1 = document.getElementById('topInversionChart').getContext('2d');
+            if (topInversionChart) topInversionChart.destroy();
+            topInversionChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['Sin datos'],
+                    datasets: [{
+                        label: 'Inversión (C$)',
+                        data: data.length > 0 ? data : [0],
+                        backgroundColor: colors.slice(0, data.length || 1),
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { callback: value => 'C$' + value.toFixed(0) } }
-                        }
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: value => 'C$' + value.toFixed(0) } }
                     }
-                });
-            }
+                }
+            });
 
-            // Distribución por categoría
+            // Distribución por categoría (valor)
             const categorias = {};
             productos.forEach(p => {
                 const cat = p.categoria_nombre || 'Sin categoría';
@@ -862,44 +701,39 @@
             const catData = Object.values(categorias);
             const catColors = ['#6366f1', '#8b5cf6', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#ec4899', '#14b8a6'];
 
-            const ctx2 = document.getElementById('categoryValueChart');
-            if (ctx2) {
-                categoryValueChart = new Chart(ctx2, {
-                    type: 'doughnut',
-                    data: {
-                        labels: catLabels.length > 0 ? catLabels : ['Sin datos'],
-                        datasets: [{
-                            data: catData.length > 0 ? catData : [1],
-                            backgroundColor: catColors.slice(0, catLabels.length || 1),
-                            borderWidth: 2,
-                            borderColor: '#fff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 10,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle',
-                                    font: { size: 11 }
-                                }
+            const ctx2 = document.getElementById('categoryValueChart').getContext('2d');
+            if (categoryValueChart) categoryValueChart.destroy();
+            categoryValueChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels.length > 0 ? catLabels : ['Sin datos'],
+                    datasets: [{
+                        data: catData.length > 0 ? catData : [1],
+                        backgroundColor: catColors.slice(0, catLabels.length || 1),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 10,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: { size: 11 }
                             }
                         }
                     }
-                });
-            }
+                }
+            });
         }
 
-        // ============================================
-        // INICIALIZACIÓN
-        // ============================================
-        function iniciarReporte() {
-            console.log('🚀 Iniciando reporte general...');
-            
+        
+        document.addEventListener('DOMContentLoaded', () => {
             if (!token || !tenantId) {
                 alert('Sesión no válida. Redirigiendo...');
                 localStorage.clear();
@@ -908,13 +742,7 @@
             }
 
             cargarReporte();
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', iniciarReporte);
-        } else {
-            iniciarReporte();
-        }
+        });
     </script>
 
 </body>
