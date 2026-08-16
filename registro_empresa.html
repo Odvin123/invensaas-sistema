@@ -576,12 +576,12 @@
 
                     if (result.exists) {
                         tenantValidation.className = 'validation-message error';
-                        tenantMessage.textContent = '❌ Este Tenant ID ya está en uso. Elige otro.';
+                        tenantMessage.textContent = ' Este Tenant ID ya está en uso. Elige otro.';
                         tenantInput.classList.add('input-error');
                         tenantInput.classList.remove('input-success');
                     } else {
                         tenantValidation.className = 'validation-message success';
-                        tenantMessage.textContent = '✅ Disponible';
+                        tenantMessage.textContent = 'Disponible';
                         tenantInput.classList.add('input-success');
                         tenantInput.classList.remove('input-error');
                     }
@@ -608,12 +608,12 @@
 
                     if (result.exists) {
                         emailValidation.className = 'validation-message error';
-                        emailMessage.textContent = '❌ Este correo ya está registrado. Usa otro.';
+                        emailMessage.textContent = ' Este correo ya está registrado. Usa otro.';
                         emailInput.classList.add('input-error');
                         emailInput.classList.remove('input-success');
                     } else {
                         emailValidation.className = 'validation-message success';
-                        emailMessage.textContent = '✅ Disponible';
+                        emailMessage.textContent = 'Disponible';
                         emailInput.classList.add('input-success');
                         emailInput.classList.remove('input-error');
                     }
