@@ -1223,56 +1223,72 @@ VIEW: REPORTES
         // MODALES
         // ============================================
         function openModal(type, data = null) {
-            document.getElementById('modal-' + type).style.display = 'block';
-            if (type === 'product') {
-                document.getElementById('product-modal-title').textContent = data ? 'Editar Producto' : 'Agregar Producto';
-                
-                const stockInput = document.getElementById('product-stock');
-             const stockLabel = document.getElementById('stock-label');
+    document.getElementById('modal-' + type).style.display = 'block';
+    
+    if (type === 'product') {
+        document.getElementById('product-modal-title').textContent = data ? '✏️ Editar Producto' : '➕ Agregar Producto';
+        
+        const stockInput = document.getElementById('product-stock');
+        const stockLabel = document.getElementById('stock-label');
 
-                if (data) {
+        // 🔥 PRIMERO: Cargar los selects (proveedores y categorías)
+        loadProductFormData().then(() => {
+            // 🔥 DESPUÉS: Cuando los selects estén cargados, llenar los datos
+            if (data) {
+                // MODO EDICIÓN
+                stockInput.disabled = true;
+                stockInput.style.background = '#f1f5f9';
+                stockLabel.textContent = '(no editable, usa Entrada)';
 
-                        stockInput.disabled = true;
-                        stockInput.style.background = '#f1f5f9';
-                        stockLabel.textContent = '(no editable, usa Entrada)';
+                document.getElementById('product-id').value = data.id;
+                document.getElementById('product-descripcion').value = data.descripcion || '';
+                document.getElementById('product-stock').value = formatStock(data.stock);
+                document.getElementById('product-costo').value = parseFloat(data.costo).toFixed(2);
+                document.getElementById('product-precio').value = parseFloat(data.precio).toFixed(2);
+                document.getElementById('product-clave').value = data.id;
 
-                    document.getElementById('product-id').value = data.id;
-                    document.getElementById('product-descripcion').value = data.descripcion || '';
-                    document.getElementById('product-stock').value = formatStock(data.stock);
-                    document.getElementById('product-costo').value = parseFloat(data.costo).toFixed(2);
-                    document.getElementById('product-precio').value = parseFloat(data.precio).toFixed(2);
-                    document.getElementById('product-clave').value = data.id;
-                } else {
-
-                     stockInput.disabled = false;
-                        stockInput.style.background = '';
-                        stockLabel.textContent = '(solo al crear)';
-                    document.getElementById('productForm').reset();
-                    document.getElementById('product-id').value = '';
-                    document.getElementById('product-clave').value = 'Auto-Generada';
+                // 🔥 Seleccionar proveedor y categoría
+                if (data.proveedor_id) {
+                    document.getElementById('product-proveedor').value = data.proveedor_id;
                 }
-                loadProductFormData();
-            } else if (type === 'categoria') {
-                document.getElementById('categoria-modal-title').textContent = data ? 'Editar Categoría' : 'Nueva Categoría';
-                document.getElementById('categoria-id').value = data ? data.id : '';
-                document.getElementById('categoria-nombre').value = data ? data.nombre : '';
-            } else if (type === 'proveedor') {
-                document.getElementById('proveedor-modal-title').textContent = data ? 'Editar Proveedor' : 'Nuevo Proveedor';
-                document.getElementById('proveedor-id').value = data ? data.id : '';
-                document.getElementById('proveedor-nombre').value = data ? data.nombre : '';
-                document.getElementById('proveedor-telefono').value = data ? data.telefono : '';
-                document.getElementById('proveedor-correo').value = data ? data.correo_contacto : '';
-            } else if (type === 'cliente') {
-                document.getElementById('cliente-modal-title').textContent = data ? 'Editar Cliente' : 'Nuevo Cliente';
-                document.getElementById('cliente-id').value = data ? data.id : '';
-                document.getElementById('cliente-nombre').value = data ? data.nombre : '';
-            } else if (type === 'vendedor') {
-                document.getElementById('vendedor-modal-title').textContent = data ? 'Editar Vendedor' : 'Nuevo Vendedor';
-                document.getElementById('vendedor-id').value = data ? data.id : '';
-                document.getElementById('vendedor-nombre').value = data ? data.nombre : '';
+                if (data.categoria_id) {
+                    document.getElementById('product-categoria').value = data.categoria_id;
+                }
+            } else {
+                // MODO CREACIÓN
+                stockInput.disabled = false;
+                stockInput.style.background = '';
+                stockLabel.textContent = '(solo al crear)';
+                document.getElementById('productForm').reset();
+                document.getElementById('product-id').value = '';
+                document.getElementById('product-descripcion').value = '';
+                document.getElementById('product-stock').value = '0';
+                document.getElementById('product-costo').value = '0.00';
+                document.getElementById('product-precio').value = '0.00';
+                document.getElementById('product-clave').value = 'Auto-Generada';
             }
-        }
-
+        });
+        
+    } else if (type === 'categoria') {
+        document.getElementById('categoria-modal-title').textContent = data ? 'Editar Categoría' : 'Nueva Categoría';
+        document.getElementById('categoria-id').value = data ? data.id : '';
+        document.getElementById('categoria-nombre').value = data ? data.nombre : '';
+    } else if (type === 'proveedor') {
+        document.getElementById('proveedor-modal-title').textContent = data ? 'Editar Proveedor' : 'Nuevo Proveedor';
+        document.getElementById('proveedor-id').value = data ? data.id : '';
+        document.getElementById('proveedor-nombre').value = data ? data.nombre : '';
+        document.getElementById('proveedor-telefono').value = data ? data.telefono : '';
+        document.getElementById('proveedor-correo').value = data ? data.correo_contacto : '';
+    } else if (type === 'cliente') {
+        document.getElementById('cliente-modal-title').textContent = data ? 'Editar Cliente' : 'Nuevo Cliente';
+        document.getElementById('cliente-id').value = data ? data.id : '';
+        document.getElementById('cliente-nombre').value = data ? data.nombre : '';
+    } else if (type === 'vendedor') {
+        document.getElementById('vendedor-modal-title').textContent = data ? 'Editar Vendedor' : 'Nuevo Vendedor';
+        document.getElementById('vendedor-id').value = data ? data.id : '';
+        document.getElementById('vendedor-nombre').value = data ? data.nombre : '';
+    }
+}
         function closeModal(type) {
             document.getElementById('modal-' + type).style.display = 'none';
         }
