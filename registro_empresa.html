@@ -2,85 +2,55 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Registro de Empresa - InvenSaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
             --primary: #6366f1;
+            --primary-dark: #4f46e5;
             --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
-            --secondary: #0f172a;
             --text: #1e293b;
             --text-light: #64748b;
             --white: #ffffff;
-            --light: #f8fafc;
+            --light: #f1f5f9;
             --border: #e2e8f0;
             --success: #22c55e;
             --danger: #ef4444;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-            --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.2);
             --radius: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.15);
+            --transition: all 0.3s ease;
         }
 
         body {
             font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--light);
             padding: 20px;
-            position: relative;
-            overflow: hidden;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -30%;
-            width: 600px;
-            height: 600px;
-            background: var(--primary-gradient);
-            border-radius: 50%;
-            opacity: 0.06;
-            animation: floatBlob 8s ease-in-out infinite;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -20%;
-            width: 500px;
-            height: 500px;
-            background: var(--primary-gradient);
-            border-radius: 50%;
-            opacity: 0.04;
-            animation: floatBlob 10s ease-in-out infinite reverse;
-        }
-
-        @keyframes floatBlob {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(30px, -30px) scale(1.1); }
-        }
-
-        .register-wrapper {
+        .container {
+            max-width: 520px;
             width: 100%;
-            max-width: 480px;
             background: var(--white);
             border-radius: var(--radius);
+            padding: 40px 32px;
             box-shadow: var(--shadow-hover);
-            padding: 40px;
-            position: relative;
-            z-index: 2;
-            border: 1px solid rgba(226, 232, 240, 0.5);
-            animation: fadeInUp 0.6s ease forwards;
+            border: 1px solid var(--border);
+            animation: fadeInUp 0.5s ease;
         }
 
         @keyframes fadeInUp {
@@ -88,12 +58,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .register-header {
+        .header {
             text-align: center;
             margin-bottom: 28px;
         }
 
-        .register-header .logo {
+        .header .logo {
             display: inline-flex;
             align-items: center;
             gap: 10px;
@@ -103,7 +73,7 @@
             margin-bottom: 8px;
         }
 
-        .register-header .logo .icon {
+        .header .logo .icon {
             width: 44px;
             height: 44px;
             background: var(--primary-gradient);
@@ -115,81 +85,88 @@
             font-size: 22px;
         }
 
-        .register-header .logo .text {
+        .header .logo .text {
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .register-header .logo .text span {
-            color: var(--secondary);
-            -webkit-text-fill-color: var(--secondary);
+        .header .logo .text span {
+            color: var(--text);
+            -webkit-text-fill-color: var(--text);
         }
 
-        .register-header h2 {
-            font-size: 24px;
+        .header h2 {
+            font-size: 22px;
             font-weight: 800;
-            color: var(--secondary);
-            margin-top: 8px;
-        }
-
-        .register-header p {
-            color: var(--text-light);
-            font-size: 14px;
             margin-top: 4px;
         }
 
-        .register-header .invite-badge {
-            display: inline-block;
-            background: #dcfce7;
-            color: #16a34a;
-            padding: 4px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
+        .header p {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-top: 2px;
         }
 
-        .register-form {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+        /* Mensaje de error */
+        .error-message {
+            display: none;
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid #fecaca;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
         }
 
+        .error-message i {
+            margin-right: 8px;
+        }
+
+        /* Formulario */
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            margin-bottom: 16px;
         }
 
         .form-group label {
+            display: block;
             font-weight: 600;
             font-size: 14px;
-            color: var(--secondary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .form-group label i {
-            color: var(--primary);
-            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 4px;
         }
 
         .form-group label .required {
             color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .form-group .input-wrapper {
+            position: relative;
+        }
+
+        .form-group .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
             font-size: 16px;
         }
 
         .form-group input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px 16px 12px 44px;
             border: 2px solid var(--border);
             border-radius: 10px;
-            font-size: 15px;
             font-family: 'Inter', sans-serif;
+            font-size: 15px;
             transition: var(--transition);
             background: var(--light);
+            color: var(--text);
         }
 
         .form-group input:focus {
@@ -203,35 +180,14 @@
             color: #94a3b8;
         }
 
-        .form-group .helper {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-top: 2px;
+        .form-group input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        .message {
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            display: none;
-        }
-
-        .message.error {
-            display: block;
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fca5a5;
-        }
-
-        .message.success {
-            display: block;
-            background: #dcfce7;
-            color: #16a34a;
-            border: 1px solid #86efac;
-        }
-
-        .btn-submit {
+        /* Botón */
+        .btn-register {
+            width: 100%;
             padding: 14px;
             background: var(--primary-gradient);
             color: white;
@@ -241,183 +197,294 @@
             font-weight: 700;
             cursor: pointer;
             transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
             margin-top: 8px;
         }
 
-        .btn-submit:hover {
+        .btn-register:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.35);
         }
 
-        .btn-submit:disabled {
-            opacity: 0.7;
+        .btn-register:disabled {
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
 
-        .register-footer {
+        .btn-register .spinner {
+            display: none;
+            animation: spin 1s linear infinite;
+        }
+
+        .btn-register.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-register.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
             text-align: center;
             margin-top: 20px;
             padding-top: 16px;
             border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-light);
         }
 
-        .register-footer a {
+        .footer a {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
-            font-size: 14px;
+            transition: var(--transition);
         }
 
-        .register-footer a:hover {
+        .footer a:hover {
+            color: var(--primary-dark);
             text-decoration: underline;
         }
 
+        /* 🔥 RESPONSIVE */
         @media (max-width: 480px) {
-            .register-wrapper { padding: 24px 20px; }
-            .register-header .logo { font-size: 24px; }
-            .register-header h2 { font-size: 20px; }
+            body {
+                padding: 12px;
+                align-items: flex-start;
+                padding-top: 30px;
+            }
+
+            .container {
+                padding: 24px 18px;
+                border-radius: 12px;
+            }
+
+            .header .logo {
+                font-size: 22px;
+            }
+
+            .header .logo .icon {
+                width: 38px;
+                height: 38px;
+                font-size: 18px;
+            }
+
+            .header h2 {
+                font-size: 20px;
+            }
+
+            .form-group input {
+                padding: 10px 14px 10px 38px;
+                font-size: 14px;
+            }
+
+            .form-group .input-wrapper i {
+                left: 12px;
+                font-size: 14px;
+            }
+
+            .btn-register {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .footer {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .container {
+                padding: 18px 14px;
+            }
+
+            .header h2 {
+                font-size: 18px;
+            }
+
+            .form-group input {
+                font-size: 13px;
+                padding: 8px 12px 8px 34px;
+            }
+        }
+
+        /* Scroll suave para toda la página */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Para dispositivos táctiles, mejorar el tamaño de los inputs */
+        input {
+            font-size: 16px !important; /* Evita zoom en iOS */
+        }
+
+        /* Ocultar flechas de input number */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
         }
     </style>
 </head>
 <body>
 
-    <div class="register-wrapper">
-        <div class="register-header">
-            <div class="logo">
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <a href="index.html" class="logo">
                 <div class="icon"><i class="fas fa-cubes"></i></div>
                 <div class="text">Inven<span>SaaS</span></div>
-            </div>
-            <h2>Registro de Empresa</h2>
-            <p>Completa tus datos para crear tu cuenta</p>
-            <span class="invite-badge"><i class="fas fa-envelope"></i> Invitación</span>
+            </a>
+            <h2>Registrar Nueva Empresa</h2>
+            <p>Completa el formulario para crear tu cuenta</p>
         </div>
 
-        <div id="message" class="message"></div>
+        <!-- MENSAJE DE ERROR -->
+        <div id="mensaje-error" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            No se encontró un enlace de invitación válido. Contacta al administrador.
+        </div>
 
-        <form class="register-form" id="registerForm">
+        <!-- FORMULARIO -->
+        <form id="registroForm" novalidate>
+            <!-- 🔥 CAMPO OCULTO PARA EL TOKEN (IMPORTANTE) -->
+            <input type="hidden" id="token_invitacion" name="token_invitacion">
+
             <div class="form-group">
-                <label><i class="fas fa-building"></i> ID de Puesto/Empresa <span class="required">*</span></label>
-                <input type="text" id="tenant_id" placeholder="ej: miempresa" required>
-                <div class="helper">Sin espacios, solo letras y números</div>
+                <label for="tenant_id">ID de Puesto/Empresa <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-building"></i>
+                    <input type="text" id="tenant_id" placeholder="ej: miempresa" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-store"></i> Nombre de la Empresa <span class="required">*</span></label>
-                <input type="text" id="nombre_empresa" placeholder="Mi Empresa S.A." required>
+                <label for="nombre_empresa">Nombre de la Empresa <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-store"></i>
+                    <input type="text" id="nombre_empresa" placeholder="Nombre completo de la empresa" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-user"></i> Nombre del Administrador <span class="required">*</span></label>
-                <input type="text" id="nombre_admin" placeholder="Nombre completo" required>
+                <label for="nombre_admin">Nombre del Administrador <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="nombre_admin" placeholder="Nombre completo del administrador" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-envelope"></i> Correo Electrónico <span class="required">*</span></label>
-                <input type="email" id="correo_electronico" placeholder="admin@empresa.com" required>
-                <div class="helper">Solo dominios: @gmail.com, @outlook.com, @yahoo.com, @icloud.com</div>
+                <label for="correo_admin">Correo Electrónico <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="correo_admin" placeholder="admin@empresa.com" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-lock"></i> Contraseña <span class="required">*</span></label>
-                <input type="password" id="password" placeholder="Mínimo 6 caracteres" required minlength="6">
-                <div class="helper">Mínimo 6 caracteres</div>
+                <label for="password_admin">Contraseña <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password_admin" placeholder="Mínimo 6 caracteres" required minlength="6">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label><i class="fas fa-check-circle"></i> Confirmar Contraseña <span class="required">*</span></label>
-                <input type="password" id="confirm_password" placeholder="Repite tu contraseña" required>
-            </div>
-
-            <button type="submit" class="btn-submit" id="registerButton">
-                <i class="fas fa-user-plus"></i> Registrar Empresa
+            <button type="submit" class="btn-register" id="btn-registrar">
+                <span class="btn-text"><i class="fas fa-rocket"></i> Registrar Empresa</span>
+                <span class="spinner"><i class="fas fa-spinner"></i></span>
             </button>
         </form>
 
-        <div class="register-footer">
-            <a href="login.html"><i class="fas fa-arrow-left"></i> Volver al Login</a>
+        <!-- FOOTER -->
+        <div class="footer">
+            ¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // REGISTRO DE EMPRESA
-        // ============================================
+       
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
 
-        const form = document.getElementById('registerForm');
-        const message = document.getElementById('message');
-        const btn = document.getElementById('registerButton');
+            console.log('🔍 URL actual:', window.location.href);
+            console.log('🔍 Token en URL:', token);
 
-        // ✅ Validar dominios de correo
-        const emailRegex = /^[^\s@]+@(gmail\.com|outlook\.com|yahoo\.com|icloud\.com)$/i;
+            if (token) {
+                document.getElementById('token_invitacion').value = token;
+                console.log('✅ Token de invitación capturado:', token);
+            } else {
+                document.getElementById('mensaje-error').style.display = 'block';
+                const btn = document.getElementById('btn-registrar');
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.querySelector('.btn-text').textContent = '❌ Enlace inválido';
+            }
+        });
 
-        form.addEventListener('submit', async (e) => {
+        
+        document.getElementById('registroForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            message.className = 'message';
-            message.style.display = 'none';
 
-            // Obtener datos
-            const tenant_id = document.getElementById('tenant_id').value.trim();
-            const nombre_empresa = document.getElementById('nombre_empresa').value.trim();
-            const nombre_admin = document.getElementById('nombre_admin').value.trim();
-            const correo_electronico = document.getElementById('correo_electronico').value.trim();
-            const password = document.getElementById('password').value;
-            const confirm_password = document.getElementById('confirm_password').value;
+            const token = document.getElementById('token_invitacion').value;
 
-            // ✅ Validaciones
-            if (tenant_id.toLowerCase() === 'super_admin') {
-                showMessage('❌ El Tenant ID "super_admin" está reservado.', 'error');
+            // Validar token
+            if (!token) {
+                alert('⚠️ No se encontró un enlace de invitación válido.');
                 return;
             }
 
-            if (!emailRegex.test(correo_electronico)) {
-                showMessage('❌ Correo inválido. Solo se permiten: @gmail.com, @outlook.com, @yahoo.com, @icloud.com', 'error');
+            const data = {
+                tenant_id: document.getElementById('tenant_id').value.trim(),
+                nombre_empresa: document.getElementById('nombre_empresa').value.trim(),
+                nombre_admin: document.getElementById('nombre_admin').value.trim(),
+                correo_electronico: document.getElementById('correo_admin').value.trim(),
+                password: document.getElementById('password_admin').value,
+                forzar_cambio_pw: true,
+                token: token
+            };
+
+            if (!data.tenant_id || !data.nombre_empresa || !data.nombre_admin || !data.correo_electronico || !data.password) {
+                alert('⚠️ Todos los campos son obligatorios.');
                 return;
             }
 
-            if (password.length < 6) {
-                showMessage('❌ La contraseña debe tener al menos 6 caracteres.', 'error');
+            if (data.password.length < 6) {
+                alert('⚠️ La contraseña debe tener al menos 6 caracteres.');
                 return;
             }
 
-            if (password !== confirm_password) {
-                showMessage('❌ Las contraseñas no coinciden.', 'error');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(data.correo_electronico)) {
+                alert('⚠️ Ingresa un correo electrónico válido.');
                 return;
             }
 
-            // ✅ Verificar que el Tenant ID no exista
-            try {
-                const checkResponse = await fetch(`${API_URL}/check-tenant/${tenant_id}`);
-                const checkResult = await checkResponse.json();
-
-                if (checkResult.exists) {
-                    showMessage(`❌ El Tenant ID "${tenant_id}" ya está en uso.`, 'error');
-                    return;
-                }
-            } catch (error) {
-                showMessage('❌ Error al verificar disponibilidad.', 'error');
+            if (data.tenant_id.toLowerCase() === 'super_admin') {
+                alert('❌ El Tenant ID "super_admin" está reservado.');
                 return;
             }
 
-            // ✅ Enviar registro
+            console.log('📦 Datos a enviar:', data);
+
+            const btn = document.getElementById('btn-registrar');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+            btn.classList.add('loading');
 
             try {
-                const data = {
-                    tenant_id,
-                    nombre_empresa,
-                    nombre_admin,
-                    correo_electronico,
-                    password,
-                    forzar_cambio_pw: false
-                };
-
                 const response = await fetch(`${API_URL}/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -427,29 +494,24 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    showMessage(`✅ ¡Empresa "${nombre_empresa}" registrada exitosamente!`, 'success');
-                    
-                    // Mostrar credenciales
-                    setTimeout(() => {
-                        alert(`✅ ¡Registro exitoso!\n\nTenant ID: ${tenant_id}\nCorreo: ${correo_electronico}\n\nAhora puedes iniciar sesión.`);
-                        window.location.href = `login.html?tenant=${tenant_id}`;
-                    }, 1500);
+                    alert(`✅ ¡Empresa "${data.nombre_empresa}" registrada exitosamente!\n\nAhora puedes iniciar sesión.`);
+                    window.location.href = 'login.html?tenant=' + data.tenant_id;
                 } else {
-                    showMessage('❌ Error: ' + (result.message || 'Error desconocido.'), 'error');
+                    alert('❌ Error: ' + (result.message || 'Error desconocido.'));
                 }
             } catch (error) {
-                showMessage('❌ Error de conexión con el servidor.', 'error');
+                console.error('Error:', error);
+                alert('❌ Error de conexión con el servidor.');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-user-plus"></i> Registrar Empresa';
+                btn.classList.remove('loading');
             }
         });
 
-        function showMessage(text, type) {
-            message.textContent = text;
-            message.className = 'message ' + type;
-            message.style.display = 'block';
-        }
+        
+        window.onclick = function(event) {
+        };
     </script>
+
 </body>
 </html>

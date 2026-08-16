@@ -546,9 +546,9 @@
             <input type="number" id="dias-validez" value="7" min="1" max="30" 
                    style="width: 80px; padding: 8px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px;">
         </div>
-        <button onclick="generarEnlaceInvitacion()" class="btn btn-primary" style="padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; cursor: pointer; margin-top: 18px;">
-            <i class="fas fa-link"></i> Generar Enlace
-        </button>
+        <button onclick="generarInvitacion()" class="btn btn-primary" style="padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; cursor: pointer; margin-top: 18px;">
+    <i class="fas fa-link"></i> Generar Enlace
+</button>
     </div>
     <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
         <input type="text" id="inviteLink" style="flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; min-width: 200px; background: white;" placeholder="El enlace aparecerá aquí..." readonly>
@@ -952,6 +952,7 @@ function copiarEnlace() {
                 return;
             }
             loadEmpresas();
+            cargarInvitaciones();
         });
 
         // Cerrar modal al hacer click fuera
@@ -979,7 +980,7 @@ async function generarInvitacion() {
         if (response.ok && result.success) {
             document.getElementById('inviteLink').value = result.enlace;
             alert(`✅ Enlace generado correctamente.\n\nExpira en ${dias} días.\n\nComparte este enlace con la empresa que quieras invitar.`);
-            cargarInvitaciones(); // Recargar lista
+            cargarInvitaciones();
         } else {
             alert('❌ Error: ' + (result.message || 'Error desconocido.'));
         }
