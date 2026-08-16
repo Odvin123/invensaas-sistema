@@ -530,21 +530,33 @@
         </div>
     </header>
 <!-- En el dashboard-menu o donde quieras -->
+<!-- ============================================
+    INVITAR NUEVA EMPRESA (CON TOKENS)
+============================================ -->
 <div class="invite-section" style="background: #f0f7ff; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #dbeafe;">
     <h3 style="color: #1e293b; margin-bottom: 8px;">
         <i class="fas fa-envelope" style="color: #6366f1;"></i> Invitar Nueva Empresa
     </h3>
     <p style="color: #64748b; font-size: 14px; margin-bottom: 12px;">
-        Genera un enlace para que una empresa se registre automáticamente.
+        Genera un enlace único de un solo uso para registrar una nueva empresa.
     </p>
-    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <button onclick="generarEnlaceInvitacion()" class="btn btn-primary" style="padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; cursor: pointer;">
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <div style="flex: 0 0 auto;">
+            <label style="font-size: 12px; font-weight: 600; color: #64748b; display: block; margin-bottom: 2px;">Días de validez:</label>
+            <input type="number" id="dias-validez" value="7" min="1" max="30" 
+                   style="width: 80px; padding: 8px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px;">
+        </div>
+        <button onclick="generarInvitacion()" class="btn btn-primary" style="padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; cursor: pointer; margin-top: 18px;">
             <i class="fas fa-link"></i> Generar Enlace
         </button>
-        <input type="text" id="inviteLink" style="flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; min-width: 200px;" placeholder="El enlace aparecerá aquí..." readonly>
+    </div>
+    <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <input type="text" id="inviteLink" style="flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; min-width: 200px; background: white;" placeholder="El enlace aparecerá aquí..." readonly>
         <button onclick="copiarEnlace()" class="btn btn-success" style="padding: 10px 20px; border: none; border-radius: 8px; background: #22c55e; color: white; font-weight: 600; cursor: pointer;">
             <i class="fas fa-copy"></i> Copiar
         </button>
+    </div>
+    <div id="invitaciones-lista" style="margin-top: 16px; max-height: 200px; overflow-y: auto; font-size: 13px;">
     </div>
 </div>
     <!-- ============================================
@@ -948,6 +960,80 @@ function copiarEnlace() {
                 closeCreateModal();
             }
         };
+
+async function generarInvitacion() {
+    const dias = document.getElementById('dias-validez')?.value || 7;
+    
+    try {
+        const response = await fetch(`${API_URL}/invitaciones/generar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ dias_validez: parseInt(dias) })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            document.getElementById('inviteLink').value = result.enlace;
+            alert(`✅ Enlace generado correctamente.\n\nExpira en ${dias} días.\n\nComparte este enlace con la empresa que quieras invitar.`);
+            cargarInvitaciones(); // Recargar lista
+        } else {
+            alert('❌ Error: ' + (result.message || 'Error desconocido.'));
+        }
+    } catch (error) {
+        alert('❌ Error de conexión.');
+        console.error('Error:', error);
+    }
+}
+
+async function cargarInvitaciones() {
+    try {
+        const response = await fetch(`${API_URL}/invitaciones`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        const container = document.getElementById('invitaciones-lista');
+        if (!container) return;
+        
+        if (data.success && data.invitaciones && data.invitaciones.length > 0) {
+            let html = `<table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:8px;">
+                <thead>
+                    <tr style="background:#f1f5f9;">
+                        <th style="padding:6px 8px; text-align:left;">Token</th>
+                        <th style="padding:6px 8px; text-align:left;">Creado</th>
+                        <th style="padding:6px 8px; text-align:left;">Expira</th>
+                        <th style="padding:6px 8px; text-align:center;">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            data.invitaciones.slice(0, 10).forEach(inv => {
+                const expirado = new Date(inv.fecha_expiracion) < new Date();
+                const estado = inv.usado ? '✅ Usado' : (expirado ? '❌ Expirado' : '🟢 Activo');
+                const color = inv.usado ? '#22c55e' : (expirado ? '#ef4444' : '#3b82f6');
+                html += `
+                    <tr style="border-bottom:1px solid #e2e8f0;">
+                        <td style="padding:6px 8px; font-family:monospace; font-size:10px; color:#6366f1;">${inv.token.substring(0, 12)}...</td>
+                        <td style="padding:6px 8px; font-size:12px;">${new Date(inv.fecha_creacion).toLocaleDateString()}</td>
+                        <td style="padding:6px 8px; font-size:12px;">${new Date(inv.fecha_expiracion).toLocaleDateString()}</td>
+                        <td style="padding:6px 8px; text-align:center; color:${color}; font-weight:600; font-size:11px;">${estado}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<p style="color:#94a3b8; font-size:13px; padding:8px 0;">📭 No hay invitaciones generadas.</p>';
+        }
+    } catch (error) {
+        console.error('Error al cargar invitaciones:', error);
+    }
+}
     </script>
 </body>
 </html>
