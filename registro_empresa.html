@@ -25,6 +25,7 @@
             --border: #e2e8f0;
             --success: #22c55e;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --radius: 16px;
             --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
             --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.15);
@@ -126,6 +127,24 @@
             margin-right: 8px;
         }
 
+        /* Mensaje de éxito */
+        .success-message {
+            display: none;
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid #bbf7d0;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .success-message i {
+            margin-right: 8px;
+        }
+
         /* Formulario */
         .form-group {
             margin-bottom: 16px;
@@ -155,6 +174,7 @@
             transform: translateY(-50%);
             color: var(--text-light);
             font-size: 16px;
+            z-index: 1;
         }
 
         .form-group input {
@@ -183,6 +203,26 @@
         .form-group input:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+        }
+
+        /* 🔥 BOTÓN DE MOSTRAR CONTRASEÑA */
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            transition: var(--transition);
+            z-index: 2;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
         }
 
         /* Botón */
@@ -292,6 +332,11 @@
                 font-size: 14px;
             }
 
+            .toggle-password {
+                right: 10px;
+                font-size: 16px;
+            }
+
             .btn-register {
                 padding: 12px;
                 font-size: 15px;
@@ -317,17 +362,16 @@
             }
         }
 
-        /* Scroll suave para toda la página */
+        /* Scroll suave */
         html {
             scroll-behavior: smooth;
         }
 
-        /* Para dispositivos táctiles, mejorar el tamaño de los inputs */
+        /* Evita zoom en iOS */
         input {
-            font-size: 16px !important; /* Evita zoom en iOS */
+            font-size: 16px !important;
         }
 
-        /* Ocultar flechas de input number */
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -351,15 +395,20 @@
             <p>Completa el formulario para crear tu cuenta</p>
         </div>
 
-        <!-- MENSAJE DE ERROR -->
+        <!-- MENSAJES -->
         <div id="mensaje-error" class="error-message">
             <i class="fas fa-exclamation-circle"></i>
             No se encontró un enlace de invitación válido. Contacta al administrador.
         </div>
 
+        <div id="mensaje-success" class="success-message">
+            <i class="fas fa-check-circle"></i>
+            <span id="success-text">Empresa registrada exitosamente.</span>
+        </div>
+
         <!-- FORMULARIO -->
         <form id="registroForm" novalidate>
-            <!-- 🔥 CAMPO OCULTO PARA EL TOKEN (IMPORTANTE) -->
+            <!-- 🔥 TOKEN OCULTO -->
             <input type="hidden" id="token_invitacion" name="token_invitacion">
 
             <div class="form-group">
@@ -399,6 +448,10 @@
                 <div class="input-wrapper">
                     <i class="fas fa-lock"></i>
                     <input type="password" id="password_admin" placeholder="Mínimo 6 caracteres" required minlength="6">
+                    <!-- 🔥 BOTÓN DE MOSTRAR CONTRASEÑA -->
+                    <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
             </div>
 
@@ -415,7 +468,27 @@
     </div>
 
     <script>
-       
+        // ============================================
+        // MOSTRAR/OCULTAR CONTRASEÑA
+        // ============================================
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password_admin');
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                this.setAttribute('aria-label', 'Ocultar contraseña');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                this.setAttribute('aria-label', 'Mostrar contraseña');
+            }
+        });
+
+    
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
@@ -435,13 +508,14 @@
             }
         });
 
-        
+        // ============================================
+        // REGISTRAR EMPRESA
+        // ============================================
         document.getElementById('registroForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const token = document.getElementById('token_invitacion').value;
 
-            // Validar token
             if (!token) {
                 alert('⚠️ No se encontró un enlace de invitación válido.');
                 return;
@@ -453,10 +527,11 @@
                 nombre_admin: document.getElementById('nombre_admin').value.trim(),
                 correo_electronico: document.getElementById('correo_admin').value.trim(),
                 password: document.getElementById('password_admin').value,
-                forzar_cambio_pw: true,
+                forzar_cambio_pw: false, 
                 token: token
             };
 
+            // Validaciones
             if (!data.tenant_id || !data.nombre_empresa || !data.nombre_admin || !data.correo_electronico || !data.password) {
                 alert('⚠️ Todos los campos son obligatorios.');
                 return;
@@ -494,10 +569,31 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    alert(`✅ ¡Empresa "${data.nombre_empresa}" registrada exitosamente!\n\nAhora puedes iniciar sesión.`);
-                    window.location.href = 'login.html?tenant=' + data.tenant_id;
+                    // Mostrar mensaje de éxito
+                    document.getElementById('mensaje-success').style.display = 'block';
+                    document.getElementById('success-text').textContent =
+                        `✅ ¡Empresa "${data.nombre_empresa}" registrada exitosamente! Serás redirigido al login.`;
+
+                    // Deshabilitar el botón
+                    btn.disabled = true;
+                    btn.querySelector('.btn-text').textContent = '✅ Registrado';
+
+                    // Redirigir al login después de 3 segundos
+                    setTimeout(() => {
+                        window.location.href = 'login.html?tenant=' + encodeURIComponent(data.tenant_id);
+                    }, 3000);
+
                 } else {
-                    alert('❌ Error: ' + (result.message || 'Error desconocido.'));
+                    // 🔥 MANEJAR ERRORES DE DUPLICADOS
+                    let mensajeError = result.message || 'Error desconocido.';
+
+                    if (mensajeError.includes('tenant_id')) {
+                        mensajeError = '❌ El ID de Puesto/Empresa ya está en uso. Por favor, elige otro.';
+                    } else if (mensajeError.includes('correo_electronico') || mensajeError.includes('email')) {
+                        mensajeError = '❌ El correo electrónico ya está registrado. Por favor, usa otro.';
+                    }
+
+                    alert('❌ Error: ' + mensajeError);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -508,9 +604,13 @@
             }
         });
 
-        
-        window.onclick = function(event) {
-        };
+      
+        document.querySelectorAll('#registroForm input').forEach(input => {
+            input.addEventListener('input', function() {
+                document.getElementById('mensaje-error').style.display = 'none';
+                document.getElementById('mensaje-success').style.display = 'none';
+            });
+        });
     </script>
 
 </body>
