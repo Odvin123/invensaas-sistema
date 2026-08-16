@@ -109,7 +109,6 @@
             margin-top: 2px;
         }
 
-        /* Mensaje de error */
         .error-message {
             display: none;
             background: #fee2e2;
@@ -127,7 +126,6 @@
             margin-right: 8px;
         }
 
-        /* Mensaje de éxito */
         .success-message {
             display: none;
             background: #dcfce7;
@@ -145,7 +143,6 @@
             margin-right: 8px;
         }
 
-        /* Formulario */
         .form-group {
             margin-bottom: 16px;
         }
@@ -205,7 +202,44 @@
             cursor: not-allowed;
         }
 
-        /* 🔥 BOTÓN DE MOSTRAR CONTRASEÑA */
+        .validation-message {
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 4px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .validation-message.error {
+            display: flex;
+            color: #dc2626;
+        }
+
+        .validation-message.success {
+            display: flex;
+            color: #16a34a;
+        }
+
+        .validation-message i {
+            font-size: 14px;
+        }
+
+        .input-error {
+            border-color: #dc2626 !important;
+            background: #fef2f2 !important;
+        }
+
+        .input-error:focus {
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1) !important;
+        }
+
+        .input-success {
+            border-color: #16a34a !important;
+            background: #f0fdf4 !important;
+        }
+
         .toggle-password {
             position: absolute;
             right: 14px;
@@ -295,7 +329,7 @@
             text-decoration: underline;
         }
 
-        /* 🔥 RESPONSIVE */
+        /* RESPONSIVE */
         @media (max-width: 480px) {
             body {
                 padding: 12px;
@@ -362,12 +396,10 @@
             }
         }
 
-        /* Scroll suave */
         html {
             scroll-behavior: smooth;
         }
 
-        /* Evita zoom en iOS */
         input {
             font-size: 16px !important;
         }
@@ -408,17 +440,22 @@
 
         <!-- FORMULARIO -->
         <form id="registroForm" novalidate>
-            <!-- 🔥 TOKEN OCULTO -->
             <input type="hidden" id="token_invitacion" name="token_invitacion">
 
+            <!-- Tenant ID -->
             <div class="form-group">
                 <label for="tenant_id">ID de Puesto/Empresa <span class="required">*</span></label>
                 <div class="input-wrapper">
                     <i class="fas fa-building"></i>
                     <input type="text" id="tenant_id" placeholder="ej: miempresa" required>
                 </div>
+                <div id="tenant-validation" class="validation-message">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="tenant-message">Disponible</span>
+                </div>
             </div>
 
+            <!-- Nombre Empresa -->
             <div class="form-group">
                 <label for="nombre_empresa">Nombre de la Empresa <span class="required">*</span></label>
                 <div class="input-wrapper">
@@ -427,6 +464,7 @@
                 </div>
             </div>
 
+            <!-- Nombre Admin -->
             <div class="form-group">
                 <label for="nombre_admin">Nombre del Administrador <span class="required">*</span></label>
                 <div class="input-wrapper">
@@ -435,20 +473,25 @@
                 </div>
             </div>
 
+            <!-- Correo -->
             <div class="form-group">
                 <label for="correo_admin">Correo Electrónico <span class="required">*</span></label>
                 <div class="input-wrapper">
                     <i class="fas fa-envelope"></i>
                     <input type="email" id="correo_admin" placeholder="admin@empresa.com" required>
                 </div>
+                <div id="email-validation" class="validation-message">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="email-message">Disponible</span>
+                </div>
             </div>
 
+            <!-- Contraseña -->
             <div class="form-group">
                 <label for="password_admin">Contraseña <span class="required">*</span></label>
                 <div class="input-wrapper">
                     <i class="fas fa-lock"></i>
                     <input type="password" id="password_admin" placeholder="Mínimo 6 caracteres" required minlength="6">
-                    <!-- 🔥 BOTÓN DE MOSTRAR CONTRASEÑA -->
                     <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
                         <i class="fas fa-eye"></i>
                     </button>
@@ -468,9 +511,7 @@
     </div>
 
     <script>
-        // ============================================
-        // MOSTRAR/OCULTAR CONTRASEÑA
-        // ============================================
+        
         document.getElementById('togglePassword').addEventListener('click', function() {
             const passwordInput = document.getElementById('password_admin');
             const icon = this.querySelector('i');
@@ -488,7 +529,7 @@
             }
         });
 
-    
+  
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
@@ -508,9 +549,89 @@
             }
         });
 
-        // ============================================
-        // REGISTRAR EMPRESA
-        // ============================================
+        const tenantInput = document.getElementById('tenant_id');
+        const emailInput = document.getElementById('correo_admin');
+        const tenantValidation = document.getElementById('tenant-validation');
+        const emailValidation = document.getElementById('email-validation');
+        const tenantMessage = document.getElementById('tenant-message');
+        const emailMessage = document.getElementById('email-message');
+
+        let tenantTimeout = null;
+        let emailTimeout = null;
+
+        tenantInput.addEventListener('input', function() {
+            const value = this.value.trim();
+            
+            if (value.length < 2) {
+                tenantValidation.className = 'validation-message';
+                this.classList.remove('input-error', 'input-success');
+                return;
+            }
+
+            clearTimeout(tenantTimeout);
+            tenantTimeout = setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_URL}/check-tenant/${encodeURIComponent(value)}`);
+                    const result = await response.json();
+
+                    if (result.exists) {
+                        tenantValidation.className = 'validation-message error';
+                        tenantMessage.textContent = '❌ Este Tenant ID ya está en uso. Elige otro.';
+                        tenantInput.classList.add('input-error');
+                        tenantInput.classList.remove('input-success');
+                    } else {
+                        tenantValidation.className = 'validation-message success';
+                        tenantMessage.textContent = '✅ Disponible';
+                        tenantInput.classList.add('input-success');
+                        tenantInput.classList.remove('input-error');
+                    }
+                } catch (error) {
+                    console.error('Error validando tenant:', error);
+                }
+            }, 500);
+        });
+
+        emailInput.addEventListener('input', function() {
+            const value = this.value.trim();
+            
+            if (value.length < 3 || !value.includes('@')) {
+                emailValidation.className = 'validation-message';
+                this.classList.remove('input-error', 'input-success');
+                return;
+            }
+
+            clearTimeout(emailTimeout);
+            emailTimeout = setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_URL}/check-email/${encodeURIComponent(value)}`);
+                    const result = await response.json();
+
+                    if (result.exists) {
+                        emailValidation.className = 'validation-message error';
+                        emailMessage.textContent = '❌ Este correo ya está registrado. Usa otro.';
+                        emailInput.classList.add('input-error');
+                        emailInput.classList.remove('input-success');
+                    } else {
+                        emailValidation.className = 'validation-message success';
+                        emailMessage.textContent = '✅ Disponible';
+                        emailInput.classList.add('input-success');
+                        emailInput.classList.remove('input-error');
+                    }
+                } catch (error) {
+                    console.error('Error validando email:', error);
+                }
+            }, 500);
+        });
+
+        tenantInput.addEventListener('focus', function() {
+            this.select();
+        });
+
+        emailInput.addEventListener('focus', function() {
+            this.select();
+        });
+
+        
         document.getElementById('registroForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -521,17 +642,21 @@
                 return;
             }
 
+            if (tenantInput.classList.contains('input-error') || emailInput.classList.contains('input-error')) {
+                alert('⚠️ Corrige los campos marcados en rojo antes de registrar.');
+                return;
+            }
+
             const data = {
-                tenant_id: document.getElementById('tenant_id').value.trim(),
+                tenant_id: tenantInput.value.trim(),
                 nombre_empresa: document.getElementById('nombre_empresa').value.trim(),
                 nombre_admin: document.getElementById('nombre_admin').value.trim(),
-                correo_electronico: document.getElementById('correo_admin').value.trim(),
+                correo_electronico: emailInput.value.trim(),
                 password: document.getElementById('password_admin').value,
-                forzar_cambio_pw: false, 
+                forzar_cambio_pw: false,
                 token: token
             };
 
-            // Validaciones
             if (!data.tenant_id || !data.nombre_empresa || !data.nombre_admin || !data.correo_electronico || !data.password) {
                 alert('⚠️ Todos los campos son obligatorios.');
                 return;
@@ -569,30 +694,19 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    // Mostrar mensaje de éxito
                     document.getElementById('mensaje-success').style.display = 'block';
                     document.getElementById('success-text').textContent =
                         `✅ ¡Empresa "${data.nombre_empresa}" registrada exitosamente! Serás redirigido al login.`;
 
-                    // Deshabilitar el botón
                     btn.disabled = true;
                     btn.querySelector('.btn-text').textContent = '✅ Registrado';
 
-                    // Redirigir al login después de 3 segundos
                     setTimeout(() => {
                         window.location.href = 'login.html?tenant=' + encodeURIComponent(data.tenant_id);
                     }, 3000);
 
                 } else {
-                    // 🔥 MANEJAR ERRORES DE DUPLICADOS
                     let mensajeError = result.message || 'Error desconocido.';
-
-                    if (mensajeError.includes('tenant_id')) {
-                        mensajeError = '❌ El ID de Puesto/Empresa ya está en uso. Por favor, elige otro.';
-                    } else if (mensajeError.includes('correo_electronico') || mensajeError.includes('email')) {
-                        mensajeError = '❌ El correo electrónico ya está registrado. Por favor, usa otro.';
-                    }
-
                     alert('❌ Error: ' + mensajeError);
                 }
             } catch (error) {
@@ -604,7 +718,7 @@
             }
         });
 
-      
+        
         document.querySelectorAll('#registroForm input').forEach(input => {
             input.addEventListener('input', function() {
                 document.getElementById('mensaje-error').style.display = 'none';
@@ -612,6 +726,5 @@
             });
         });
     </script>
-
 </body>
 </html>
