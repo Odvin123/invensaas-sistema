@@ -1222,7 +1222,7 @@ VIEW: REPORTES
         // ============================================
         // MODALES
         // ============================================
-    function openModal(type, data = null) {
+   function openModal(type, data = null) {
     document.getElementById('modal-' + type).style.display = 'block';
     
     if (type === 'product') {
@@ -1231,53 +1231,43 @@ VIEW: REPORTES
         const stockInput = document.getElementById('product-stock');
         const stockLabel = document.getElementById('stock-label');
 
-        // 🔥 PRIMERO: Establecer los valores del producto (antes de cargar selects)
-        if (data) {
-            // MODO EDICIÓN - Cargar TODOS los datos primero
-            stockInput.disabled = true;
-            stockInput.style.background = '#f1f5f9';
-            stockLabel.textContent = '(no editable, usa Entrada)';
+        // 🔥 PRIMERO: Cargar los selects (proveedores y categorías)
+        // y DESPUÉS llenar los datos del producto
+        cargarSelectsProducto().then(() => {
+            if (data) {
+                // MODO EDICIÓN
+                stockInput.disabled = true;
+                stockInput.style.background = '#f1f5f9';
+                stockLabel.textContent = '(no editable, usa Entrada)';
 
-            document.getElementById('product-id').value = data.id;
-            
-            // 🔥 FORZAR la carga de descripción y otros campos
-            const descTextarea = document.getElementById('product-descripcion');
-            descTextarea.value = data.descripcion || '';
-            
-            document.getElementById('product-stock').value = formatStock(data.stock);
-            document.getElementById('product-costo').value = parseFloat(data.costo).toFixed(2);
-            document.getElementById('product-precio').value = parseFloat(data.precio).toFixed(2);
-            document.getElementById('product-clave').value = data.id;
+                document.getElementById('product-id').value = data.id;
+                document.getElementById('product-descripcion').value = data.descripcion || '';
+                document.getElementById('product-stock').value = formatStock(data.stock);
+                document.getElementById('product-costo').value = parseFloat(data.costo).toFixed(2);
+                document.getElementById('product-precio').value = parseFloat(data.precio).toFixed(2);
+                document.getElementById('product-clave').value = data.id;
 
-            // 🔥 Guardar los IDs para seleccionarlos después
-            const proveedorId = data.proveedor_id;
-            const categoriaId = data.categoria_id;
-
-            // 🔥 Cargar selects y luego seleccionar los valores
-            loadProductFormData().then(() => {
-                if (proveedorId) {
-                    document.getElementById('product-proveedor').value = proveedorId;
+                // 🔥 Seleccionar proveedor y categoría
+                if (data.proveedor_id) {
+                    document.getElementById('product-proveedor').value = data.proveedor_id;
                 }
-                if (categoriaId) {
-                    document.getElementById('product-categoria').value = categoriaId;
+                if (data.categoria_id) {
+                    document.getElementById('product-categoria').value = data.categoria_id;
                 }
-            });
-
-        } else {
-            // MODO CREACIÓN
-            stockInput.disabled = false;
-            stockInput.style.background = '';
-            stockLabel.textContent = '(solo al crear)';
-            document.getElementById('productForm').reset();
-            document.getElementById('product-id').value = '';
-            document.getElementById('product-descripcion').value = '';
-            document.getElementById('product-stock').value = '0';
-            document.getElementById('product-costo').value = '0.00';
-            document.getElementById('product-precio').value = '0.00';
-            document.getElementById('product-clave').value = 'Auto-Generada';
-            
-            loadProductFormData();
-        }
+            } else {
+                // MODO CREACIÓN
+                stockInput.disabled = false;
+                stockInput.style.background = '';
+                stockLabel.textContent = '(solo al crear)';
+                document.getElementById('productForm').reset();
+                document.getElementById('product-id').value = '';
+                document.getElementById('product-descripcion').value = '';
+                document.getElementById('product-stock').value = '0';
+                document.getElementById('product-costo').value = '0.00';
+                document.getElementById('product-precio').value = '0.00';
+                document.getElementById('product-clave').value = 'Auto-Generada';
+            }
+        });
         
     } else if (type === 'categoria') {
         document.getElementById('categoria-modal-title').textContent = data ? 'Editar Categoría' : 'Nueva Categoría';
@@ -1300,6 +1290,7 @@ VIEW: REPORTES
     }
 }
 
+
         function closeModal(type) {
             document.getElementById('modal-' + type).style.display = 'none';
         }
@@ -1319,15 +1310,8 @@ VIEW: REPORTES
             await loadProveedores(false);
         }
 
-       async function loadProductFormData() {
+        async function cargarSelectsProducto() {
     try {
-        // 🔥 Guardar los valores actuales antes de recargar
-        const currentProveedor = document.getElementById('product-proveedor').value;
-        const currentCategoria = document.getElementById('product-categoria').value;
-        const currentDescripcion = document.getElementById('product-descripcion').value;
-        const currentCosto = document.getElementById('product-costo').value;
-        const currentPrecio = document.getElementById('product-precio').value;
-
         const [provResp, catResp] = await Promise.all([
             fetch(`${API_URL}/admin/proveedores`, { headers: { 'Authorization': `Bearer ${token}` } }),
             fetch(`${API_URL}/admin/categorias`, { headers: { 'Authorization': `Bearer ${token}` } })
@@ -1351,17 +1335,15 @@ VIEW: REPORTES
                 catSelect.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
             });
         }
-
-        // 🔥 RESTAURAR los valores guardados (si hay)
-        if (currentProveedor) provSelect.value = currentProveedor;
-        if (currentCategoria) catSelect.value = currentCategoria;
-        if (currentDescripcion) document.getElementById('product-descripcion').value = currentDescripcion;
-        if (currentCosto) document.getElementById('product-costo').value = currentCosto;
-        if (currentPrecio) document.getElementById('product-precio').value = currentPrecio;
-
     } catch (e) { 
-        console.error('Error loading form data:', e); 
+        console.error('Error cargando selects:', e); 
     }
+}
+
+
+       async function loadProductFormData() {
+      await cargarSelectsProducto();
+
 }
 
         // ============================================
