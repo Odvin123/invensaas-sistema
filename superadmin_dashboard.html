@@ -529,30 +529,24 @@
             </a>
         </div>
     </header>
-
-    <!-- ============================================
-    INVITE SECTION
-    ============================================ -->
-    <div class="dashboard">
-        <div class="invite-section" style="background: #f0f7ff; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #dbeafe;">
-            <h3 style="color: #1e293b; margin-bottom: 8px;">
-                <i class="fas fa-envelope" style="color: #6366f1;"></i> Invitar Nueva Empresa
-            </h3>
-            <p style="color: #64748b; font-size: 14px; margin-bottom: 12px;">
-                Genera un enlace para que una empresa se registre automáticamente.
-            </p>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                <button onclick="generarEnlaceInvitacion()" class="btn btn-primary" style="padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; cursor: pointer;">
-                    <i class="fas fa-link"></i> Generar Enlace
-                </button>
-                <input type="text" id="inviteLink" style="flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; min-width: 200px;" placeholder="El enlace aparecerá aquí..." readonly>
-                <button onclick="copiarEnlace()" class="btn btn-success" style="padding: 10px 20px; border: none; border-radius: 8px; background: #22c55e; color: white; font-weight: 600; cursor: pointer;">
-                    <i class="fas fa-copy"></i> Copiar
-                </button>
-            </div>
-        </div>
+<!-- En el dashboard-menu o donde quieras -->
+<div class="invite-section" style="background: #f0f7ff; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #dbeafe;">
+    <h3 style="color: #1e293b; margin-bottom: 8px;">
+        <i class="fas fa-envelope" style="color: #6366f1;"></i> Invitar Nueva Empresa
+    </h3>
+    <p style="color: #64748b; font-size: 14px; margin-bottom: 12px;">
+        Genera un enlace para que una empresa se registre automáticamente.
+    </p>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button onclick="generarEnlaceInvitacion()" class="btn btn-primary" style="padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; cursor: pointer;">
+            <i class="fas fa-link"></i> Generar Enlace
+        </button>
+        <input type="text" id="inviteLink" style="flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; min-width: 200px;" placeholder="El enlace aparecerá aquí..." readonly>
+        <button onclick="copiarEnlace()" class="btn btn-success" style="padding: 10px 20px; border: none; border-radius: 8px; background: #22c55e; color: white; font-weight: 600; cursor: pointer;">
+            <i class="fas fa-copy"></i> Copiar
+        </button>
     </div>
-
+</div>
     <!-- ============================================
     DASHBOARD
     ============================================ -->
@@ -653,28 +647,27 @@
         </div>
     </div>
 
+    
     <script>
-        // ============================================
-        // CONFIGURACIÓN
-        // ============================================
-        const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
+       
+        const API_URL_EMPRESAS = API_URL + '/admin/empresas';
+        const API_URL_REGISTER = API_URL + '/register';
+        const API_URL_ADMIN_RESET = API_URL + '/admin/reset-pw';
+        const API_URL_CHECK_TENANT = API_URL + '/check-tenant/';
         let token = localStorage.getItem('token');
         let empresasCache = [];
 
         // ============================================
-        // LOGOUT
+        // FUNCIONES PRINCIPALES
         // ============================================
-        function logout() {
-            if (confirm('¿Cerrar sesión?')) {
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.href = 'index.html';
-            }
-        }
 
-        // ============================================
-        // CARGAR EMPRESAS
-        // ============================================
+ function logout() {
+    if (confirm('¿Cerrar sesión?')) {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = 'index.html';  
+    }
+}
         async function loadEmpresas() {
             const tbody = document.getElementById('empresas-tbody');
             tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner"></i> Cargando empresas...</td></tr>';
@@ -705,9 +698,6 @@
             }
         }
 
-        // ============================================
-        // RENDERIZAR EMPRESAS
-        // ============================================
         function renderEmpresas(empresas) {
             const tbody = document.getElementById('empresas-tbody');
             tbody.innerHTML = '';
@@ -746,9 +736,6 @@
             });
         }
 
-        // ============================================
-        // ACTUALIZAR STATS
-        // ============================================
         function updateStats(empresas) {
             const total = empresas.length;
             const activas = empresas.filter(e => e.activo).length;
@@ -761,9 +748,6 @@
             document.getElementById('empresas-inactivas').textContent = inactivas;
         }
 
-        // ============================================
-        // FILTRAR EMPRESAS
-        // ============================================
         function filterEmpresas() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const filtered = empresasCache.filter(e =>
@@ -774,35 +758,38 @@
             renderEmpresas(filtered);
         }
 
-        // ============================================
-        // GENERAR ENLACE DE INVITACIÓN
-        // ============================================
-        function generarEnlaceInvitacion() {
-            const baseUrl = window.location.origin;
-            const enlace = `${baseUrl}/registro_empresa.html`;
-            document.getElementById('inviteLink').value = enlace;
-            alert('✅ Enlace generado correctamente.\n\nCopialo y envíalo a la empresa que quieras invitar.');
-        }
-
-        function copiarEnlace() {
-            const input = document.getElementById('inviteLink');
-            if (!input.value) {
-                alert('⚠️ Primero genera el enlace.');
-                return;
-            }
-            input.select();
-            input.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(input.value).then(() => {
-                alert('✅ Enlace copiado al portapapeles.');
-            }).catch(() => {
-                document.execCommand('copy');
-                alert('✅ Enlace copiado al portapapeles.');
-            });
-        }
 
         // ============================================
-        // MODAL CREAR EMPRESA
-        // ============================================
+// GENERAR ENLACE DE INVITACIÓN
+// ============================================
+
+function generarEnlaceInvitacion() {
+    // Obtener la URL base (local o producción)
+    const baseUrl = window.location.origin;
+    const enlace = `${baseUrl}/registro_empresa.html`;
+    
+    document.getElementById('inviteLink').value = enlace;
+    
+    // Mostrar mensaje
+    alert('✅ Enlace generado correctamente.\n\nCopialo y envíalo a la empresa que quieras invitar.');
+}
+
+function copiarEnlace() {
+    const input = document.getElementById('inviteLink');
+    if (!input.value) {
+        alert('⚠️ Primero genera el enlace.');
+        return;
+    }
+    
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(() => {
+        alert('✅ Enlace copiado al portapapeles.');
+    }).catch(() => {
+        document.execCommand('copy');
+        alert('✅ Enlace copiado al portapapeles.');
+    });
+}
         function showCreateForm() {
             document.getElementById('createModal').style.display = 'block';
             document.getElementById('createForm').reset();
@@ -824,6 +811,7 @@
                 forzar_cambio_pw: true
             };
 
+            // Validaciones básicas
             if (data.tenant_id.toLowerCase() === 'super_admin') {
                 alert('❌ El Tenant ID "super_admin" está reservado.');
                 return;
@@ -858,6 +846,7 @@
         // ============================================
         // RESET PASSWORD
         // ============================================
+
         async function resetPassword(tenantId, adminEmail) {
             if (!adminEmail || adminEmail === 'N/A') {
                 alert('❌ No se encontró el correo del administrador.');
@@ -911,8 +900,9 @@
         }
 
         // ============================================
-        // 🔥 DELETE EMPRESA (CORREGIDO)
+        // DELETE EMPRESA
         // ============================================
+
         async function deleteEmpresa(tenantId, nombreEmpresa) {
             if (tenantId === 'super_admin') {
                 alert('❌ No se puede eliminar la empresa central.');
@@ -924,17 +914,12 @@
             }
 
             try {
-                console.log('🔍 Eliminando empresa:', tenantId);
-                
                 const response = await fetch(`${API_URL}/empresa/${tenantId}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                console.log('📡 Status:', response.status);
-                
                 const result = await response.json();
-                console.log('📦 Respuesta:', result);
 
                 if (response.ok && result.success) {
                     alert(`✅ Empresa "${nombreEmpresa}" eliminada.`);
@@ -943,15 +928,11 @@
                     alert('❌ Error: ' + (result.message || 'Error desconocido.'));
                 }
             } catch (error) {
-                console.error('❌ Error:', error);
                 alert('❌ Error de conexión.');
             }
         }
 
-        // ============================================
-        // INICIALIZACIÓN
-        // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
+     document.addEventListener('DOMContentLoaded', () => {
             if (!token) {
                 alert('Sesión no válida. Redirigiendo...');
                 localStorage.clear();
