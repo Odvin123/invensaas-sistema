@@ -648,6 +648,13 @@
                     </button>
                 </div>
             </div>
+            <div style="padding:0 20px 12px;">
+                <div style="position:relative; max-width:320px;">
+                    <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:13px;"></i>
+                    <input type="text" id="productos-buscar-input" placeholder="Buscar por nombre, ID, categoría o proveedor..." oninput="filtrarProductosView()"
+                           style="width:100%; padding:10px 14px 10px 34px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:13px;">
+                </div>
+            </div>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -789,17 +796,26 @@
                         <button type="button" class="btn btn-success" onclick="agregarProductoEntrada()"><i class="fas fa-plus"></i> Agregar Producto</button>
                     </div>
 
+                    <div style="margin-bottom:12px; font-size:11px; color:var(--text-light); background:var(--light); padding:8px 12px; border-radius:8px;">
+                        <i class="fas fa-circle-info" style="color:var(--primary);"></i>
+                        Costo y Precio se cargan con el valor actual del producto. Si los cambias, se calculará automáticamente un
+                        <strong>promedio ponderado</strong> entre el stock/valor anterior y lo que estás ingresando.
+                    </div>
+
                     <div style="overflow-x:auto; margin-bottom:16px;">
                         <table style="width:100%;border-collapse:collapse;">
                             <thead>
                                 <tr>
                                     <th style="text-align:left;padding:8px;border-bottom:2px solid var(--border);">Producto</th>
                                     <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Cantidad</th>
+                                    <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Costo Unit. (C$)</th>
+                                    <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Precio Venta (C$)</th>
+                                    <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Resultante</th>
                                     <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Acción</th>
                                 </tr>
                             </thead>
                             <tbody id="entrada-productos-tbody">
-                                <tr><td colspan="3" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>
+                                <tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1027,11 +1043,13 @@ VIEW: REPORTES
                             <th style="text-align:left;padding:8px;">ID</th>
                             <th style="text-align:left;padding:8px;">Producto</th>
                             <th style="text-align:center;padding:8px;">Stock</th>
+                            <th style="text-align:right;padding:8px;">Precio</th>
+                            <th style="text-align:right;padding:8px;">Costo</th>
                             <th style="text-align:center;padding:8px;">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="buscar-productos-tbody">
-                        <tr><td colspan="4" class="text-center text-muted" style="padding:20px;">Cargando productos...</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Cargando productos...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1077,6 +1095,10 @@ VIEW: REPORTES
             cargarProductosConFiltro('todos');
         }
 
+        // Lista base (ya filtrada por estado: todos/stock-bajo/agotados/stock-normal),
+        // sobre la que luego se aplica el filtro de texto de búsqueda.
+        let productosVistaBase = [];
+
         async function cargarProductosConFiltro(tipo) {
             const tbody = document.getElementById('productos-tbody');
             tbody.innerHTML = '<tr><td colspan="8" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>';
@@ -1103,12 +1125,37 @@ VIEW: REPORTES
                         document.getElementById('productos-titulo').textContent = '📦 Todos los Productos';
                     }
 
-                    renderProductosCompletos(productos);
-                    document.getElementById('productos-contador').textContent = `${productos.length} producto(s)`;
+                    productosVistaBase = productos;
+                    const buscarInput = document.getElementById('productos-buscar-input');
+                    if (buscarInput) buscarInput.value = '';
+                    aplicarFiltroBusquedaProductos();
                 }
             } catch (error) {
                 tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted" style="padding:20px;">Error de conexión</td></tr>';
             }
+        }
+
+        // Aplica el texto de búsqueda sobre la lista ya filtrada por estado
+        function aplicarFiltroBusquedaProductos() {
+            const texto = (document.getElementById('productos-buscar-input')?.value || '').toLowerCase().trim();
+            let productos = productosVistaBase;
+
+            if (texto) {
+                productos = productos.filter(p =>
+                    (p.descripcion && p.descripcion.toLowerCase().includes(texto)) ||
+                    (p.id && p.id.toString().includes(texto)) ||
+                    (p.categoria_nombre && p.categoria_nombre.toLowerCase().includes(texto)) ||
+                    (p.proveedor_nombre && p.proveedor_nombre.toLowerCase().includes(texto))
+                );
+            }
+
+            renderProductosCompletos(productos);
+            document.getElementById('productos-contador').textContent = `${productos.length} producto(s)`;
+        }
+
+        // Se llama en cada tecla escrita en el buscador
+        function filtrarProductosView() {
+            aplicarFiltroBusquedaProductos();
         }
 
         function renderProductosCompletos(productos) {
@@ -1898,7 +1945,7 @@ function formatStock(value) {
             const tbody = document.getElementById('buscar-productos-tbody');
             tbody.innerHTML = '';
             if (productos.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding:20px;">No hay productos.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted" style="padding:20px;">No hay productos.</td></tr>';
                 return;
             }
             productos.forEach(p => {
@@ -1906,9 +1953,11 @@ function formatStock(value) {
                 tr.innerHTML = `
                     <td>${p.id}</td>
                     <td>${p.descripcion || 'Sin nombre'}</td>
-                    <td style="text-align:center;font-weight:600;">${p.stock || 0}</td>
+                    <td style="text-align:center;font-weight:600;">${formatStock(p.stock)}</td>
+                    <td style="text-align:right;">C$${parseFloat(p.precio || 0).toFixed(2)}</td>
+                    <td style="text-align:right;">C$${parseFloat(p.costo || 0).toFixed(2)}</td>
                     <td style="text-align:center;">
-                        <button class="btn-sm btn-success" onclick="seleccionarProductoEntrada(${p.id}, '${p.descripcion.replace(/'/g, "\\'")}')">Seleccionar</button>
+                        <button class="btn-sm btn-success" onclick="seleccionarProductoEntrada(${p.id})">Seleccionar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -1924,53 +1973,117 @@ function formatStock(value) {
             renderBusquedaProductos(filtered);
         }
 
+        // Promedio ponderado: combina el valor anterior (según el stock que ya existía)
+        // con el valor nuevo ingresado en esta entrada (según la cantidad que entra).
+        // Si no había stock anterior, se toma directamente el valor nuevo.
+        function calcularPromedioPonderado(stockAnterior, valorAnterior, cantidadNueva, valorNuevo) {
+            const stockTotal = stockAnterior + cantidadNueva;
+            if (stockTotal <= 0) return valorNuevo;
+            if (stockAnterior <= 0) return valorNuevo;
+            return ((stockAnterior * valorAnterior) + (cantidadNueva * valorNuevo)) / stockTotal;
+        }
 
+        function actualizarPromedioEntrada(id) {
+            const item = entradaProductos.find(p => p.id === id);
+            if (!item) return;
 
-function seleccionarProductoEntrada(id, descripcion) {
-    closeModal('buscar-producto');
+            item.costoPromedio = calcularPromedioPonderado(item.stockAnterior, item.costoAnterior, item.cantidad, item.costoNuevo);
+            item.precioPromedio = calcularPromedioPonderado(item.stockAnterior, item.precioAnterior, item.cantidad, item.precioNuevo);
 
-    if (entradaProductos.find(p => p.id === id)) {
-        alert('⚠️ Este producto ya está en la lista.');
-        return;
-    }
+            const celda = document.getElementById(`entrada-promedio-${id}`);
+            if (celda) {
+                const costoCambio = Math.abs(item.costoNuevo - item.costoAnterior) > 0.001;
+                const precioCambio = Math.abs(item.precioNuevo - item.precioAnterior) > 0.001;
+                celda.innerHTML = `
+                    Costo: C$${item.costoPromedio.toFixed(2)} ${costoCambio ? '<i class="fas fa-sync-alt" style="color:var(--primary);" title="Promedio ponderado aplicado"></i>' : ''}<br>
+                    Precio: C$${item.precioPromedio.toFixed(2)} ${precioCambio ? '<i class="fas fa-sync-alt" style="color:var(--primary);" title="Promedio ponderado aplicado"></i>' : ''}
+                `;
+            }
+        }
 
-    entradaProductos.push({ id, descripcion, cantidad: 1 });
+        function actualizarEntradaCampo(id, campo, valor) {
+            const item = entradaProductos.find(p => p.id === id);
+            if (!item) return;
 
-    const tbody = document.getElementById('entrada-productos-tbody');
-    if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+            if (campo === 'cantidad') {
+                let cantidad = parseFloat(valor);
+                if (isNaN(cantidad) || cantidad < 0.01) cantidad = 1;
+                item.cantidad = cantidad;
+            } else if (campo === 'costoNuevo') {
+                const v = parseFloat(valor);
+                item.costoNuevo = (isNaN(v) || v < 0) ? item.costoAnterior : v;
+            } else if (campo === 'precioNuevo') {
+                const v = parseFloat(valor);
+                item.precioNuevo = (isNaN(v) || v < 0) ? item.precioAnterior : v;
+            }
 
-    const tr = document.createElement('tr');
-    tr.dataset.productoId = id;
-    tr.innerHTML = `
-        <td>${descripcion}</td>
-        <td style="text-align:center;">
-            <input type="number" value="1" style="width:80px;padding:6px;border:2px solid var(--border);border-radius:6px;text-align:center;font-size:14px;"
-                   step="any" min="0.01" 
-                   onchange="actualizarCantidadEntrada(this, ${id})">
-        </td>
-        <td style="text-align:center;">
-            <button class="btn-sm btn-delete" onclick="eliminarProductoEntrada(this, ${id})"><i class="fas fa-trash"></i></button>
-        </td>
-    `;
-    tbody.appendChild(tr);
-}
-function actualizarCantidadEntrada(input, id) {
-    let cantidad = parseFloat(input.value) || 1;
-    if (cantidad < 0.01) input.value = 1;
-    const item = entradaProductos.find(p => p.id === id);
-    if (item) item.cantidad = parseFloat(input.value) || 1;
-}
+            actualizarPromedioEntrada(id);
+        }
 
-function eliminarProductoEntrada(btn, id) {
-    const row = btn.closest('tr');
-    row.remove();
-    entradaProductos = entradaProductos.filter(p => p.id !== id);
-    const tbody = document.getElementById('entrada-productos-tbody');
-    if (tbody.children.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>';
-    }
-}
+        function seleccionarProductoEntrada(id) {
+            closeModal('buscar-producto');
 
+            if (entradaProductos.find(p => p.id === id)) {
+                alert('⚠️ Este producto ya está en la lista.');
+                return;
+            }
+
+            const producto = productosCache.find(p => p.id === id);
+            if (!producto) {
+                alert('❌ No se pudo cargar la información del producto.');
+                return;
+            }
+
+            const stockAnterior = parseFloat(producto.stock) || 0;
+            const costoAnterior = parseFloat(producto.costo) || 0;
+            const precioAnterior = parseFloat(producto.precio) || 0;
+            const descripcion = producto.descripcion || 'Sin nombre';
+
+            const item = {
+                id: id,
+                descripcion: descripcion,
+                cantidad: 1,
+                stockAnterior: stockAnterior,
+                costoAnterior: costoAnterior,
+                precioAnterior: precioAnterior,
+                costoNuevo: costoAnterior,
+                precioNuevo: precioAnterior,
+                costoPromedio: costoAnterior,
+                precioPromedio: precioAnterior
+            };
+            entradaProductos.push(item);
+
+            const tbody = document.getElementById('entrada-productos-tbody');
+            if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+
+            const tr = document.createElement('tr');
+            tr.dataset.productoId = id;
+            tr.innerHTML = `
+                <td>${descripcion}<br><small style="color:var(--text-light);">Stock actual: ${formatStock(stockAnterior)}</small></td>
+                <td style="text-align:center;">
+                    <input type="number" value="1" style="width:80px;padding:6px;border:2px solid var(--border);border-radius:6px;text-align:center;font-size:14px;"
+                           step="any" min="0.01"
+                           oninput="actualizarEntradaCampo(${id}, 'cantidad', this.value)">
+                </td>
+                <td style="text-align:center;">
+                    <input type="number" value="${costoAnterior.toFixed(2)}" style="width:90px;padding:6px;border:2px solid var(--border);border-radius:6px;text-align:center;font-size:14px;"
+                           step="0.01" min="0"
+                           oninput="actualizarEntradaCampo(${id}, 'costoNuevo', this.value)">
+                </td>
+                <td style="text-align:center;">
+                    <input type="number" value="${precioAnterior.toFixed(2)}" style="width:90px;padding:6px;border:2px solid var(--border);border-radius:6px;text-align:center;font-size:14px;"
+                           step="0.01" min="0"
+                           oninput="actualizarEntradaCampo(${id}, 'precioNuevo', this.value)">
+                </td>
+                <td style="text-align:center; font-size:12px;" id="entrada-promedio-${id}">
+                    Costo: C$${costoAnterior.toFixed(2)}<br>Precio: C$${precioAnterior.toFixed(2)}
+                </td>
+                <td style="text-align:center;">
+                    <button type="button" class="btn-sm btn-delete" onclick="eliminarProductoEntrada(this, ${id})"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
 
         function eliminarProductoEntrada(btn, id) {
             const row = btn.closest('tr');
@@ -1978,7 +2091,7 @@ function eliminarProductoEntrada(btn, id) {
             entradaProductos = entradaProductos.filter(p => p.id !== id);
             const tbody = document.getElementById('entrada-productos-tbody');
             if (tbody.children.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>';
             }
         }
 
@@ -1991,7 +2104,15 @@ function eliminarProductoEntrada(btn, id) {
             }
 
             const data = {
-                productos: entradaProductos.map(p => ({ producto_id: p.id, cantidad: p.cantidad })),
+                productos: entradaProductos.map(p => ({
+                    producto_id: p.id,
+                    cantidad: p.cantidad,
+                    // Se envía lo que el usuario escribió (o el valor actual si no lo tocó);
+                    // el promedio ponderado final lo calcula y aplica el backend con los
+                    // datos reales de la base de datos.
+                    costo: parseFloat(p.costoNuevo.toFixed(2)),
+                    precio: parseFloat(p.precioNuevo.toFixed(2))
+                })),
                 referencia: document.getElementById('entrada-referencia').value.trim(),
                 motivo: document.getElementById('entrada-motivo').value.trim()
             };
@@ -2012,7 +2133,7 @@ function eliminarProductoEntrada(btn, id) {
                     alert(`✅ Entrada registrada con ${entradaProductos.length} producto(s).`);
                     loadDashboardData(); 
                     entradaProductos = [];
-                    document.getElementById('entrada-productos-tbody').innerHTML = '<tr><td colspan="3" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>';
+                    document.getElementById('entrada-productos-tbody').innerHTML = '<tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>';
                     document.getElementById('entrada-referencia').value = '';
                     document.getElementById('entrada-motivo').value = '';
                     loadDashboardData();
