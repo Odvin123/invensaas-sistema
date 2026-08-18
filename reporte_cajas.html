@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Cortes de Caja - InvenSaaS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="js/config.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #0f172a;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --light: #f1f5f9;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --radius: 12px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .top-bar {
+            background: var(--white);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .top-bar .brand {
+            font-size: 22px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .top-bar .brand span {
+            color: var(--secondary);
+            -webkit-text-fill-color: var(--secondary);
+        }
+        .top-bar .back-btn {
+            padding: 10px 20px;
+            background: var(--light);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .top-bar .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 32px;
+        }
+        .page-header {
+            margin-bottom: 24px;
+        }
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-header h1 i {
+            color: var(--danger);
+        }
+        .page-header p {
+            color: var(--text-light);
+            font-size: 15px;
+        }
+        .filters-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            align-items: end;
+        }
+        .filter-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+        .filter-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-light);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
+        }
+        .stat-card .stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        .stat-card .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
+        .stat-card .stat-icon.green { background: #dcfce7; color: #16a34a; }
+        .stat-card .stat-icon.orange { background: #fef3c7; color: #d97706; }
+        .stat-card .stat-icon.red { background: #fee2e2; color: #dc2626; }
+        .stat-card .stat-number {
+            font-size: 28px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 4px;
+        }
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        .table-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .table-card .table-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .table-card .table-header h3 {
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .table-card .table-header h3 i {
+            color: var(--primary);
+        }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        thead th {
+            text-align: left;
+            padding: 12px 16px;
+            background: var(--light);
+            color: var(--text-light);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.03);
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-success { background: #dcfce7; color: #16a34a; }
+        .badge-warning { background: #fef3c7; color: #d97706; }
+        .badge-danger { background: #fee2e2; color: #dc2626; }
+        .badge-info { background: #dbeafe; color: #2563eb; }
+        .money-positive { color: var(--success); font-weight: 700; }
+        .money-negative { color: var(--danger); font-weight: 700; }
+        .money-neutral { color: var(--text); font-weight: 600; }
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+        .loading-state i {
+            animation: spin 1s linear infinite;
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        .empty-state i {
+            font-size: 64px;
+            opacity: 0.2;
+            margin-bottom: 16px;
+        }
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        .detail-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .detail-item {
+            padding: 4px 10px;
+            background: var(--light);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .top-bar {
+                padding: 12px 16px;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .container {
+                padding: 16px;
+            }
+            .page-header h1 {
+                font-size: 20px;
+            }
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .table-card .table-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            table {
+                font-size: 12px;
+            }
+            thead th, tbody td {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="top-bar">
+        <div class="brand">Inven<span>SaaS</span></div>
+        <a href="inventario_dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </a>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-cash-register"></i> Reporte de Cortes de Caja</h1>
+            <p>Historial completo de cierres de caja con ganancias, arqueos y desglose por método de pago</p>
+        </div>
+
+        <div class="filters-card">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
+                    <input type="date" id="fechaInicio">
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
+                    <input type="date" id="fechaFin">
+                </div>
+                <div class="filter-group">
+                    <button class="btn btn-primary" onclick="cargarCortes()">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarFiltros()">
+                        <i class="fas fa-undo"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid" style="display:none;">
+            <div class="stat-card">
+                <div class="stat-icon purple">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <div class="stat-number" id="totalCortes">0</div>
+                <div class="stat-label">Total de Cortes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-number" id="totalVentas">C$0.00</div>
+                <div class="stat-label">Total Ventas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-number" id="totalGanancia">C$0.00</div>
+                <div class="stat-label">Ganancia Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="stat-number" id="totalDiferencia">C$0.00</div>
+                <div class="stat-label">Diferencia de Efectivo</div>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3><i class="fas fa-list"></i> Historial de Cortes</h3>
+                <button class="btn btn-primary" onclick="exportarExcel()">
+                    <i class="fas fa-file-excel"></i> Exportar Excel
+                </button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha de Cierre</th>
+                            <th>Usuario</th>
+                            <th>Ventas</th>
+                            <th>Costo</th>
+                            <th>Ganancia</th>
+                            <th>Efectivo (Sistema/Real)</th>
+                            <th>Diferencia</th>
+                            <th>Pagos</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cortesTbody">
+                        <tr>
+                            <td colspan="10" class="loading-state">
+                                <i class="fas fa-spinner"></i>
+                                <div>Cargando cortes de caja...</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('token');
+        let cortesCache = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!token) {
+                alert('Sesión no válida');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaFin').value = hoy;
+            
+            cargarCortes();
+        });
+
+        async function cargarCortes() {
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+            
+            const tbody = document.getElementById('cortesTbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="10" class="loading-state">
+                        <i class="fas fa-spinner"></i>
+                        <div>Cargando...</div>
+                    </td>
+                </tr>
+            `;
+
+            try {
+                let url = `${API_URL}/admin/cortes/historial`;
+                const params = new URLSearchParams();
+                
+                if (fechaInicio) params.append('inicio', fechaInicio);
+                if (fechaFin) params.append('fin', fechaFin);
+                
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Error al cargar datos');
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    cortesCache = data.cortes || [];
+                    renderCortes(cortesCache);
+                    calcularEstadisticas(cortesCache);
+                    document.getElementById('statsGrid').style.display = 'grid';
+                } else {
+                    mostrarError(data.message || 'Error al cargar cortes');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError('Error de conexión al cargar los cortes');
+            }
+        }
+
+        function renderCortes(cortes) {
+            const tbody = document.getElementById('cortesTbody');
+            tbody.innerHTML = '';
+
+            if (!cortes || cortes.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <h3>No hay cortes de caja registrados</h3>
+                            <p>Los cortes aparecerán aquí una vez que se realicen desde el punto de venta</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            cortes.forEach(corte => {
+                const diferencia = parseFloat(corte.diferencia) || 0;
+                const ganancia = parseFloat(corte.ganancia) || 0;
+                
+                let diferenciaClass = 'money-neutral';
+                let diferenciaIcon = 'fa-check-circle';
+                let estadoBadge = 'badge-success';
+                let estadoTexto = 'Cuadrado';
+                
+                if (diferencia > 0) {
+                    diferenciaClass = 'money-positive';
+                    diferenciaIcon = 'fa-arrow-up';
+                    estadoBadge = 'badge-warning';
+                    estadoTexto = 'Sobrante';
+                } else if (diferencia < 0) {
+                    diferenciaClass = 'money-negative';
+                    diferenciaIcon = 'fa-arrow-down';
+                    estadoBadge = 'badge-danger';
+                    estadoTexto = 'Faltante';
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${corte.id}</strong></td>
+                    <td>${formatearFecha(corte.fecha_cierre)}</td>
+                    <td>${corte.usuario_nombre || 'N/A'}</td>
+                    <td class="money-neutral">C$${parseFloat(corte.total_ventas).toFixed(2)}</td>
+                    <td class="text-muted">C$${parseFloat(corte.total_costo).toFixed(2)}</td>
+                    <td class="money-positive">C$${ganancia.toFixed(2)}</td>
+                    <td>
+                        <div class="detail-row">
+                            <span class="detail-item">S: C$${parseFloat(corte.efectivo_sistema).toFixed(2)}</span>
+                            <span class="detail-item">R: C$${parseFloat(corte.efectivo_real).toFixed(2)}</span>
+                        </div>
+                    </td>
+                    <td class="${diferenciaClass}">
+                        <i class="fas ${diferenciaIcon}"></i> C$${Math.abs(diferencia).toFixed(2)}
+                    </td>
+                    <td>
+                        <div class="detail-row">
+                            <span class="detail-item" style="background:#dcfce7;color:#16a34a;">
+                                <i class="fas fa-money-bill"></i> C$${parseFloat(corte.total_efectivo).toFixed(0)}
+                            </span>
+                            <span class="detail-item" style="background:#dbeafe;color:#2563eb;">
+                                <i class="fas fa-credit-card"></i> C$${parseFloat(corte.total_tarjeta).toFixed(0)}
+                            </span>
+                            ${parseFloat(corte.total_transferencia) > 0 ? `
+                            <span class="detail-item" style="background:#fef3c7;color:#d97706;">
+                                <i class="fas fa-exchange-alt"></i> C$${parseFloat(corte.total_transferencia).toFixed(0)}
+                            </span>
+                            ` : ''}
+                            ${parseFloat(corte.total_credito) > 0 ? `
+                            <span class="detail-item" style="background:#fee2e2;color:#dc2626;">
+                                <i class="fas fa-file-invoice"></i> C$${parseFloat(corte.total_credito).toFixed(0)}
+                            </span>
+                            ` : ''}
+                        </div>
+                    </td>
+                    <td><span class="badge ${estadoBadge}">${estadoTexto}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function calcularEstadisticas(cortes) {
+            const totalCortes = cortes.length;
+            const totalVentas = cortes.reduce((sum, c) => sum + parseFloat(c.total_ventas || 0), 0);
+            const totalGanancia = cortes.reduce((sum, c) => sum + parseFloat(c.ganancia || 0), 0);
+            const totalDiferencia = cortes.reduce((sum, c) => sum + parseFloat(c.diferencia || 0), 0);
+
+            document.getElementById('totalCortes').textContent = totalCortes;
+            document.getElementById('totalVentas').textContent = `C$${totalVentas.toFixed(2)}`;
+            document.getElementById('totalGanancia').textContent = `C$${totalGanancia.toFixed(2)}`;
+            
+            const diffElement = document.getElementById('totalDiferencia');
+            diffElement.textContent = `C$${Math.abs(totalDiferencia).toFixed(2)}`;
+            diffElement.className = totalDiferencia >= 0 ? 'money-positive' : 'money-negative';
+        }
+
+        function formatearFecha(fecha) {
+            if (!fecha) return 'N/A';
+            const d = new Date(fecha);
+            return d.toLocaleString('es-NI', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('fechaInicio').value = '';
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaFin').value = hoy;
+            cargarCortes();
+        }
+
+        function mostrarError(mensaje) {
+            const tbody = document.getElementById('cortesTbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="10" class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i>
+                        <h3>${mensaje}</h3>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('statsGrid').style.display = 'none';
+        }
+
+        function exportarExcel() {
+            if (!cortesCache || cortesCache.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+
+            let csv = 'ID,Fecha Cierre,Usuario,Ventas,Costo,Ganancia,Efectivo Sistema,Efectivo Real,Diferencia,Total Efectivo,Total Tarjeta,Total Transferencia,Total Credito,Estado\n';
+            
+            cortesCache.forEach(corte => {
+                const diferencia = parseFloat(corte.diferencia) || 0;
+                let estado = 'Cuadrado';
+                if (diferencia > 0) estado = 'Sobrante';
+                else if (diferencia < 0) estado = 'Faltante';
+                
+                csv += `${corte.id},"${corte.fecha_cierre}",${corte.usuario_nombre || 'N/A'},${corte.total_ventas},${corte.total_costo},${corte.ganancia},${corte.efectivo_sistema},${corte.efectivo_real},${corte.diferencia},${corte.total_efectivo},${corte.total_tarjeta},${corte.total_transferencia},${corte.total_credito},${estado}\n`;
+            });
+
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cortes_caja_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

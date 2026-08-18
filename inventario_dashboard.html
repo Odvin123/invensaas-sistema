@@ -853,6 +853,27 @@ VIEW: REPORTES
             <span>📊 Reporte General</span>
             <small style="font-size:10px; opacity:0.8;">Inversión · Ganancia · Valor</small>
         </a>
+<a href="reporte_cajas.html" style="
+    padding:24px; 
+    display:flex; 
+    flex-direction:column; 
+    align-items:center; 
+    justify-content:center; 
+    gap:8px; 
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    color:white; 
+    border-radius:16px; 
+    text-decoration:none; 
+    font-size:15px; 
+    font-weight:600; 
+    min-height:120px;
+    box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+    transition: all 0.3s ease;
+">
+    <i class="fas fa-cash-register" style="font-size:32px;"></i>
+    <span>Cortes de Caja</span>
+    <small style="font-size:10px; opacity:0.8;">Historial · Ganancias · Arqueos</small>
+</a>
 
         <!-- Movimientos de Inventario -->
         <a href="reporte_inventario.html" style="
@@ -1738,10 +1759,6 @@ function formatStock(value) {
             }
         }
 
-        // ============================================
-        // CLIENTES
-        // ============================================
-
         async function loadClientes() {
             const tbody = document.getElementById('clientes-tbody');
             tbody.innerHTML = '<tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>';
@@ -1828,10 +1845,6 @@ function formatStock(value) {
                 alert('❌ Error de conexión.');
             }
         }
-
-        // ============================================
-        // VENDEDORES
-        // ============================================
 
         async function loadVendedores() {
             const tbody = document.getElementById('vendedores-tbody');
@@ -2107,9 +2120,7 @@ function formatStock(value) {
                 productos: entradaProductos.map(p => ({
                     producto_id: p.id,
                     cantidad: p.cantidad,
-                    // Se envía lo que el usuario escribió (o el valor actual si no lo tocó);
-                    // el promedio ponderado final lo calcula y aplica el backend con los
-                    // datos reales de la base de datos.
+                   
                     costo: parseFloat(p.costoNuevo.toFixed(2)),
                     precio: parseFloat(p.precioNuevo.toFixed(2))
                 })),
