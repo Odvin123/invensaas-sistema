@@ -2,18 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InvenSaaS - Panel de Control</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- TU CONFIGURACIÓN ORIGINAL -->
     <script src="js/config.js"></script>
-    
     <style>
         /* ============================================
-           VARIABLES Y RESET (TU CÓDIGO ORIGINAL + AJUSTES RESPONSIVE)
+           VARIABLES Y RESET
         ============================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -42,7 +40,6 @@
             background: var(--light);
             color: var(--text);
             min-height: 100vh;
-            overflow-x: hidden; /* Evita scroll horizontal indeseado */
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -110,7 +107,6 @@
             border-bottom: 1px solid var(--border);
             flex-wrap: wrap;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
         }
 
         .main-menu a {
@@ -176,13 +172,6 @@
         .stat-card:hover {
             transform: translateY(-3px);
             box-shadow: var(--shadow-hover);
-        }
-
-        /* ESTILO PARA TARJETA ACTIVA (FILTRO SELECCIONADO) */
-        .stat-card.active-filter {
-            border-color: var(--primary);
-            background: #eef2ff;
-            box-shadow: 0 0 0 2px var(--primary-light);
         }
 
         .stat-card .stat-icon {
@@ -306,7 +295,6 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
-            min-width: 700px; /* Fuerza scroll en móviles pequeños */
         }
 
         thead th {
@@ -319,7 +307,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid var(--border);
-            white-space: nowrap;
         }
 
         tbody td {
@@ -453,26 +440,8 @@
             gap: 12px;
         }
 
-        /* VALIDACIÓN TELEFONO */
-        .error-msg { 
-            color: var(--danger); 
-            font-size: 11px; 
-            display: none; 
-            margin-top: 4px; 
-            font-weight: 600;
-        }
-        .input-error { border-color: var(--danger) !important; }
-
-        /* HELPER TEXT PARA SMART INPUT */
-        .helper-text {
-            font-size: 11px;
-            color: var(--text-light);
-            margin-top: 4px;
-            display: block;
-        }
-
         /* ============================================
-           RESPONSIVE MEJORADO
+           RESPONSIVE
         ============================================ */
         @media (max-width: 992px) {
             .charts-grid { grid-template-columns: 1fr; }
@@ -507,16 +476,11 @@
             .modal-content .form-row {
                 grid-template-columns: 1fr;
             }
-            
-            .modal-content {
-                margin: 10% auto;
-                padding: 20px;
-            }
         }
 
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: 1fr; }
-            .stat-card .stat-number { font-size: 22px; }
+            .modal-content { padding: 20px; margin: 10% auto; }
         }
 
         /* UTILIDADES */
@@ -586,25 +550,25 @@
 
         <!-- Stats - CLICABLES -->
         <div class="stats-grid" id="statsGrid">
-            <div class="stat-card" id="card-todos" onclick="filtrarPorEstado('todos')" title="Ver todos los productos">
+            <div class="stat-card" onclick="filtrarPorEstado('todos')" title="Ver todos los productos">
                 <div class="stat-icon purple"><i class="fas fa-boxes"></i></div>
                 <div class="stat-number" id="total-productos">0</div>
                 <div class="stat-label">Total Productos</div>
                 <div class="click-hint">👆 Click para ver</div>
             </div>
-            <div class="stat-card" id="card-normal" onclick="filtrarPorEstado('stock-normal')" title="Ver productos con stock normal">
+            <div class="stat-card" onclick="filtrarPorEstado('stock-normal')" title="Ver productos con stock normal">
                 <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
                 <div class="stat-number" id="stock-normal">0</div>
                 <div class="stat-label">Stock Normal</div>
-                <div class="click-hint"> Click para ver</div>
+                <div class="click-hint">👆 Click para ver</div>
             </div>
-            <div class="stat-card" id="card-bajo" onclick="filtrarPorEstado('stock-bajo')" title="Ver productos con stock bajo">
+            <div class="stat-card" onclick="filtrarPorEstado('stock-bajo')" title="Ver productos con stock bajo">
                 <div class="stat-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
                 <div class="stat-number" id="stock-bajo-count">0</div>
                 <div class="stat-label">Stock Bajo</div>
                 <div class="click-hint">👆 Click para ver</div>
             </div>
-            <div class="stat-card" id="card-agotados" onclick="filtrarPorEstado('agotados')" title="Ver productos agotados">
+            <div class="stat-card" onclick="filtrarPorEstado('agotados')" title="Ver productos agotados">
                 <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
                 <div class="stat-number" id="stock-agotados">0</div>
                 <div class="stat-label">Agotados</div>
@@ -886,7 +850,7 @@ VIEW: REPORTES
             transition: all 0.3s ease;
         ">
             <i class="fas fa-chart-pie" style="font-size:32px;"></i>
-            <span> Reporte General</span>
+            <span>📊 Reporte General</span>
             <small style="font-size:10px; opacity:0.8;">Inversión · Ganancia · Valor</small>
         </a>
 
@@ -966,39 +930,31 @@ VIEW: REPORTES
     MODALES (Producto, Categoría, Proveedor, Cliente, Vendedor, Buscar Producto)
     ============================================ -->
 
-    <!-- MODAL: PRODUCTO (MODIFICADO CON SMART INPUT) -->
+    <!-- MODAL: PRODUCTO -->
     <div id="modal-product" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('product')">&times;</span>
             <h3><i class="fas fa-box"></i> <span id="product-modal-title">Agregar Producto</span></h3>
             <form id="productForm">
                 <input type="hidden" id="product-id">
-                
-                <!-- CAMPO UNIFICADO INTELIGENTE -->
-                <label>Categoría / Proveedor <span style="color:var(--danger);">*</span></label>
-                <input type="text" id="product-categoria-proveedor" list="lista-cat-prov" required placeholder="Escribe para buscar o crear nuevo...">
-                <datalist id="lista-cat-prov"></datalist>
-                <span class="helper-text"> Escribe un nombre nuevo para crearlo automáticamente o selecciona uno existente.</span>
-
-                <!-- VALIDACIÓN TELÉFONO 8 DÍGITOS -->
-                <label>Teléfono Proveedor (8 dígitos)</label>
-                <input type="tel" id="product-telefono" placeholder="Ej: 88881234" maxlength="8" pattern="[0-9]{8}" inputmode="numeric">
-                <span id="tel-error" class="error-msg">⚠️ Debe ser exactamente 8 números.</span>
-
+                <label>Proveedor <span style="color:var(--danger);">*</span></label>
+                <select id="product-proveedor" required><option value="">-- Seleccionar --</option></select>
+                <label>Categoría <span style="color:var(--danger);">*</span></label>
+                <select id="product-categoria" required><option value="">-- Seleccionar --</option></select>
                 <label>Descripción <span style="color:var(--danger);">*</span></label>
                 <textarea id="product-descripcion" required></textarea>
-            
-                <div class="form-row">
-                    <div>
-                        <label>Stock <span id="stock-label" style="color:var(--text-light); font-weight:400; font-size:11px;">(solo al crear)</span></label>
-                        <input type="number" id="product-stock" step="0.01" min="0" value="0">
-                        <small style="color:var(--text-light); font-size:10px;">Para modificar stock usa <strong>"Entrada"</strong></small>
-                    </div>
-                    <div>
-                        <label>Costo (C$)</label>
-                        <input type="number" id="product-costo" step="0.01" min="0" value="0.00">
-                    </div>
-                </div>
+            <!-- MODAL: PRODUCTO - PARTE DEL STOCK -->
+<div class="form-row">
+    <div>
+        <label>Stock <span id="stock-label" style="color:var(--text-light); font-weight:400; font-size:11px;">(solo al crear)</span></label>
+        <input type="number" id="product-stock" step="0.01" min="0" value="0">
+        <small style="color:var(--text-light); font-size:10px;">Para modificar stock usa <strong>"Entrada"</strong></small>
+    </div>
+    <div>
+        <label>Costo (C$)</label>
+        <input type="number" id="product-costo" step="0.01" min="0" value="0.00">
+    </div>
+</div>
                 <div class="form-row">
                     <div>
                         <label>Precio Venta (C$)</label>
@@ -1114,9 +1070,6 @@ VIEW: REPORTES
         let proveedoresCache = [];
         let clientesCache = [];
         let vendedoresCache = [];
-        
-        // Variable global para mantener el filtro de stock activo
-        let currentStockFilter = 'todos';
 
         // ============================================
         // LOGOUT - Redirige a index.html
@@ -1130,31 +1083,15 @@ VIEW: REPORTES
         }
 
         // ============================================
-        // FILTRAR PRODUCTOS POR ESTADO (CLICK EN TARJETAS) - CORREGIDO
+        // FILTRAR PRODUCTOS POR ESTADO (CLICK EN TARJETAS)
         // ============================================
         function filtrarPorEstado(tipo) {
-            currentStockFilter = tipo;
-            
-            // Actualizar UI visual de tarjetas activas
-            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter'));
-            const cardMap = {
-                'todos': 'card-todos',
-                'stock-normal': 'card-normal',
-                'stock-bajo': 'card-bajo',
-                'agotados': 'card-agotados'
-            };
-            if(cardMap[tipo]) document.getElementById(cardMap[tipo])?.classList.add('active-filter');
-
             showView('productos');
             cargarProductosConFiltro(tipo);
         }
 
         function limpiarFiltroProductos() {
-            currentStockFilter = 'todos';
             document.getElementById('productos-titulo').textContent = 'Todos los Productos';
-            document.getElementById('productos-buscar-input').value = '';
-            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter'));
-            document.getElementById('card-todos').classList.add('active-filter');
             cargarProductosConFiltro('todos');
         }
 
@@ -1313,7 +1250,7 @@ VIEW: REPORTES
 
             const loadMap = {
                 'dashboard': loadDashboardData,
-                'productos': () => cargarProductosConFiltro(currentStockFilter),
+                'productos': loadProductos,
                 'categorias': loadCategorias,
                 'proveedores': loadProveedores,
                 'clientes': loadClientes,
@@ -1332,24 +1269,19 @@ VIEW: REPORTES
         // ============================================
         // MODALES
         // ============================================
-        async function openModal(type, data = null) {
+  function openModal(type, data = null) {
             document.getElementById('modal-' + type).style.display = 'block';
             if (type === 'product') {
                 document.getElementById('product-modal-title').textContent = data ? 'Editar Producto' : 'Agregar Producto';
                 
                 const stockInput = document.getElementById('product-stock');
-                const stockLabel = document.getElementById('stock-label');
-                const telInput = document.getElementById('product-telefono');
-                const telError = document.getElementById('tel-error');
-
-                // Resetear errores
-                telInput.classList.remove('input-error');
-                telError.style.display = 'none';
+             const stockLabel = document.getElementById('stock-label');
 
                 if (data) {
-                    stockInput.disabled = true;
-                    stockInput.style.background = '#f1f5f9';
-                    stockLabel.textContent = '(no editable, usa Entrada)';
+
+                        stockInput.disabled = true;
+                        stockInput.style.background = '#f1f5f9';
+                        stockLabel.textContent = '(no editable, usa Entrada)';
 
                     document.getElementById('product-id').value = data.id;
                     document.getElementById('product-descripcion').value = data.descripcion || '';
@@ -1357,22 +1289,16 @@ VIEW: REPORTES
                     document.getElementById('product-costo').value = parseFloat(data.costo).toFixed(2);
                     document.getElementById('product-precio').value = parseFloat(data.precio).toFixed(2);
                     document.getElementById('product-clave').value = data.id;
-                    
-                    // En edición, mostramos la categoría/proveedor existente
-                    document.getElementById('product-categoria-proveedor').value = data.categoria_nombre || data.proveedor_nombre || '';
-                    document.getElementById('product-telefono').value = ''; // No mostramos tel en edición para evitar confusión
-                    
                 } else {
-                    stockInput.disabled = false;
-                    stockInput.style.background = '';
-                    stockLabel.textContent = '(solo al crear)';
+
+                     stockInput.disabled = false;
+                        stockInput.style.background = '';
+                        stockLabel.textContent = '(solo al crear)';
                     document.getElementById('productForm').reset();
                     document.getElementById('product-id').value = '';
                     document.getElementById('product-clave').value = 'Auto-Generada';
-                    document.getElementById('product-categoria-proveedor').value = '';
                 }
-                
-                await loadProductFormData(); // Cargar datalist
+                loadProductFormData();
             } else if (type === 'categoria') {
                 document.getElementById('categoria-modal-title').textContent = data ? 'Editar Categoría' : 'Nueva Categoría';
                 document.getElementById('categoria-id').value = data ? data.id : '';
@@ -1414,6 +1340,11 @@ VIEW: REPORTES
             await loadProveedores(false);
         }
 
+                async function loadDashboardData() {
+            await loadProductos();
+            await loadProveedores(false);
+        }
+
         async function loadProductFormData() {
             try {
                 const [provResp, catResp] = await Promise.all([
@@ -1424,39 +1355,35 @@ VIEW: REPORTES
                 const provData = await provResp.json();
                 const catData = await catResp.json();
 
-                // Llenar DATALIST para autocompletado inteligente
-                const datalist = document.getElementById('lista-cat-prov');
-                datalist.innerHTML = '';
-                
-                categoriasCache = catData.categorias || [];
-                proveedoresCache = provData.proveedores || [];
+                const provSelect = document.getElementById('product-proveedor');
+                provSelect.innerHTML = '<option value="">-- Seleccionar --</option>';
+                if (provData.success) {
+                    provData.proveedores.forEach(p => {
+                        provSelect.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
+                    });
+                }
 
-                // Combinamos nombres únicos para el autocompletado
-                const nombresUnicos = new Set();
-                [...categoriasCache, ...proveedoresCache].forEach(item => {
-                    if(item.nombre) nombresUnicos.add(item.nombre);
-                });
+                const catSelect = document.getElementById('product-categoria');
+                catSelect.innerHTML = '<option value="">-- Seleccionar --</option>';
+                if (catData.success) {
+                    catData.categorias.forEach(c => {
+                        catSelect.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+                    });
+                }
 
-                nombresUnicos.forEach(nombre => {
-                    const opt = document.createElement('option');
-                    opt.value = nombre;
-                    datalist.appendChild(opt);
-                });
-
-                // Si estamos editando, pre-seleccionar valores originales
                 const productId = document.getElementById('product-id').value;
                 if (productId) {
                     const producto = productosCache.find(p => p.id == productId);
                     if (producto) {
-                        // En edición usamos el nombre directo porque el smart input lo maneja así
-                        document.getElementById('product-categoria-proveedor').value = producto.categoria_nombre || producto.proveedor_nombre || '';
+                        document.getElementById('product-proveedor').value = producto.proveedor_id || '';
+                        document.getElementById('product-categoria').value = producto.categoria_id || '';
                     }
                 }
             } catch (e) { console.error('Error loading form data:', e); }
         }
 
         // ============================================
-        // PRODUCTOS (CON SMART FORM Y VALIDACIÓN TEL)
+        // PRODUCTOS
         // ============================================
 
         async function loadProductos() {
@@ -1475,8 +1402,8 @@ VIEW: REPORTES
                     renderProductosDashboard(productosCache.slice(0, 10));
                     updateStats(productosCache);
                     updateCharts(productosCache);
-                    // También actualizar la vista completa de productos manteniendo filtro actual
-                    cargarProductosConFiltro(currentStockFilter);
+                    // También actualizar la vista completa de productos
+                    cargarProductosConFiltro('todos');
                 }
             } catch (error) {
                 tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted" style="padding:20px;">Error de conexión</td></tr>';
@@ -1535,72 +1462,30 @@ VIEW: REPORTES
             document.getElementById('valor-inventario').textContent = `C$${valorTotal.toFixed(2)}`;
         }
 
-        // Product Form Submit - SMART LOGIC + VALIDACIÓN TEL
+        // Product Form Submit
         document.getElementById('productForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const id = document.getElementById('product-id').value;
             const isEditing = !!id;
-            const telefono = document.getElementById('product-telefono').value.trim();
-            const telError = document.getElementById('tel-error');
-            const telInput = document.getElementById('product-telefono');
 
-            // Validación estricta de 8 dígitos si se escribió algo
-            if (telefono && !/^\d{8}$/.test(telefono)) {
-                telError.style.display = 'block';
-                telInput.classList.add('input-error');
+            const data = {
+                proveedor_id: document.getElementById('product-proveedor').value,
+                categoria_id: document.getElementById('product-categoria').value,
+                descripcion: document.getElementById('product-descripcion').value.trim(),
+                stock: parseFloat(document.getElementById('product-stock').value) || 0,
+                costo: parseFloat(document.getElementById('product-costo').value) || 0,
+                precio: parseFloat(document.getElementById('product-precio').value) || 0,
+            };
+
+            if (!data.proveedor_id || !data.categoria_id || !data.descripcion) {
+                alert('⚠️ Proveedor, Categoría y Descripción son obligatorios.');
                 return;
             }
-            telError.style.display = 'none';
-            telInput.classList.remove('input-error');
 
-            const nombreUnificado = document.getElementById('product-categoria-proveedor').value.trim();
-            if(!nombreUnificado) {
-                alert('⚠️ Ingresa una Categoría o Proveedor.');
-                return;
-            }
+            const method = isEditing ? 'PUT' : 'POST';
+            const url = isEditing ? `${API_URL}/admin/productos/${id}` : `${API_URL}/admin/productos`;
 
             try {
-                // 1. Buscar o Crear Categoría
-                let catId = categoriasCache.find(c => c.nombre.toLowerCase() === nombreUnificado.toLowerCase())?.id;
-                if (!catId) {
-                    const res = await fetch(`${API_URL}/admin/categorias`, {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
-                        body: JSON.stringify({nombre: nombreUnificado})
-                    });
-                    const data = await res.json();
-                    if(data.success) catId = data.categoria.id;
-                }
-
-                // 2. Buscar o Crear Proveedor
-                let provId = proveedoresCache.find(p => p.nombre.toLowerCase() === nombreUnificado.toLowerCase())?.id;
-                if (!provId) {
-                    const res = await fetch(`${API_URL}/admin/proveedores`, {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
-                        body: JSON.stringify({
-                            nombre: nombreUnificado,
-                            telefono: telefono || null
-                        })
-                    });
-                    const data = await res.json();
-                    if(data.success) provId = data.proveedor.id;
-                }
-
-                // 3. Crear/Actualizar Producto
-                const data = {
-                    proveedor_id: provId,
-                    categoria_id: catId,
-                    descripcion: document.getElementById('product-descripcion').value.trim(),
-                    stock: parseFloat(document.getElementById('product-stock').value) || 0,
-                    costo: parseFloat(document.getElementById('product-costo').value) || 0,
-                    precio: parseFloat(document.getElementById('product-precio').value) || 0,
-                };
-
-                const method = isEditing ? 'PUT' : 'POST';
-                const url = isEditing ? `${API_URL}/admin/productos/${id}` : `${API_URL}/admin/productos`;
-
                 const response = await fetch(url, {
                     method: method,
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -1635,7 +1520,7 @@ VIEW: REPORTES
                     alert('❌ Error: ' + (result.message || 'No se puede eliminar.'));
                 }
             } catch (error) {
-                alert(' Error de conexión.');
+                alert('❌ Error de conexión.');
             }
         }
 
@@ -2028,7 +1913,7 @@ function formatStock(value) {
                     alert('✅ Vendedor eliminado.');
                     loadVendedores();
                 } else {
-                    alert(' Error: ' + (result.message || 'Es el vendedor por defecto.'));
+                    alert('❌ Error: ' + (result.message || 'Es el vendedor por defecto.'));
                 }
             } catch (error) {
                 alert('❌ Error de conexión.');
