@@ -221,7 +221,7 @@
         .chart-card:hover { box-shadow: var(--shadow-hover); }
         .chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .chart-card h3 i { color: var(--primary); }
-        .chart-card .chart-container { position: relative; height: 200px; }
+        .chart-card .chart-container { position: relative; height: 250px; }
 
         /* TABLA */
         .table-card {
@@ -591,7 +591,7 @@
         <!-- Charts -->
         <div class="charts-grid">
             <div class="chart-card">
-                <h3><i class="fas fa-chart-line"></i> Top 5 Productos con más stock</h3>
+                <h3><i class="fas fa-chart-line"></i> Top 10 Productos con más stock</h3>
                 <div class="chart-container">
                     <canvas id="topProductsChart"></canvas>
                 </div>
@@ -1233,33 +1233,44 @@ VIEW: REPORTES
         }
 
         function updateCharts(productos) {
-            if (categoryChart && productos && productos.length > 0) {
-                const categorias = {};
-                productos.forEach(p => {
-                    const cat = p.categoria_nombre || 'Sin categoría';
-                    categorias[cat] = (categorias[cat] || 0) + 1;
-                });
-                const labels = Object.keys(categorias);
-                const data = Object.values(categorias);
-                const colors = ['#6366f1', '#8b5cf6', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#ec4899'];
-                categoryChart.data.labels = labels;
-                categoryChart.data.datasets[0].data = data;
-                categoryChart.data.datasets[0].backgroundColor = colors.slice(0, labels.length);
-                categoryChart.update();
-            }
+    if (categoryChart && productos && productos.length > 0) {
+        const categorias = {};
+        productos.forEach(p => {
+            const cat = p.categoria_nombre || 'Sin categoría';
+            categorias[cat] = (categorias[cat] || 0) + 1;
+        });
+        const labels = Object.keys(categorias);
+        const data = Object.values(categorias);
+        const colors = ['#6366f1', '#8b5cf6', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#ec4899', '#14b8a6', '#8b5cf6', '#f472b6'];
+        categoryChart.data.labels = labels;
+        categoryChart.data.datasets[0].data = data;
+        categoryChart.data.datasets[0].backgroundColor = colors.slice(0, labels.length);
+        categoryChart.update();
+    }
 
-            if (topProductsChart && productos && productos.length > 0) {
-                const sorted = [...productos].sort((a, b) => (b.stock || 0) - (a.stock || 0)).slice(0, 5);
-                const labels = sorted.map(p => p.descripcion && p.descripcion.length > 15 ? p.descripcion.substring(0, 14) + '…' : (p.descripcion || 'Sin nombre'));
-                const data = sorted.map(p => p.stock || 0);
-                const colors = ['#6366f1', '#8b5cf6', '#3b82f6', '#22c55e', '#f59e0b'];
-                topProductsChart.data.labels = labels;
-                topProductsChart.data.datasets[0].data = data;
-                topProductsChart.data.datasets[0].backgroundColor = colors;
-                topProductsChart.update();
-            }
-        }
+    if (topProductsChart && productos && productos.length > 0) {
+        const sorted = [...productos]
+            .sort((a, b) => (b.stock || 0) - (a.stock || 0))
+            .slice(0, 10); 
 
+        const labels = sorted.map(p => 
+            p.descripcion && p.descripcion.length > 12 
+                ? p.descripcion.substring(0, 11) + '…' 
+                : (p.descripcion || 'Sin nombre')
+        );
+        const data = sorted.map(p => p.stock || 0);
+        
+        const colors = [
+            '#6366f1', '#8b5cf6', '#3b82f6', '#22c55e', '#f59e0b',
+            '#ef4444', '#ec4899', '#14b8a6', '#8b5cf6', '#f472b6'
+        ];
+        
+        topProductsChart.data.labels = labels;
+        topProductsChart.data.datasets[0].data = data;
+        topProductsChart.data.datasets[0].backgroundColor = colors;
+        topProductsChart.update();
+    }
+}
         // ============================================
         // NAVEGACIÓN
         // ============================================
