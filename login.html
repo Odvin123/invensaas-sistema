@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Iniciar Sesión - InvenSaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="icon" type="image/png" href="IM.png" />
 
     <script src="js/config.js"></script>
-    
+
     <style>
         /* ============================================
            RESET Y VARIABLES
@@ -81,8 +83,15 @@
         }
 
         @keyframes floatBlob {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(30px, -30px) scale(1.1); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
         }
 
         /* ============================================
@@ -106,6 +115,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -410,6 +420,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="login-wrapper" id="loginWrapper">
@@ -498,7 +509,7 @@
         // ============================================
         // TOGGLE CONTRASEÑA
         // ============================================
-        togglePasswordButton.addEventListener('click', function() {
+        togglePasswordButton.addEventListener('click', function () {
             const icon = this.querySelector('i');
             const isPassword = passwordInput.getAttribute('type') === 'password';
 
@@ -640,4 +651,5 @@
         });
     </script>
 </body>
+
 </html>

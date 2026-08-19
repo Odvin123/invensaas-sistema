@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SuperAdmin - InvenSaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="js/config.js"></script>
     <style>
@@ -327,8 +329,15 @@
             font-weight: 600;
         }
 
-        .status-badge.active { background: #dcfce7; color: #16a34a; }
-        .status-badge.inactive { background: #fee2e2; color: #dc2626; }
+        .status-badge.active {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-badge.inactive {
+            background: #fee2e2;
+            color: #dc2626;
+        }
 
         .actions-cell {
             display: flex;
@@ -346,11 +355,24 @@
             transition: var(--transition);
         }
 
-        .btn-sm:hover { transform: translateY(-1px); }
+        .btn-sm:hover {
+            transform: translateY(-1px);
+        }
 
-        .btn-edit { background: var(--warning); color: white; }
-        .btn-reset { background: var(--primary); color: white; }
-        .btn-delete { background: var(--danger); color: white; }
+        .btn-edit {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-reset {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
 
         /* ============================================
            LOADING
@@ -367,7 +389,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* ============================================
@@ -423,17 +447,41 @@
            ANIMACIONES
         ============================================ */
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .stat-card { animation: fadeInUp 0.4s ease forwards; }
-        .stat-card:nth-child(1) { animation-delay: 0.05s; }
-        .stat-card:nth-child(2) { animation-delay: 0.10s; }
-        .stat-card:nth-child(3) { animation-delay: 0.15s; }
-        .stat-card:nth-child(4) { animation-delay: 0.20s; }
+        .stat-card {
+            animation: fadeInUp 0.4s ease forwards;
+        }
 
-        .table-card { animation: fadeInUp 0.4s ease 0.15s forwards; opacity: 0; }
+        .stat-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .stat-card:nth-child(2) {
+            animation-delay: 0.10s;
+        }
+
+        .stat-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .stat-card:nth-child(4) {
+            animation-delay: 0.20s;
+        }
+
+        .table-card {
+            animation: fadeInUp 0.4s ease 0.15s forwards;
+            opacity: 0;
+        }
 
         /* ============================================
            MODAL (para crear empresa)
@@ -472,7 +520,9 @@
             transition: var(--transition);
         }
 
-        .modal-content .close:hover { color: var(--secondary); }
+        .modal-content .close:hover {
+            color: var(--secondary);
+        }
 
         .modal-content h3 {
             margin-bottom: 20px;
@@ -511,6 +561,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- ============================================
@@ -519,7 +570,8 @@
     <header class="top-bar">
         <div class="brand">
             <span class="logo">Inven<span>SaaS</span></span>
-            <span style="font-size:12px; background:var(--primary); color:white; padding:2px 12px; border-radius:20px;">SuperAdmin</span>
+            <span
+                style="font-size:12px; background:var(--primary); color:white; padding:2px 12px; border-radius:20px;">SuperAdmin</span>
         </div>
         <div class="user-info">
             <span style="color:var(--text-light); font-size:14px;">Super Administrador</span>
@@ -529,36 +581,43 @@
             </a>
         </div>
     </header>
-<!-- En el dashboard-menu o donde quieras -->
-<!-- ============================================
+    <!-- En el dashboard-menu o donde quieras -->
+    <!-- ============================================
     INVITAR NUEVA EMPRESA (CON TOKENS)
 ============================================ -->
-<div class="invite-section" style="background: #f0f7ff; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #dbeafe;">
-    <h3 style="color: #1e293b; margin-bottom: 8px;">
-        <i class="fas fa-envelope" style="color: #6366f1;"></i> Invitar Nueva Empresa
-    </h3>
-    <p style="color: #64748b; font-size: 14px; margin-bottom: 12px;">
-        Genera un enlace único de un solo uso para registrar una nueva empresa.
-    </p>
-    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-        <div style="flex: 0 0 auto;">
-            <label style="font-size: 12px; font-weight: 600; color: #64748b; display: block; margin-bottom: 2px;">Días de validez:</label>
-            <input type="number" id="dias-validez" value="7" min="1" max="30" 
-                   style="width: 80px; padding: 8px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px;">
+    <div class="invite-section"
+        style="background: #f0f7ff; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #dbeafe;">
+        <h3 style="color: #1e293b; margin-bottom: 8px;">
+            <i class="fas fa-envelope" style="color: #6366f1;"></i> Invitar Nueva Empresa
+        </h3>
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 12px;">
+            Genera un enlace único de un solo uso para registrar una nueva empresa.
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <div style="flex: 0 0 auto;">
+                <label
+                    style="font-size: 12px; font-weight: 600; color: #64748b; display: block; margin-bottom: 2px;">Días
+                    de validez:</label>
+                <input type="number" id="dias-validez" value="7" min="1" max="30"
+                    style="width: 80px; padding: 8px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px;">
+            </div>
+            <button onclick="generarInvitacion()" class="btn btn-primary"
+                style="padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; cursor: pointer; margin-top: 18px;">
+                <i class="fas fa-link"></i> Generar Enlace
+            </button>
         </div>
-        <button onclick="generarInvitacion()" class="btn btn-primary" style="padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-weight: 600; cursor: pointer; margin-top: 18px;">
-    <i class="fas fa-link"></i> Generar Enlace
-</button>
+        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <input type="text" id="inviteLink"
+                style="flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; min-width: 200px; background: white;"
+                placeholder="El enlace aparecerá aquí..." readonly>
+            <button onclick="copiarEnlace()" class="btn btn-success"
+                style="padding: 10px 20px; border: none; border-radius: 8px; background: #22c55e; color: white; font-weight: 600; cursor: pointer;">
+                <i class="fas fa-copy"></i> Copiar
+            </button>
+        </div>
+        <div id="invitaciones-lista" style="margin-top: 16px; max-height: 200px; overflow-y: auto; font-size: 13px;">
+        </div>
     </div>
-    <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-        <input type="text" id="inviteLink" style="flex: 1; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; min-width: 200px; background: white;" placeholder="El enlace aparecerá aquí..." readonly>
-        <button onclick="copiarEnlace()" class="btn btn-success" style="padding: 10px 20px; border: none; border-radius: 8px; background: #22c55e; color: white; font-weight: 600; cursor: pointer;">
-            <i class="fas fa-copy"></i> Copiar
-        </button>
-    </div>
-    <div id="invitaciones-lista" style="margin-top: 16px; max-height: 200px; overflow-y: auto; font-size: 13px;">
-    </div>
-</div>
     <!-- ============================================
     DASHBOARD
     ============================================ -->
@@ -624,7 +683,9 @@
                         </tr>
                     </thead>
                     <tbody id="empresas-tbody">
-                        <tr><td colspan="7" class="loading"><i class="fas fa-spinner"></i> Cargando empresas...</td></tr>
+                        <tr>
+                            <td colspan="7" class="loading"><i class="fas fa-spinner"></i> Cargando empresas...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -659,9 +720,9 @@
         </div>
     </div>
 
-    
+
     <script>
-       
+
         const API_URL_EMPRESAS = API_URL + '/admin/empresas';
         const API_URL_REGISTER = API_URL + '/register';
         const API_URL_ADMIN_RESET = API_URL + '/admin/reset-pw';
@@ -673,13 +734,13 @@
         // FUNCIONES PRINCIPALES
         // ============================================
 
- function logout() {
-    if (confirm('¿Cerrar sesión?')) {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = 'index.html';  
-    }
-}
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
         async function loadEmpresas() {
             const tbody = document.getElementById('empresas-tbody');
             tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner"></i> Cargando empresas...</td></tr>';
@@ -772,36 +833,36 @@
 
 
         // ============================================
-// GENERAR ENLACE DE INVITACIÓN
-// ============================================
+        // GENERAR ENLACE DE INVITACIÓN
+        // ============================================
 
-function generarEnlaceInvitacion() {
-    // Obtener la URL base (local o producción)
-    const baseUrl = window.location.origin;
-    const enlace = `${baseUrl}/registro_empresa.html`;
-    
-    document.getElementById('inviteLink').value = enlace;
-    
-    // Mostrar mensaje
-    alert('✅ Enlace generado correctamente.\n\nCopialo y envíalo a la empresa que quieras invitar.');
-}
+        function generarEnlaceInvitacion() {
+            // Obtener la URL base (local o producción)
+            const baseUrl = window.location.origin;
+            const enlace = `${baseUrl}/registro_empresa.html`;
 
-function copiarEnlace() {
-    const input = document.getElementById('inviteLink');
-    if (!input.value) {
-        alert('⚠️ Primero genera el enlace.');
-        return;
-    }
-    
-    input.select();
-    input.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(input.value).then(() => {
-        alert('✅ Enlace copiado al portapapeles.');
-    }).catch(() => {
-        document.execCommand('copy');
-        alert('✅ Enlace copiado al portapapeles.');
-    });
-}
+            document.getElementById('inviteLink').value = enlace;
+
+            // Mostrar mensaje
+            alert('✅ Enlace generado correctamente.\n\nCopialo y envíalo a la empresa que quieras invitar.');
+        }
+
+        function copiarEnlace() {
+            const input = document.getElementById('inviteLink');
+            if (!input.value) {
+                alert('⚠️ Primero genera el enlace.');
+                return;
+            }
+
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value).then(() => {
+                alert('✅ Enlace copiado al portapapeles.');
+            }).catch(() => {
+                document.execCommand('copy');
+                alert('✅ Enlace copiado al portapapeles.');
+            });
+        }
         function showCreateForm() {
             document.getElementById('createModal').style.display = 'block';
             document.getElementById('createForm').reset();
@@ -811,7 +872,7 @@ function copiarEnlace() {
             document.getElementById('createModal').style.display = 'none';
         }
 
-        document.getElementById('createForm').addEventListener('submit', async function(e) {
+        document.getElementById('createForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const data = {
@@ -944,7 +1005,7 @@ function copiarEnlace() {
             }
         }
 
-     document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             if (!token) {
                 alert('Sesión no válida. Redirigiendo...');
                 localStorage.clear();
@@ -956,52 +1017,52 @@ function copiarEnlace() {
         });
 
         // Cerrar modal al hacer click fuera
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target.id === 'createModal') {
                 closeCreateModal();
             }
         };
 
-async function generarInvitacion() {
-    const dias = document.getElementById('dias-validez')?.value || 7;
-    
-    try {
-        const response = await fetch(`${API_URL}/invitaciones/generar`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ dias_validez: parseInt(dias) })
-        });
+        async function generarInvitacion() {
+            const dias = document.getElementById('dias-validez')?.value || 7;
 
-        const result = await response.json();
+            try {
+                const response = await fetch(`${API_URL}/invitaciones/generar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ dias_validez: parseInt(dias) })
+                });
 
-        if (response.ok && result.success) {
-            document.getElementById('inviteLink').value = result.enlace;
-            alert(`✅ Enlace generado correctamente.\n\nExpira en ${dias} días.\n\nComparte este enlace con la empresa que quieras invitar.`);
-            cargarInvitaciones();
-        } else {
-            alert('❌ Error: ' + (result.message || 'Error desconocido.'));
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    document.getElementById('inviteLink').value = result.enlace;
+                    alert(`✅ Enlace generado correctamente.\n\nExpira en ${dias} días.\n\nComparte este enlace con la empresa que quieras invitar.`);
+                    cargarInvitaciones();
+                } else {
+                    alert('❌ Error: ' + (result.message || 'Error desconocido.'));
+                }
+            } catch (error) {
+                alert('❌ Error de conexión.');
+                console.error('Error:', error);
+            }
         }
-    } catch (error) {
-        alert('❌ Error de conexión.');
-        console.error('Error:', error);
-    }
-}
 
-async function cargarInvitaciones() {
-    try {
-        const response = await fetch(`${API_URL}/invitaciones`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        
-        const container = document.getElementById('invitaciones-lista');
-        if (!container) return;
-        
-        if (data.success && data.invitaciones && data.invitaciones.length > 0) {
-            let html = `<table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:8px;">
+        async function cargarInvitaciones() {
+            try {
+                const response = await fetch(`${API_URL}/invitaciones`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                const container = document.getElementById('invitaciones-lista');
+                if (!container) return;
+
+                if (data.success && data.invitaciones && data.invitaciones.length > 0) {
+                    let html = `<table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:8px;">
                 <thead>
                     <tr style="background:#f1f5f9;">
                         <th style="padding:6px 8px; text-align:left;">Token</th>
@@ -1011,12 +1072,12 @@ async function cargarInvitaciones() {
                     </tr>
                 </thead>
                 <tbody>`;
-            
-            data.invitaciones.slice(0, 10).forEach(inv => {
-                const expirado = new Date(inv.fecha_expiracion) < new Date();
-                const estado = inv.usado ? '✅ Usado' : (expirado ? '❌ Expirado' : '🟢 Activo');
-                const color = inv.usado ? '#22c55e' : (expirado ? '#ef4444' : '#3b82f6');
-                html += `
+
+                    data.invitaciones.slice(0, 10).forEach(inv => {
+                        const expirado = new Date(inv.fecha_expiracion) < new Date();
+                        const estado = inv.usado ? '✅ Usado' : (expirado ? '❌ Expirado' : '🟢 Activo');
+                        const color = inv.usado ? '#22c55e' : (expirado ? '#ef4444' : '#3b82f6');
+                        html += `
                     <tr style="border-bottom:1px solid #e2e8f0;">
                         <td style="padding:6px 8px; font-family:monospace; font-size:10px; color:#6366f1;">${inv.token.substring(0, 12)}...</td>
                         <td style="padding:6px 8px; font-size:12px;">${new Date(inv.fecha_creacion).toLocaleDateString()}</td>
@@ -1024,17 +1085,18 @@ async function cargarInvitaciones() {
                         <td style="padding:6px 8px; text-align:center; color:${color}; font-weight:600; font-size:11px;">${estado}</td>
                     </tr>
                 `;
-            });
-            
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-        } else {
-            container.innerHTML = '<p style="color:#94a3b8; font-size:13px; padding:8px 0;">📭 No hay invitaciones generadas.</p>';
+                    });
+
+                    html += `</tbody></table>`;
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<p style="color:#94a3b8; font-size:13px; padding:8px 0;">📭 No hay invitaciones generadas.</p>';
+                }
+            } catch (error) {
+                console.error('Error al cargar invitaciones:', error);
+            }
         }
-    } catch (error) {
-        console.error('Error al cargar invitaciones:', error);
-    }
-}
     </script>
 </body>
+
 </html>

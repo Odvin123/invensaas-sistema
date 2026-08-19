@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Ventas | InvenSaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/reporte_ventas.css">
     <script src="js/config.js"></script>
 </head>
+
 <body>
     <div class="container">
         <!-- HEADER -->
@@ -31,7 +34,8 @@
             </div>
             <div class="actions">
                 <button class="btn btn-primary" id="btn-mostrar"><i class="fas fa-eye"></i> Mostrar Detalles</button>
-                <button class="btn btn-outline" id="btn-refrescar"><i class="fas fa-sync-alt"></i> Refrescar (Todas)</button>
+                <button class="btn btn-outline" id="btn-refrescar"><i class="fas fa-sync-alt"></i> Refrescar
+                    (Todas)</button>
             </div>
         </div>
 
@@ -58,7 +62,10 @@
                         </tr>
                     </thead>
                     <tbody id="ventas-tbody">
-                        <tr><td colspan="10" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando ventas...</td></tr>
+                        <tr>
+                            <td colspan="10" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando ventas...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -66,18 +73,18 @@
     </div>
 
     <script>
-        (function() {
+        (function () {
             console.log('🚀 ===== REPORTE DE VENTAS INICIADO =====');
-            
+
             const token = localStorage.getItem('token');
             const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
             let todasLasVentas = [];
-            
+
             console.log('🔑 Token:', token ? '✅ Sí' : '❌ No');
             console.log('🌐 API_URL:', API_URL);
 
             if (!token) {
-                document.getElementById('ventas-tbody').innerHTML = 
+                document.getElementById('ventas-tbody').innerHTML =
                     '<tr><td colspan="10" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
                 return;
             }
@@ -85,7 +92,7 @@
             const tbody = document.getElementById('ventas-tbody');
             const totalAcumuladoEl = document.getElementById('total-acumulado');
 
-           
+
             function formatNumber(value) {
                 const num = Number(value);
                 return isNaN(num) ? '0.00' : num.toFixed(2);
@@ -100,10 +107,10 @@
                 try {
                     const date = new Date(dateStr);
                     return date.toLocaleString('es-NI', {
-                        day: '2-digit', 
-                        month: '2-digit', 
+                        day: '2-digit',
+                        month: '2-digit',
                         year: 'numeric',
-                        hour: '2-digit', 
+                        hour: '2-digit',
                         minute: '2-digit'
                     });
                 } catch {
@@ -112,8 +119,8 @@
             }
 
             function getStatusBadge(esFactura) {
-                return esFactura 
-                    ? '<span class="status-badge yes">Sí</span>' 
+                return esFactura
+                    ? '<span class="status-badge yes">Sí</span>'
                     : '<span class="status-badge no">No</span>';
             }
 
@@ -127,7 +134,7 @@
                 }).join(', ');
             }
 
-         
+
             function renderVentas(ventas) {
                 if (!ventas || ventas.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="10" class="empty">📭 No hay ventas registradas.</td></tr>';
@@ -164,7 +171,7 @@
                 console.log('✅ Tabla renderizada con', ventas.length, 'ventas');
             }
 
-         
+
             async function loadVentas(filtros = {}) {
                 console.log('🔄 Cargando ventas...');
                 tbody.innerHTML = '<tr><td colspan="10" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
@@ -172,10 +179,10 @@
                 try {
                     let url = `${API_URL}/admin/ventas/reportes`;
                     const params = new URLSearchParams();
-                    
+
                     if (filtros.inicio) params.append('inicio', filtros.inicio);
                     if (filtros.fin) params.append('fin', filtros.fin);
-                    
+
                     if (params.toString()) {
                         url += '?' + params.toString();
                     }
@@ -212,17 +219,17 @@
                 }
             }
 
-            
+
 
             document.getElementById('btn-mostrar').addEventListener('click', () => {
                 const inicio = document.getElementById('fecha-inicio').value;
                 const fin = document.getElementById('fecha-fin').value;
-                
+
                 if (!inicio || !fin) {
                     alert('⚠️ Selecciona ambas fechas (inicial y final) para filtrar.');
                     return;
                 }
-                
+
                 loadVentas({ inicio, fin });
             });
 
@@ -232,7 +239,7 @@
                 loadVentas({});
             });
 
-            
+
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => loadVentas({}));
             } else {
@@ -242,4 +249,5 @@
         })();
     </script>
 </body>
+
 </html>

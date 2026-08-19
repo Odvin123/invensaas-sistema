@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Movimientos de Inventario | InvenSaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/reporte_inventario.css">
     <script src="js/config.js"></script>
 </head>
+
 <body>
     <div class="container">
         <!-- ============================================
@@ -53,14 +56,18 @@
                     <button class="btn btn-export" id="btn-exportar">
                         <i class="fas fa-file-export"></i> Exportar ▼
                     </button>
-                    <div class="dropdown-content" style="display:none; position:absolute; background:white; min-width:160px; box-shadow:0 8px 16px rgba(0,0,0,0.1); border-radius:8px; z-index:10; margin-top:4px;">
-                        <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
+                    <div class="dropdown-content"
+                        style="display:none; position:absolute; background:white; min-width:160px; box-shadow:0 8px 16px rgba(0,0,0,0.1); border-radius:8px; z-index:10; margin-top:4px;">
+                        <button onclick="exportarCSV()"
+                            style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
                             <i class="fas fa-file-csv" style="color:#22c55e;"></i> CSV
                         </button>
-                        <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
+                        <button onclick="exportarCSV()"
+                            style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
                             <i class="fas fa-file-excel" style="color:#22c55e;"></i> Excel (CSV)
                         </button>
-                        <button onclick="window.print()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
+                        <button onclick="window.print()"
+                            style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
                             <i class="fas fa-print" style="color:#3b82f6;"></i> Imprimir
                         </button>
                     </div>
@@ -87,7 +94,10 @@
                         </tr>
                     </thead>
                     <tbody id="movimientos-tbody">
-                        <tr><td colspan="8" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando movimientos...</td></tr>
+                        <tr>
+                            <td colspan="8" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando movimientos...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -116,18 +126,18 @@
     </div>
 
     <script>
-        (function() {
+        (function () {
             console.log('🚀 ===== REPORTE INVENTARIO INICIADO =====');
-            
+
             const token = localStorage.getItem('token');
             const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
             let todosLosMovimientos = [];
-            
+
             console.log('🔑 Token:', token ? '✅ Sí' : '❌ No');
             console.log('🌐 API_URL:', API_URL);
 
             if (!token) {
-                document.getElementById('movimientos-tbody').innerHTML = 
+                document.getElementById('movimientos-tbody').innerHTML =
                     '<tr><td colspan="8" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
                 return;
             }
@@ -241,7 +251,7 @@
             // ============================================
             function exportarCSV() {
                 const rows = tbody.querySelectorAll('tr');
-                
+
                 if (rows.length === 0 || rows[0].classList.contains('empty')) {
                     alert('⚠️ No hay datos para exportar.');
                     return;
@@ -281,11 +291,11 @@
                 const link = document.createElement('a');
                 const url = URL.createObjectURL(blob);
                 link.setAttribute('href', url);
-                
+
                 const now = new Date();
                 const fechaStr = now.toISOString().slice(0, 10);
                 link.setAttribute('download', `movimientos_inventario_${fechaStr}.csv`);
-                
+
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -324,7 +334,7 @@
                 }
 
                 if (buscarProducto) {
-                    filtrados = filtrados.filter(m => 
+                    filtrados = filtrados.filter(m =>
                         (m.producto_nombre && m.producto_nombre.toLowerCase().includes(buscarProducto))
                     );
                 }
@@ -346,7 +356,7 @@
             });
 
             // ✅ CORREGIDO: El evento de exportar ya está bien
-            document.getElementById('btn-exportar').addEventListener('click', function(e) {
+            document.getElementById('btn-exportar').addEventListener('click', function (e) {
                 e.stopPropagation();
                 // El dropdown se maneja con CSS
             });
@@ -369,4 +379,5 @@
         })();
     </script>
 </body>
+
 </html>

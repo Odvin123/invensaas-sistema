@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Registro de Empresa - InvenSaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     <style>
@@ -55,8 +57,15 @@
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header {
@@ -304,7 +313,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Footer */
@@ -409,11 +420,13 @@
             -webkit-appearance: none;
             margin: 0;
         }
+
         input[type=number] {
             -moz-appearance: textfield;
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -511,8 +524,8 @@
     </div>
 
     <script>
-        
-        document.getElementById('togglePassword').addEventListener('click', function() {
+
+        document.getElementById('togglePassword').addEventListener('click', function () {
             const passwordInput = document.getElementById('password_admin');
             const icon = this.querySelector('i');
 
@@ -529,8 +542,8 @@
             }
         });
 
-  
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
 
@@ -559,9 +572,9 @@
         let tenantTimeout = null;
         let emailTimeout = null;
 
-        tenantInput.addEventListener('input', function() {
+        tenantInput.addEventListener('input', function () {
             const value = this.value.trim();
-            
+
             if (value.length < 2) {
                 tenantValidation.className = 'validation-message';
                 this.classList.remove('input-error', 'input-success');
@@ -591,9 +604,9 @@
             }, 500);
         });
 
-        emailInput.addEventListener('input', function() {
+        emailInput.addEventListener('input', function () {
             const value = this.value.trim();
-            
+
             if (value.length < 3 || !value.includes('@')) {
                 emailValidation.className = 'validation-message';
                 this.classList.remove('input-error', 'input-success');
@@ -623,16 +636,16 @@
             }, 500);
         });
 
-        tenantInput.addEventListener('focus', function() {
+        tenantInput.addEventListener('focus', function () {
             this.select();
         });
 
-        emailInput.addEventListener('focus', function() {
+        emailInput.addEventListener('focus', function () {
             this.select();
         });
 
-        
-        document.getElementById('registroForm').addEventListener('submit', async function(e) {
+
+        document.getElementById('registroForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const token = document.getElementById('token_invitacion').value;
@@ -718,13 +731,14 @@
             }
         });
 
-        
+
         document.querySelectorAll('#registroForm input').forEach(input => {
-            input.addEventListener('input', function() {
+            input.addEventListener('input', function () {
                 document.getElementById('mensaje-error').style.display = 'none';
                 document.getElementById('mensaje-success').style.display = 'none';
             });
         });
     </script>
 </body>
+
 </html>

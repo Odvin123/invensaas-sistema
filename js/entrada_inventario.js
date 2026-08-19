@@ -1,67 +1,69 @@
 // js/entrada_inventario.js
-let token = localStorage.getItem('token');
+let token = localStorage.getItem("token");
 let productosCache = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (!token) {
-        alert('⚠️ Sesión no válida. Redirigiendo al login...');
-        window.location.href = 'login.html';
-        return;
-    }
-    loadProductos();
+document.addEventListener("DOMContentLoaded", () => {
+  if (!token) {
+    alert("⚠️ Sesión no válida. Redirigiendo al login...");
+    window.location.href = "login.html";
+    return;
+  }
+  loadProductos();
 });
 
 async function loadProductos() {
-    try {
-        const response = await fetch(`${API_URL}/admin/productos`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        if (data.success) {
-            productosCache = data.productos;
-            console.log('✅ Productos cargados:', productosCache.length);
-        }
-    } catch (error) {
-        console.error('Error al cargar productos:', error);
+  try {
+    const response = await fetch(`${API_URL}/admin/productos`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await response.json();
+    if (data.success) {
+      productosCache = data.productos;
+      console.log("✅ Productos cargados:", productosCache.length);
     }
+  } catch (error) {
+    console.error("Error al cargar productos:", error);
+  }
 }
 
 function addProductoRow() {
-    openBusquedaModal();
+  openBusquedaModal();
 }
 
 function openBusquedaModal() {
-    document.getElementById('busquedaModal').style.display = 'block';
-    renderBusquedaProductos(productosCache);
-    document.getElementById('filtro-producto').value = '';
-    document.getElementById('filtro-producto').focus();
+  document.getElementById("busquedaModal").style.display = "block";
+  renderBusquedaProductos(productosCache);
+  document.getElementById("filtro-producto").value = "";
+  document.getElementById("filtro-producto").focus();
 }
 
 function closeBusquedaModal() {
-    document.getElementById('busquedaModal').style.display = 'none';
+  document.getElementById("busquedaModal").style.display = "none";
 }
 
 function filterProductos() {
-    const filtro = document.getElementById('filtro-producto').value.toLowerCase();
-    const productosFiltrados = productosCache.filter(p =>
-        p.descripcion.toLowerCase().includes(filtro) ||
-        p.id.toString().includes(filtro)
-    );
-    renderBusquedaProductos(productosFiltrados);
+  const filtro = document.getElementById("filtro-producto").value.toLowerCase();
+  const productosFiltrados = productosCache.filter(
+    (p) =>
+      p.descripcion.toLowerCase().includes(filtro) ||
+      p.id.toString().includes(filtro),
+  );
+  renderBusquedaProductos(productosFiltrados);
 }
 
 function renderBusquedaProductos(productos) {
-    const tbody = document.getElementById('busqueda-tbody');
-    tbody.innerHTML = '';
+  const tbody = document.getElementById("busqueda-tbody");
+  tbody.innerHTML = "";
 
-    if (productos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No se encontraron productos.</td></tr>';
-        return;
-    }
+  if (productos.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="4" style="text-align: center;">No se encontraron productos.</td></tr>';
+    return;
+  }
 
-    productos.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+  productos.forEach((p) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
             <td>${p.id}</td>
             <td>${p.descripcion}</td>
             <td>${Number(p.stock).toFixed(2)}</td>
@@ -71,19 +73,19 @@ function renderBusquedaProductos(productos) {
                 </button>
             </td>
         `;
-        tbody.appendChild(tr);
-    });
+    tbody.appendChild(tr);
+  });
 }
 
 // 🔥 SELECT PRODUCTO - CON BOTONES + Y - Y INPUT TEXT SIN VALIDACIÓN
 function selectProducto(id, descripcion) {
-    const tbody = document.getElementById('productos-tbody');
-    const emptyRow = tbody.querySelector('tr td[colspan]');
-    if (emptyRow) tbody.innerHTML = '';
+  const tbody = document.getElementById("productos-tbody");
+  const emptyRow = tbody.querySelector("tr td[colspan]");
+  if (emptyRow) tbody.innerHTML = "";
 
-    const tr = document.createElement('tr');
-    tr.dataset.productoId = id;
-    tr.innerHTML = `
+  const tr = document.createElement("tr");
+  tr.dataset.productoId = id;
+  tr.innerHTML = `
         <td>
             <input type="hidden" name="producto_id" value="${id}">
             ${descripcion}
@@ -104,125 +106,128 @@ function selectProducto(id, descripcion) {
             <button type="button" class="btn-delete" onclick="removeRow(this)">🗑️</button>
         </td>
     `;
-    tbody.appendChild(tr);
-    closeBusquedaModal();
+  tbody.appendChild(tr);
+  closeBusquedaModal();
 }
 
 // 🔥 CAMBIAR CANTIDAD CON BOTONES
 function cambiarCantidad(button, incremento) {
-    const row = button.closest('tr');
-    const input = row.querySelector('[name="cantidad"]');
-    let valor = parseFloat(input.value) || 0;
-    valor = Math.max(0.01, valor + incremento);
-    input.value = valor.toFixed(2);
+  const row = button.closest("tr");
+  const input = row.querySelector('[name="cantidad"]');
+  let valor = parseFloat(input.value) || 0;
+  valor = Math.max(0.01, valor + incremento);
+  input.value = valor.toFixed(2);
 }
 
 // 🔥 VALIDAR CANTIDAD - SOLO FILTRAR CARACTERES (SIN VALIDACIÓN DE NAVEGADOR)
 function validarCantidadInput(input) {
-    let value = input.value;
-    
-    // Reemplazar comas por puntos
-    value = value.replace(/,/g, '.');
-    
-    // Eliminar todo excepto números y punto
-    value = value.replace(/[^0-9.]/g, '');
-    
-    // Evitar múltiples puntos
-    const partes = value.split('.');
-    if (partes.length > 2) {
-        value = partes[0] + '.' + partes.slice(1).join('');
-    }
-    
-    // Limitar a 2 decimales
-    if (partes.length === 2 && partes[1].length > 2) {
-        value = partes[0] + '.' + partes[1].substring(0, 2);
-    }
-    
-    // Si está vacío o es solo punto, poner 1.00
-    if (value === '' || value === '.') {
-        value = '1.00';
-    }
-    
-    input.value = value;
+  let value = input.value;
+
+  // Reemplazar comas por puntos
+  value = value.replace(/,/g, ".");
+
+  // Eliminar todo excepto números y punto
+  value = value.replace(/[^0-9.]/g, "");
+
+  // Evitar múltiples puntos
+  const partes = value.split(".");
+  if (partes.length > 2) {
+    value = partes[0] + "." + partes.slice(1).join("");
+  }
+
+  // Limitar a 2 decimales
+  if (partes.length === 2 && partes[1].length > 2) {
+    value = partes[0] + "." + partes[1].substring(0, 2);
+  }
+
+  // Si está vacío o es solo punto, poner 1.00
+  if (value === "" || value === ".") {
+    value = "1.00";
+  }
+
+  input.value = value;
 }
 
 function removeRow(button) {
-    const row = button.closest('tr');
-    row.remove();
+  const row = button.closest("tr");
+  row.remove();
 
-    const tbody = document.getElementById('productos-tbody');
-    if (tbody.children.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">Haz clic en "➕ Añadir Producto"</td></tr>';
-    }
+  const tbody = document.getElementById("productos-tbody");
+  if (tbody.children.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="3" style="text-align: center;">Haz clic en "➕ Añadir Producto"</td></tr>';
+  }
 }
 
 // ✅ ENVIAR ENTRADA
-document.getElementById('btn-guardar').addEventListener('click', async () => {
-    const tbody = document.getElementById('productos-tbody');
-    const rows = tbody.querySelectorAll('tr:not(:has(td[colspan]))');
+document.getElementById("btn-guardar").addEventListener("click", async () => {
+  const tbody = document.getElementById("productos-tbody");
+  const rows = tbody.querySelectorAll("tr:not(:has(td[colspan]))");
 
-    if (rows.length === 0) {
-        alert('⚠️ Debe añadir al menos un producto.');
-        return;
+  if (rows.length === 0) {
+    alert("⚠️ Debe añadir al menos un producto.");
+    return;
+  }
+
+  const productos = [];
+  for (const row of rows) {
+    const id = row.querySelector('[name="producto_id"]').value;
+    const cantidadInput = row.querySelector('[name="cantidad"]');
+    const cantidad = parseFloat(cantidadInput.value) || 0;
+
+    if (cantidad <= 0) {
+      alert(`⚠️ La cantidad "${cantidadInput.value}" no es válida.`);
+      cantidadInput.focus();
+      return;
     }
+    productos.push({ producto_id: parseInt(id), cantidad: cantidad });
+  }
 
-    const productos = [];
-    for (const row of rows) {
-        const id = row.querySelector('[name="producto_id"]').value;
-        const cantidadInput = row.querySelector('[name="cantidad"]');
-        const cantidad = parseFloat(cantidadInput.value) || 0;
-        
-        if (cantidad <= 0) {
-            alert(`⚠️ La cantidad "${cantidadInput.value}" no es válida.`);
-            cantidadInput.focus();
-            return;
-        }
-        productos.push({ producto_id: parseInt(id), cantidad: cantidad });
+  const referencia = document.getElementById("referencia").value.trim();
+  const motivo = document.getElementById("motivo").value.trim();
+
+  const data = { productos, referencia, motivo };
+  console.log("📦 Datos a enviar:", JSON.stringify(data));
+
+  const btn = document.getElementById("btn-guardar");
+  btn.disabled = true;
+  btn.textContent = "⏳ Registrando...";
+
+  try {
+    const response = await fetch(`${API_URL}/admin/inventario/entradas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      alert(
+        `✅ Entrada registrada exitosamente con ${productos.length} producto(s).`,
+      );
+      document.getElementById("referencia").value = "";
+      document.getElementById("motivo").value = "";
+      document.getElementById("productos-tbody").innerHTML =
+        '<tr><td colspan="3" style="text-align: center;">Haz clic en "➕ Añadir Producto"</td></tr>';
+    } else {
+      alert("❌ Error: " + (result.message || "Falló el registro."));
     }
-
-    const referencia = document.getElementById('referencia').value.trim();
-    const motivo = document.getElementById('motivo').value.trim();
-
-    const data = { productos, referencia, motivo };
-    console.log('📦 Datos a enviar:', JSON.stringify(data));
-
-    const btn = document.getElementById('btn-guardar');
-    btn.disabled = true;
-    btn.textContent = '⏳ Registrando...';
-
-    try {
-        const response = await fetch(`${API_URL}/admin/inventario/entradas`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            alert(`✅ Entrada registrada exitosamente con ${productos.length} producto(s).`);
-            document.getElementById('referencia').value = '';
-            document.getElementById('motivo').value = '';
-            document.getElementById('productos-tbody').innerHTML = 
-                '<tr><td colspan="3" style="text-align: center;">Haz clic en "➕ Añadir Producto"</td></tr>';
-        } else {
-            alert('❌ Error: ' + (result.message || 'Falló el registro.'));
-        }
-    } catch (error) {
-        alert('❌ Error de conexión con el servidor.');
-        console.error('Error:', error);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Registrar Entrada';
-    }
+  } catch (error) {
+    alert("❌ Error de conexión con el servidor.");
+    console.error("Error:", error);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Registrar Entrada";
+  }
 });
 
 // Cerrar modal al hacer clic fuera
-window.onclick = function(event) {
-    if (event.target.id === 'busquedaModal') {
-        closeBusquedaModal();
-    }
+window.onclick = function (event) {
+  if (event.target.id === "busquedaModal") {
+    closeBusquedaModal();
+  }
 };

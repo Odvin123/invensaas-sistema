@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Cortes de Caja - InvenSaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="js/config.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
@@ -25,12 +32,14 @@
             --radius: 12px;
             --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
         }
+
         body {
             font-family: 'Inter', sans-serif;
             background: var(--light);
             color: var(--text);
             min-height: 100vh;
         }
+
         .top-bar {
             background: var(--white);
             padding: 16px 32px;
@@ -40,6 +49,7 @@
             border-bottom: 1px solid var(--border);
             box-shadow: var(--shadow);
         }
+
         .top-bar .brand {
             font-size: 22px;
             font-weight: 900;
@@ -47,10 +57,12 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         .top-bar .brand span {
             color: var(--secondary);
             -webkit-text-fill-color: var(--secondary);
         }
+
         .top-bar .back-btn {
             padding: 10px 20px;
             background: var(--light);
@@ -66,19 +78,23 @@
             align-items: center;
             gap: 8px;
         }
+
         .top-bar .back-btn:hover {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
         }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 24px 32px;
         }
+
         .page-header {
             margin-bottom: 24px;
         }
+
         .page-header h1 {
             font-size: 26px;
             font-weight: 800;
@@ -87,13 +103,16 @@
             align-items: center;
             gap: 12px;
         }
+
         .page-header h1 i {
             color: var(--danger);
         }
+
         .page-header p {
             color: var(--text-light);
             font-size: 15px;
         }
+
         .filters-card {
             background: var(--white);
             padding: 20px;
@@ -102,12 +121,14 @@
             margin-bottom: 24px;
             box-shadow: var(--shadow);
         }
+
         .filters-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px;
             align-items: end;
         }
+
         .filter-group label {
             display: block;
             font-weight: 600;
@@ -115,6 +136,7 @@
             margin-bottom: 6px;
             color: var(--text);
         }
+
         .filter-group input {
             width: 100%;
             padding: 10px 14px;
@@ -124,11 +146,13 @@
             font-size: 14px;
             transition: all 0.3s;
         }
+
         .filter-group input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
         }
+
         .btn {
             padding: 10px 20px;
             border: none;
@@ -141,30 +165,36 @@
             align-items: center;
             gap: 8px;
         }
+
         .btn-primary {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
         }
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
         }
+
         .btn-outline {
             background: transparent;
             border: 2px solid var(--border);
             color: var(--text-light);
         }
+
         .btn-outline:hover {
             border-color: var(--primary);
             color: var(--primary);
         }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
+
         .stat-card {
             background: var(--white);
             padding: 20px;
@@ -173,10 +203,12 @@
             box-shadow: var(--shadow);
             transition: all 0.3s;
         }
+
         .stat-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
         }
+
         .stat-card .stat-icon {
             width: 42px;
             height: 42px;
@@ -187,21 +219,40 @@
             font-size: 18px;
             margin-bottom: 12px;
         }
-        .stat-card .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
-        .stat-card .stat-icon.green { background: #dcfce7; color: #16a34a; }
-        .stat-card .stat-icon.orange { background: #fef3c7; color: #d97706; }
-        .stat-card .stat-icon.red { background: #fee2e2; color: #dc2626; }
+
+        .stat-card .stat-icon.purple {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+
+        .stat-card .stat-icon.green {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .stat-card .stat-icon.orange {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .stat-card .stat-icon.red {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
         .stat-card .stat-number {
             font-size: 28px;
             font-weight: 900;
             line-height: 1.1;
             margin-bottom: 4px;
         }
+
         .stat-card .stat-label {
             font-size: 12px;
             color: var(--text-light);
             font-weight: 500;
         }
+
         .table-card {
             background: var(--white);
             border-radius: var(--radius);
@@ -209,6 +260,7 @@
             overflow: hidden;
             box-shadow: var(--shadow);
         }
+
         .table-card .table-header {
             padding: 16px 20px;
             border-bottom: 1px solid var(--border);
@@ -218,6 +270,7 @@
             flex-wrap: wrap;
             gap: 12px;
         }
+
         .table-card .table-header h3 {
             font-size: 15px;
             font-weight: 700;
@@ -225,17 +278,21 @@
             align-items: center;
             gap: 8px;
         }
+
         .table-card .table-header h3 i {
             color: var(--primary);
         }
+
         .table-wrapper {
             overflow-x: auto;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
         }
+
         thead th {
             text-align: left;
             padding: 12px 16px;
@@ -248,17 +305,21 @@
             border-bottom: 2px solid var(--border);
             white-space: nowrap;
         }
+
         tbody td {
             padding: 14px 16px;
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
         }
+
         tbody tr:hover {
             background: rgba(99, 102, 241, 0.03);
         }
+
         tbody tr:last-child td {
             border-bottom: none;
         }
+
         .badge {
             padding: 4px 12px;
             border-radius: 20px;
@@ -266,46 +327,84 @@
             font-weight: 600;
             display: inline-block;
         }
-        .badge-success { background: #dcfce7; color: #16a34a; }
-        .badge-warning { background: #fef3c7; color: #d97706; }
-        .badge-danger { background: #fee2e2; color: #dc2626; }
-        .badge-info { background: #dbeafe; color: #2563eb; }
-        .money-positive { color: var(--success); font-weight: 700; }
-        .money-negative { color: var(--danger); font-weight: 700; }
-        .money-neutral { color: var(--text); font-weight: 600; }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .money-positive {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .money-negative {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .money-neutral {
+            color: var(--text);
+            font-weight: 600;
+        }
+
         .loading-state {
             text-align: center;
             padding: 40px;
             color: var(--text-light);
         }
+
         .loading-state i {
             animation: spin 1s linear infinite;
             font-size: 32px;
             margin-bottom: 12px;
         }
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
             color: var(--text-light);
         }
+
         .empty-state i {
             font-size: 64px;
             opacity: 0.2;
             margin-bottom: 16px;
         }
+
         .empty-state h3 {
             font-size: 18px;
             margin-bottom: 8px;
             color: var(--text);
         }
+
         .detail-row {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
         }
+
         .detail-item {
             padding: 4px 10px;
             background: var(--light);
@@ -313,37 +412,47 @@
             font-size: 12px;
             font-weight: 600;
         }
+
         @media (max-width: 768px) {
             .top-bar {
                 padding: 12px 16px;
                 flex-direction: column;
                 gap: 12px;
             }
+
             .container {
                 padding: 16px;
             }
+
             .page-header h1 {
                 font-size: 20px;
             }
+
             .filters-grid {
                 grid-template-columns: 1fr;
             }
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+
             .table-card .table-header {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             table {
                 font-size: 12px;
             }
-            thead th, tbody td {
+
+            thead th,
+            tbody td {
                 padding: 10px 12px;
             }
         }
     </style>
 </head>
+
 <body>
     <header class="top-bar">
         <div class="brand">Inven<span>SaaS</span></div>
@@ -456,17 +565,17 @@
                 window.location.href = 'login.html';
                 return;
             }
-            
+
             const hoy = new Date().toISOString().split('T')[0];
             document.getElementById('fechaFin').value = hoy;
-            
+
             cargarCortes();
         });
 
         async function cargarCortes() {
             const fechaInicio = document.getElementById('fechaInicio').value;
             const fechaFin = document.getElementById('fechaFin').value;
-            
+
             const tbody = document.getElementById('cortesTbody');
             tbody.innerHTML = `
                 <tr>
@@ -480,10 +589,10 @@
             try {
                 let url = `${API_URL}/admin/cortes/historial`;
                 const params = new URLSearchParams();
-                
+
                 if (fechaInicio) params.append('inicio', fechaInicio);
                 if (fechaFin) params.append('fin', fechaFin);
-                
+
                 if (params.toString()) {
                     url += '?' + params.toString();
                 }
@@ -493,9 +602,9 @@
                 });
 
                 if (!response.ok) throw new Error('Error al cargar datos');
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     cortesCache = data.cortes || [];
                     renderCortes(cortesCache);
@@ -530,12 +639,12 @@
             cortes.forEach(corte => {
                 const diferencia = parseFloat(corte.diferencia) || 0;
                 const ganancia = parseFloat(corte.ganancia) || 0;
-                
+
                 let diferenciaClass = 'money-neutral';
                 let diferenciaIcon = 'fa-check-circle';
                 let estadoBadge = 'badge-success';
                 let estadoTexto = 'Cuadrado';
-                
+
                 if (diferencia > 0) {
                     diferenciaClass = 'money-positive';
                     diferenciaIcon = 'fa-arrow-up';
@@ -600,7 +709,7 @@
             document.getElementById('totalCortes').textContent = totalCortes;
             document.getElementById('totalVentas').textContent = `C$${totalVentas.toFixed(2)}`;
             document.getElementById('totalGanancia').textContent = `C$${totalGanancia.toFixed(2)}`;
-            
+
             const diffElement = document.getElementById('totalDiferencia');
             diffElement.textContent = `C$${Math.abs(totalDiferencia).toFixed(2)}`;
             diffElement.className = totalDiferencia >= 0 ? 'money-positive' : 'money-negative';
@@ -645,13 +754,13 @@
             }
 
             let csv = 'ID,Fecha Cierre,Usuario,Ventas,Costo,Ganancia,Efectivo Sistema,Efectivo Real,Diferencia,Total Efectivo,Total Tarjeta,Total Transferencia,Total Credito,Estado\n';
-            
+
             cortesCache.forEach(corte => {
                 const diferencia = parseFloat(corte.diferencia) || 0;
                 let estado = 'Cuadrado';
                 if (diferencia > 0) estado = 'Sobrante';
                 else if (diferencia < 0) estado = 'Faltante';
-                
+
                 csv += `${corte.id},"${corte.fecha_cierre}",${corte.usuario_nombre || 'N/A'},${corte.total_ventas},${corte.total_costo},${corte.ganancia},${corte.efectivo_sistema},${corte.efectivo_real},${corte.diferencia},${corte.total_efectivo},${corte.total_tarjeta},${corte.total_transferencia},${corte.total_credito},${estado}\n`;
             });
 
@@ -667,4 +776,5 @@
         }
     </script>
 </body>
+
 </html>
