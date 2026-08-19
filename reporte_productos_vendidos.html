@@ -6,7 +6,7 @@
     <title>Reporte de Productos Vendidos | InvenSaaS</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/reporte_ventas.css">
+    <link rel="stylesheet" href="css/reporte_productos_vendidos.css">
     <script src="js/config.js"></script>
 </head>
 <body>
@@ -20,27 +20,27 @@
         </div>
 
         <!-- FILTROS -->
-        <div class="filters">
-            <div class="group">
-                <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
-                <input type="date" id="fecha-inicio">
-            </div>
-            <div class="group">
-                <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
-                <input type="date" id="fecha-fin">
+        <div class="toolbar">
+            <div class="filters">
+                <div class="group">
+                    <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
+                    <input type="date" id="fecha-inicio">
+                </div>
+                <div class="group">
+                    <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
+                    <input type="date" id="fecha-fin">
+                </div>
+                <button class="btn-execute" id="btn-mostrar"><i class="fas fa-eye"></i> Mostrar</button>
+                <button class="btn-refresh" id="btn-refrescar"><i class="fas fa-sync-alt"></i> Refrescar</button>
             </div>
             <div class="actions">
-                <button class="btn btn-primary" id="btn-mostrar"><i class="fas fa-eye"></i> Mostrar Detalles</button>
-                <button class="btn btn-outline" id="btn-refrescar"><i class="fas fa-sync-alt"></i> Refrescar (Todas)</button>
+                <button class="btn btn-export" id="btn-exportar"><i class="fas fa-file-export"></i> Exportar CSV</button>
+                <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
             </div>
         </div>
 
         <!-- TABLA DE PRODUCTOS VENDIDOS -->
         <div class="table-card">
-            <div class="table-header">
-                <h3><i class="fas fa-list" style="color:var(--primary);"></i> Productos Vendidos</h3>
-                <span class="total">Total Ventas: <span id="total-ventas">C$0.00</span></span>
-            </div>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -63,22 +63,19 @@
             </div>
         </div>
 
-        <!-- SUMMARY -->
-        <div class="summary" style="margin-top:20px;">
-            <div class="card">
-                <div class="label"><i class="fas fa-shopping-cart" style="color:var(--primary);"></i> Total Productos</div>
+        <!-- TOTALES FOOTER -->
+        <div class="totals-footer">
+            <div class="item">
+                <div class="label"><i class="fas fa-shopping-cart"></i> Total Productos</div>
                 <div class="value primary" id="total-productos">0</div>
-                <small>unidades vendidas</small>
             </div>
-            <div class="card">
-                <div class="label"><i class="fas fa-money-bill-wave" style="color:var(--success);"></i> Total Ventas</div>
-                <div class="value success" id="total-ventas-summary">C$0.00</div>
-                <small>ingreso total</small>
+            <div class="item">
+                <div class="label"><i class="fas fa-money-bill-wave"></i> Total Ventas</div>
+                <div class="value success" id="total-ventas">C$0.00</div>
             </div>
-            <div class="card">
-                <div class="label"><i class="fas fa-coins" style="color:var(--warning);"></i> Ganancia Total</div>
-                <div class="value warning" id="total-ganancia">C$0.00</div>
-                <small>venta - costo</small>
+            <div class="item">
+                <div class="label"><i class="fas fa-coins"></i> Ganancia Total</div>
+                <div class="value success" id="total-ganancia">C$0.00</div>
             </div>
         </div>
     </div>
@@ -101,12 +98,14 @@
             }
 
             const tbody = document.getElementById('productos-tbody');
-            const totalVentasEl = document.getElementById('total-ventas');
             const totalProductosEl = document.getElementById('total-productos');
-            const totalVentasSummaryEl = document.getElementById('total-ventas-summary');
+            const totalVentasEl = document.getElementById('total-ventas');
             const totalGananciaEl = document.getElementById('total-ganancia');
 
-           
+            // ============================================
+            // FUNCIONES AUXILIARES
+            // ============================================
+
             function formatNumber(value) {
                 const num = Number(value);
                 return isNaN(num) ? '0.00' : num.toFixed(2);
@@ -130,14 +129,15 @@
                 }
             }
 
-       
+            // ============================================
+            // RENDERIZAR TABLA
+            // ============================================
 
             function renderProductos(productos) {
                 if (!productos || productos.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
-                    totalVentasEl.textContent = 'C$0.00';
                     totalProductosEl.textContent = '0';
-                    totalVentasSummaryEl.textContent = 'C$0.00';
+                    totalVentasEl.textContent = 'C$0.00';
                     totalGananciaEl.textContent = 'C$0.00';
                     return;
                 }
@@ -157,6 +157,8 @@
                     totalGanancia += ganancia;
                     totalUnidades += cantidad;
 
+                    const gananciaColor = ganancia >= 0 ? 'var(--success)' : 'var(--danger)';
+
                     html += `
                         <tr>
                             <td>${formatDate(p.fecha_venta)}</td>
@@ -167,21 +169,89 @@
                             <td style="text-align:right;">${formatCurrency(p.precio_unitario)}</td>
                             <td style="text-align:right;">${formatCurrency(costo)}</td>
                             <td style="text-align:right;">${formatCurrency(costo)}</td>
-                            <td style="text-align:right; font-weight:700; color:${ganancia >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(ganancia)}</td>
+                            <td style="text-align:right; font-weight:700; color:${gananciaColor};">${formatCurrency(ganancia)}</td>
                         </tr>
                     `;
                 });
 
                 tbody.innerHTML = html;
-                totalVentasEl.textContent = formatCurrency(totalVentas);
                 totalProductosEl.textContent = formatNumber(totalUnidades);
-                totalVentasSummaryEl.textContent = formatCurrency(totalVentas);
+                totalVentasEl.textContent = formatCurrency(totalVentas);
                 totalGananciaEl.textContent = formatCurrency(totalGanancia);
+
+                // Cambiar color de ganancia si es negativa
+                if (totalGanancia < 0) {
+                    totalGananciaEl.style.color = 'var(--danger)';
+                } else {
+                    totalGananciaEl.style.color = 'var(--success)';
+                }
 
                 console.log('✅ Tabla renderizada con', productos.length, 'productos');
             }
 
-        
+            // ============================================
+            // EXPORTAR CSV
+            // ============================================
+
+            document.getElementById('btn-exportar').addEventListener('click', function() {
+                const rows = tbody.querySelectorAll('tr');
+                
+                if (rows.length === 0 || rows[0].classList.contains('empty')) {
+                    alert('⚠️ No hay datos para exportar.');
+                    return;
+                }
+
+                const data = [];
+                const headers = ['Fecha', 'Clave', 'Descripción', 'Cantidad', 'Venta', 'Precio', 'Costo', 'Recuperación', 'Ganancia'];
+                data.push(headers);
+
+                rows.forEach(row => {
+                    const cols = row.querySelectorAll('td');
+                    if (cols.length > 0) {
+                        const rowData = [];
+                        cols.forEach(col => {
+                            let text = col.textContent.trim();
+                            text = text.replace(/[^\w\s\d.,$C\-]/g, '').trim();
+                            rowData.push(text);
+                        });
+                        if (rowData.length === 9) {
+                            data.push(rowData);
+                        }
+                    }
+                });
+
+                let csvContent = '';
+                data.forEach(row => {
+                    const escapedRow = row.map(cell => {
+                        if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
+                            return `"${cell.replace(/"/g, '""')}"`;
+                        }
+                        return cell;
+                    });
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                
+                const now = new Date();
+                const fechaStr = now.toISOString().slice(0, 10);
+                link.setAttribute('download', `productos_vendidos_${fechaStr}.csv`);
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                console.log('✅ CSV exportado correctamente');
+            });
+
+            // ============================================
+            // CARGAR PRODUCTOS VENDIDOS
+            // ============================================
+
             async function loadProductos(filtros = {}) {
                 console.log('🔄 Cargando productos vendidos...');
                 tbody.innerHTML = '<tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
@@ -229,7 +299,10 @@
                 }
             }
 
-           
+            // ============================================
+            // EVENTOS
+            // ============================================
+
             document.getElementById('btn-mostrar').addEventListener('click', () => {
                 const inicio = document.getElementById('fecha-inicio').value;
                 const fin = document.getElementById('fecha-fin').value;
@@ -248,7 +321,10 @@
                 loadProductos({});
             });
 
-         
+            // ============================================
+            // INICIAR
+            // ============================================
+
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => loadProductos({}));
             } else {
