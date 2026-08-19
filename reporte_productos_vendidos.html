@@ -129,66 +129,67 @@
                 }
             }
 
-            // ============================================
-            // RENDERIZAR TABLA
-            // ============================================
-
+            
             function renderProductos(productos) {
-                if (!productos || productos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
-                    totalProductosEl.textContent = '0';
-                    totalVentasEl.textContent = 'C$0.00';
-                    totalGananciaEl.textContent = 'C$0.00';
-                    return;
-                }
+    if (!productos || productos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
+        totalProductosEl.textContent = '0';
+        totalVentasEl.textContent = 'C$0.00';
+        totalGananciaEl.textContent = 'C$0.00';
+        return;
+    }
 
-                let html = '';
-                let totalVentas = 0;
-                let totalGanancia = 0;
-                let totalUnidades = 0;
+    let html = '';
+    let totalVentas = 0;
+    let totalGanancia = 0;
+    let totalUnidades = 0;
 
-                productos.forEach(p => {
-                    const cantidad = Number(p.cantidad) || 0;
-                    const venta = Number(p.venta) || 0;
-                    const costo = Number(p.costo) || 0;
-                    const ganancia = venta - costo;
-                    
-                    totalVentas += venta;
-                    totalGanancia += ganancia;
-                    totalUnidades += cantidad;
+    productos.forEach(p => {
+        const cantidad = Number(p.cantidad) || 0;
+        const venta = Number(p.venta) || 0;           
+        const costo = Number(p.costo) || 0;
+        const ganancia = Number(p.ganancia) || 0;    
+        const descuento = Number(p.descuento) || 0;
+        
+        totalVentas += venta;
+        totalGanancia += ganancia;
+        totalUnidades += cantidad;
 
-                    const gananciaColor = ganancia >= 0 ? 'var(--success)' : 'var(--danger)';
+        const gananciaColor = ganancia >= 0 ? 'var(--success)' : 'var(--danger)';
+        
+        let descuentoTexto = '';
+        if (descuento > 0) {
+            descuentoTexto = ` <small style="color:var(--text-light);">(Desc: C$${descuento.toFixed(2)})</small>`;
+        }
 
-                    html += `
-                        <tr>
-                            <td>${formatDate(p.fecha_venta)}</td>
-                            <td style="text-align:center; font-weight:600;">${p.clave || '—'}</td>
-                            <td>${p.descripcion || 'Producto'}</td>
-                            <td style="text-align:center; font-weight:600;">${formatNumber(cantidad)}</td>
-                            <td style="text-align:right; font-weight:600; color:var(--primary);">${formatCurrency(venta)}</td>
-                            <td style="text-align:right;">${formatCurrency(p.precio_unitario)}</td>
-                            <td style="text-align:right;">${formatCurrency(costo)}</td>
-                            <td style="text-align:right;">${formatCurrency(costo)}</td>
-                            <td style="text-align:right; font-weight:700; color:${gananciaColor};">${formatCurrency(ganancia)}</td>
-                        </tr>
-                    `;
-                });
+        html += `
+            <tr>
+                <td>${formatDate(p.fecha_venta)}</td>
+                <td style="text-align:center; font-weight:600;">${p.clave || '—'}</td>
+                <td>${p.descripcion || 'Producto'} ${descuentoTexto}</td>
+                <td style="text-align:center; font-weight:600;">${formatNumber(cantidad)}</td>
+                <td style="text-align:right; font-weight:600; color:var(--primary);">${formatCurrency(venta)}</td>
+                <td style="text-align:right;">${formatCurrency(p.precio_unitario)}</td>
+                <td style="text-align:right;">${formatCurrency(costo)}</td>
+                <td style="text-align:right;">${formatCurrency(costo)}</td>
+                <td style="text-align:right; font-weight:700; color:${gananciaColor};">${formatCurrency(ganancia)}</td>
+            </tr>
+        `;
+    });
 
-                tbody.innerHTML = html;
-                totalProductosEl.textContent = formatNumber(totalUnidades);
-                totalVentasEl.textContent = formatCurrency(totalVentas);
-                totalGananciaEl.textContent = formatCurrency(totalGanancia);
+    tbody.innerHTML = html;
+    totalProductosEl.textContent = formatNumber(totalUnidades);
+    totalVentasEl.textContent = formatCurrency(totalVentas);
+    totalGananciaEl.textContent = formatCurrency(totalGanancia);
 
-                // Cambiar color de ganancia si es negativa
-                if (totalGanancia < 0) {
-                    totalGananciaEl.style.color = 'var(--danger)';
-                } else {
-                    totalGananciaEl.style.color = 'var(--success)';
-                }
+    if (totalGanancia < 0) {
+        totalGananciaEl.style.color = 'var(--danger)';
+    } else {
+        totalGananciaEl.style.color = 'var(--success)';
+    }
 
-                console.log('✅ Tabla renderizada con', productos.length, 'productos');
-            }
-
+    console.log('✅ Tabla renderizada con', productos.length, 'productos');
+}
             // ============================================
             // EXPORTAR CSV
             // ============================================
