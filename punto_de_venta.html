@@ -1010,7 +1010,7 @@
             window.open(url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
         }
 
-        async function handleCorteCaja() {
+       async function handleCorteCaja() {
     if (!token) { alert('Sesión no válida.'); return; }
     
     try {
@@ -1018,56 +1018,45 @@
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
-        if (!response.ok) throw new Error('Error al cargar datos');
-        
         const data = await response.json();
         
         if (data.success) {
-            console.log('✅ Datos del corte recibidos:', data.datos);
-            console.log('💰 Pagos del día:', data.datos.pagos_hoy);
-            console.log('📊 Total ventas hoy:', data.datos.total_ventas_hoy);
+            console.log('✅ Datos recibidos:', data.datos);
+            console.log('💰 EFECTIVO DEL DÍA:', data.datos.pagos.efectivo);
             mostrarCorteCajaModal(data.datos);
-        } else {
-            alert('Error: ' + data.message);
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al cargar el corte de caja');
+        alert('Error al cargar el corte');
     }
 }
 
 function mostrarCorteCajaModal(datos) {
+    // Período
     const inicio = new Date(datos.fecha_inicio_hoy);
     const fin = new Date(datos.fecha_fin_hoy);
     
-    document.getElementById('corte-fecha-inicio').textContent = inicio.toLocaleString('es-NI', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-    });
-    document.getElementById('corte-fecha-fin').textContent = fin.toLocaleString('es-NI', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-    });
+    document.getElementById('corte-fecha-inicio').textContent = inicio.toLocaleString('es-NI');
+    document.getElementById('corte-fecha-fin').textContent = fin.toLocaleString('es-NI');
     
-    document.getElementById('corte-total-ventas').textContent = `C$${parseFloat(datos.total_ventas_historico || 0).toFixed(2)}`;
-    document.getElementById('corte-total-costo').textContent = `C$${parseFloat(datos.total_costo_historico || 0).toFixed(2)}`;
-    document.getElementById('corte-ganancia').textContent = `C$${parseFloat(datos.ganancia_historica || 0).toFixed(2)}`;
+    // Eliminar o simplificar el resumen financiero
+    document.getElementById('corte-total-ventas').textContent = `C$${parseFloat(datos.total_ventas_hoy || 0).toFixed(2)}`;
+    document.getElementById('corte-total-costo').textContent = '-';
+    document.getElementById('corte-ganancia').textContent = '-';
     
-    console.log('💵 Mostrando pagos del día:', datos.pagos_hoy);
+    // Desglose por método de pago (TODAS las facturas del día)
+    document.getElementById('corte-efectivo').textContent = `C$${parseFloat(datos.pagos.efectivo || 0).toFixed(2)}`;
+    document.getElementById('corte-tarjeta').textContent = `C$${parseFloat(datos.pagos.tarjeta || 0).toFixed(2)}`;
+    document.getElementById('corte-transferencia').textContent = `C$${parseFloat(datos.pagos.transferencia || 0).toFixed(2)}`;
+    document.getElementById('corte-credito').textContent = `C$${parseFloat(datos.pagos.credito || 0).toFixed(2)}`;
     
-    document.getElementById('corte-efectivo').textContent = `C$${parseFloat(datos.pagos_hoy.efectivo || 0).toFixed(2)}`;
-    document.getElementById('corte-tarjeta').textContent = `C$${parseFloat(datos.pagos_hoy.tarjeta || 0).toFixed(2)}`;
-    document.getElementById('corte-transferencia').textContent = `C$${parseFloat(datos.pagos_hoy.transferencia || 0).toFixed(2)}`;
-    document.getElementById('corte-credito').textContent = `C$${parseFloat(datos.pagos_hoy.credito || 0).toFixed(2)}`;
-    
+    // Arqueo
     document.getElementById('corte-fondo-inicial').value = datos.fondo_inicial_sugerido || 0;
-    document.getElementById('corte-efectivo-sistema').value = parseFloat(datos.pagos_hoy.efectivo || 0).toFixed(2);
+    document.getElementById('corte-efectivo-sistema').value = parseFloat(datos.pagos.efectivo || 0).toFixed(2);
     
     window.corteDatosActuales = datos;
-    
     calcularEfectivoEsperado();
     
-    // Resetear inputs de usuario
     document.getElementById('corte-efectivo-real').value = '';
     document.getElementById('corte-diferencia-display').textContent = 'C$0.00';
     document.getElementById('corte-diferencia-display').style.background = '#d1ecf1';
@@ -1075,6 +1064,7 @@ function mostrarCorteCajaModal(datos) {
     
     document.getElementById('corteCajaModal').style.display = 'block';
 }
+
 
 function calcularEfectivoEsperado() {
     const fondoInicial = parseFloat(document.getElementById('corte-fondo-inicial').value) || 0;
