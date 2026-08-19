@@ -6,81 +6,270 @@
     <title>Reporte de Productos Vendidos | InvenSaaS</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/reporte_productos_vendidos.css">
+    <link rel="stylesheet" href="css/reporte_ventas.css">
+    <script src="js/config.js"></script>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- HEADER -->
         <div class="page-header">
-            <h1><i class="fas fa-shopping-bag"></i> Reporte de Productos Vendidos</h1>
+            <h1><i class="fas fa-boxes"></i> Reporte de Productos Vendidos</h1>
             <a href="inventario_dashboard.html" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Volver al Panel Principal
             </a>
         </div>
 
-        <!-- Toolbar -->
-        <div class="toolbar">
-            <div class="actions">
-                <button class="btn btn-print" id="btn-imprimir"><i class="fas fa-print"></i> Imprimir</button>
-                <button class="btn btn-export" id="btn-exportar"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+        <!-- FILTROS -->
+        <div class="filters">
+            <div class="group">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
+                <input type="date" id="fecha-inicio">
             </div>
-            <div class="filters">
-                <div class="group">
-                    <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
-                    <input type="date" id="fecha-inicio">
-                </div>
-                <div class="group">
-                    <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
-                    <input type="date" id="fecha-fin">
-                </div>
-                <button class="btn-execute" id="btn-ejecutar"><i class="fas fa-play"></i> Ejecutar</button>
-                <button class="btn-refresh" id="btn-recargar"><i class="fas fa-sync-alt"></i> Recargar</button>
+            <div class="group">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
+                <input type="date" id="fecha-fin">
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" id="btn-mostrar"><i class="fas fa-eye"></i> Mostrar Detalles</button>
+                <button class="btn btn-outline" id="btn-refrescar"><i class="fas fa-sync-alt"></i> Refrescar (Todas)</button>
             </div>
         </div>
 
-        <!-- Tabla -->
+        <!-- TABLA DE PRODUCTOS VENDIDOS -->
         <div class="table-card">
+            <div class="table-header">
+                <h3><i class="fas fa-list" style="color:var(--primary);"></i> Productos Vendidos</h3>
+                <span class="total">Total Ventas: <span id="total-ventas">C$0.00</span></span>
+            </div>
             <div class="table-wrapper">
-                <table id="productos-vendidos-table">
+                <table>
                     <thead>
                         <tr>
-                            <th>FECHA</th>
-                            <th>CLAVE</th>
-                            <th>DESCRIPCIÓN</th>
-                            <th style="text-align:center;">CANTIDAD</th>
-                            <th style="text-align:right;">VENTA</th>
-                            <th style="text-align:right;">PRECIO</th>
-                            <th style="text-align:right;">COSTO</th>
-                            <th style="text-align:right;">RECUPERACIÓN</th>
-                            <th style="text-align:right;">GANANCIA</th>
+                            <th style="min-width:100px;">Fecha</th>
+                            <th style="text-align:center; width:70px;">Clave</th>
+                            <th style="min-width:120px;">Descripción</th>
+                            <th style="text-align:center; width:80px;">Cantidad</th>
+                            <th style="text-align:right; width:100px;">Venta</th>
+                            <th style="text-align:right; width:90px;">Precio</th>
+                            <th style="text-align:right; width:100px;">Costo</th>
+                            <th style="text-align:right; width:100px;">Recuperación</th>
+                            <th style="text-align:right; width:100px;">Ganancia</th>
                         </tr>
                     </thead>
                     <tbody id="productos-tbody">
-                        <tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando productos vendidos...</td></tr>
+                        <tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando productos...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Totales -->
-        <div class="totals-footer">
-            <div class="item">
-                <div class="label">VENTA TOTAL</div>
-                <div class="value primary" id="venta-total">C$0.00</div>
+        <!-- SUMMARY -->
+        <div class="summary" style="margin-top:20px;">
+            <div class="card">
+                <div class="label"><i class="fas fa-shopping-cart" style="color:var(--primary);"></i> Total Productos</div>
+                <div class="value primary" id="total-productos">0</div>
+                <small>unidades vendidas</small>
             </div>
-            <div class="item">
-                <div class="label">RECUPERACIÓN</div>
-                <div class="value primary" id="recuperacion-total">C$0.00</div>
+            <div class="card">
+                <div class="label"><i class="fas fa-money-bill-wave" style="color:var(--success);"></i> Total Ventas</div>
+                <div class="value success" id="total-ventas-summary">C$0.00</div>
+                <small>ingreso total</small>
             </div>
-            <div class="item">
-                <div class="label">GANANCIA</div>
-                <div class="value success" id="ganancia-total">C$0.00</div>
+            <div class="card">
+                <div class="label"><i class="fas fa-coins" style="color:var(--warning);"></i> Ganancia Total</div>
+                <div class="value warning" id="total-ganancia">C$0.00</div>
+                <small>venta - costo</small>
             </div>
         </div>
     </div>
 
-   <script src="js/config.js"></script>
-<script src="js/reporte_productos_vendidos.js"></script>
+    <script>
+        (function() {
+            console.log('🚀 ===== REPORTE DE PRODUCTOS VENDIDOS INICIADO =====');
+            
+            const token = localStorage.getItem('token');
+            const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
+            let todosLosProductos = [];
+            
+            console.log('🔑 Token:', token ? '✅ Sí' : '❌ No');
+            console.log('🌐 API_URL:', API_URL);
 
+            if (!token) {
+                document.getElementById('productos-tbody').innerHTML = 
+                    '<tr><td colspan="9" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
+                return;
+            }
+
+            const tbody = document.getElementById('productos-tbody');
+            const totalVentasEl = document.getElementById('total-ventas');
+            const totalProductosEl = document.getElementById('total-productos');
+            const totalVentasSummaryEl = document.getElementById('total-ventas-summary');
+            const totalGananciaEl = document.getElementById('total-ganancia');
+
+            // ============================================
+            // FUNCIONES AUXILIARES
+            // ============================================
+
+            function formatNumber(value) {
+                const num = Number(value);
+                return isNaN(num) ? '0.00' : num.toFixed(2);
+            }
+
+            function formatCurrency(value) {
+                return `C$${formatNumber(value)}`;
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return '—';
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('es-NI', {
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric'
+                    });
+                } catch {
+                    return dateStr;
+                }
+            }
+
+            // ============================================
+            // RENDERIZAR TABLA
+            // ============================================
+
+            function renderProductos(productos) {
+                if (!productos || productos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
+                    totalVentasEl.textContent = 'C$0.00';
+                    totalProductosEl.textContent = '0';
+                    totalVentasSummaryEl.textContent = 'C$0.00';
+                    totalGananciaEl.textContent = 'C$0.00';
+                    return;
+                }
+
+                let html = '';
+                let totalVentas = 0;
+                let totalGanancia = 0;
+                let totalUnidades = 0;
+
+                productos.forEach(p => {
+                    const cantidad = Number(p.cantidad) || 0;
+                    const venta = Number(p.venta) || 0;
+                    const costo = Number(p.costo) || 0;
+                    const ganancia = venta - costo;
+                    
+                    totalVentas += venta;
+                    totalGanancia += ganancia;
+                    totalUnidades += cantidad;
+
+                    html += `
+                        <tr>
+                            <td>${formatDate(p.fecha_venta)}</td>
+                            <td style="text-align:center; font-weight:600;">${p.clave || '—'}</td>
+                            <td>${p.descripcion || 'Producto'}</td>
+                            <td style="text-align:center; font-weight:600;">${formatNumber(cantidad)}</td>
+                            <td style="text-align:right; font-weight:600; color:var(--primary);">${formatCurrency(venta)}</td>
+                            <td style="text-align:right;">${formatCurrency(p.precio_unitario)}</td>
+                            <td style="text-align:right;">${formatCurrency(costo)}</td>
+                            <td style="text-align:right;">${formatCurrency(costo)}</td>
+                            <td style="text-align:right; font-weight:700; color:${ganancia >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(ganancia)}</td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+                totalVentasEl.textContent = formatCurrency(totalVentas);
+                totalProductosEl.textContent = formatNumber(totalUnidades);
+                totalVentasSummaryEl.textContent = formatCurrency(totalVentas);
+                totalGananciaEl.textContent = formatCurrency(totalGanancia);
+
+                console.log('✅ Tabla renderizada con', productos.length, 'productos');
+            }
+
+            // ============================================
+            // CARGAR PRODUCTOS VENDIDOS
+            // ============================================
+
+            async function loadProductos(filtros = {}) {
+                console.log('🔄 Cargando productos vendidos...');
+                tbody.innerHTML = '<tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+
+                try {
+                    let url = `${API_URL}/admin/ventas/productos-vendidos`;
+                    const params = new URLSearchParams();
+                    
+                    if (filtros.inicio) params.append('inicio', filtros.inicio);
+                    if (filtros.fin) params.append('fin', filtros.fin);
+                    
+                    if (params.toString()) {
+                        url += '?' + params.toString();
+                    }
+
+                    console.log('📡 URL:', url);
+
+                    const response = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    console.log('📡 Status:', response.status);
+
+                    if (response.status === 401) {
+                        tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
+                        return;
+                    }
+
+                    const data = await response.json();
+                    console.log('📦 Datos recibidos:', data);
+
+                    if (!data.success || !data.productos) {
+                        tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td></tr>';
+                        return;
+                    }
+
+                    todosLosProductos = data.productos;
+                    console.log('📊 Productos encontrados:', todosLosProductos.length);
+
+                    renderProductos(todosLosProductos);
+
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    tbody.innerHTML = `<tr><td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
+                }
+            }
+
+            // ============================================
+            // EVENTOS
+            // ============================================
+
+            document.getElementById('btn-mostrar').addEventListener('click', () => {
+                const inicio = document.getElementById('fecha-inicio').value;
+                const fin = document.getElementById('fecha-fin').value;
+                
+                if (!inicio || !fin) {
+                    alert('⚠️ Selecciona ambas fechas (inicial y final) para filtrar.');
+                    return;
+                }
+                
+                loadProductos({ inicio, fin });
+            });
+
+            document.getElementById('btn-refrescar').addEventListener('click', () => {
+                document.getElementById('fecha-inicio').value = '';
+                document.getElementById('fecha-fin').value = '';
+                loadProductos({});
+            });
+
+            // ============================================
+            // INICIAR
+            // ============================================
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => loadProductos({}));
+            } else {
+                loadProductos({});
+            }
+
+        })();
+    </script>
 </body>
 </html>
