@@ -276,11 +276,3 @@ tbody .empty {
     .summary { grid-template-columns: 1fr; }
 }
 
-/* Dropdown para exportar */
-.dropdown:hover .dropdown-content {
-    display: block !important;
-}
-
-.dropdown-content button:hover {
-    background: #f1f5f9;
-}
