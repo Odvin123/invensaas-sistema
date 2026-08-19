@@ -106,10 +106,7 @@
             const totalVentasSummaryEl = document.getElementById('total-ventas-summary');
             const totalGananciaEl = document.getElementById('total-ganancia');
 
-            // ============================================
-            // FUNCIONES AUXILIARES
-            // ============================================
-
+           
             function formatNumber(value) {
                 const num = Number(value);
                 return isNaN(num) ? '0.00' : num.toFixed(2);
@@ -133,9 +130,7 @@
                 }
             }
 
-            // ============================================
-            // RENDERIZAR TABLA
-            // ============================================
+       
 
             function renderProductos(productos) {
                 if (!productos || productos.length === 0) {
@@ -186,10 +181,7 @@
                 console.log('✅ Tabla renderizada con', productos.length, 'productos');
             }
 
-            // ============================================
-            // CARGAR PRODUCTOS VENDIDOS
-            // ============================================
-
+        
             async function loadProductos(filtros = {}) {
                 console.log('🔄 Cargando productos vendidos...');
                 tbody.innerHTML = '<tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
@@ -237,10 +229,7 @@
                 }
             }
 
-            // ============================================
-            // EVENTOS
-            // ============================================
-
+           
             document.getElementById('btn-mostrar').addEventListener('click', () => {
                 const inicio = document.getElementById('fecha-inicio').value;
                 const fin = document.getElementById('fecha-fin').value;
@@ -259,10 +248,7 @@
                 loadProductos({});
             });
 
-            // ============================================
-            // INICIAR
-            // ============================================
-
+         
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => loadProductos({}));
             } else {
