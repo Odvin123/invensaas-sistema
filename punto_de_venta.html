@@ -1040,32 +1040,31 @@
 }
 
 function mostrarCorteCajaModal(datos) {
-    const inicio = new Date(datos.fecha_inicio);
-    const fin = new Date(datos.fecha_fin);
+    const inicio = new Date(datos.fecha_inicio_hoy);
+    const fin = new Date(datos.fecha_fin_hoy);
     
     document.getElementById('corte-fecha-inicio').textContent = inicio.toLocaleString('es-NI', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
+        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
     document.getElementById('corte-fecha-fin').textContent = fin.toLocaleString('es-NI', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
+        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
-    
-    document.getElementById('corte-total-ventas').textContent = `C$${parseFloat(datos.total_ventas || 0).toFixed(2)}`;
-    document.getElementById('corte-total-costo').textContent = `C$${parseFloat(datos.total_costo || 0).toFixed(2)}`;
-    document.getElementById('corte-ganancia').textContent = `C$${parseFloat(datos.ganancia || 0).toFixed(2)}`;
-    
-    document.getElementById('corte-efectivo').textContent = `C$${parseFloat(datos.pagos.efectivo || 0).toFixed(2)}`;
-    document.getElementById('corte-tarjeta').textContent = `C$${parseFloat(datos.pagos.tarjeta || 0).toFixed(2)}`;
-    document.getElementById('corte-transferencia').textContent = `C$${parseFloat(datos.pagos.transferencia || 0).toFixed(2)}`;
-    document.getElementById('corte-credito').textContent = `C$${parseFloat(datos.pagos.credito || 0).toFixed(2)}`;
-    
+
+    document.getElementById('corte-total-ventas').textContent = `C$${parseFloat(datos.total_ventas_historico || 0).toFixed(2)}`;
+    document.getElementById('corte-total-costo').textContent = `C$${parseFloat(datos.total_costo_historico || 0).toFixed(2)}`;
+    document.getElementById('corte-ganancia').textContent = `C$${parseFloat(datos.ganancia_historica || 0).toFixed(2)}`;
+
+    document.getElementById('corte-efectivo').textContent = `C$${parseFloat(datos.pagos_hoy.efectivo || 0).toFixed(2)}`;
+    document.getElementById('corte-tarjeta').textContent = `C$${parseFloat(datos.pagos_hoy.tarjeta || 0).toFixed(2)}`;
+    document.getElementById('corte-transferencia').textContent = `C$${parseFloat(datos.pagos_hoy.transferencia || 0).toFixed(2)}`;
+    document.getElementById('corte-credito').textContent = `C$${parseFloat(datos.pagos_hoy.credito || 0).toFixed(2)}`;
+
+    // --- ARQUEO DE EFECTIVO ---
     document.getElementById('corte-fondo-inicial').value = datos.fondo_inicial_sugerido || 0;
-    document.getElementById('corte-efectivo-sistema').value = parseFloat(datos.pagos.efectivo || 0).toFixed(2);
+    document.getElementById('corte-efectivo-sistema').value = parseFloat(datos.pagos_hoy.efectivo || 0).toFixed(2);
     
     window.corteDatosActuales = datos;
-    calcularEfectivoEsperado();
+    calcularEfectivoEsperado(); 
     
     document.getElementById('corte-efectivo-real').value = '';
     document.getElementById('corte-diferencia-display').textContent = 'C$0.00';
