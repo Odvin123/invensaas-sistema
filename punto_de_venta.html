@@ -1014,13 +1014,11 @@
             window.open(url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
         }
 
-        async function handleCorteCaja() {
+    async function handleCorteCaja() {
     if (!token) { alert('Sesión no válida.'); return; }
     
     try {
-        const hoy = new Date().toISOString().split('T')[0];
-        
-        const response = await fetch(`${API_URL}/admin/cortes/resumen?fecha=${hoy}`, {
+        const response = await fetch(`${API_URL}/admin/cortes/resumen`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -1029,6 +1027,7 @@
         const data = await response.json();
         
         if (data.success) {
+            console.log(' Datos del corte:', data.datos);
             mostrarCorteCajaModal(data.datos);
         } else {
             alert('Error: ' + data.message);
@@ -1040,32 +1039,43 @@
 }
 
 function mostrarCorteCajaModal(datos) {
+    console.log(' Mostrando modal con datos:', datos);
+    
+    // --- PERÍODO DEL CORTE (Día actual) ---
     const inicio = new Date(datos.fecha_inicio_hoy);
     const fin = new Date(datos.fecha_fin_hoy);
     
     document.getElementById('corte-fecha-inicio').textContent = inicio.toLocaleString('es-NI', {
-        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
     });
     document.getElementById('corte-fecha-fin').textContent = fin.toLocaleString('es-NI', {
-        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
     });
-
+    
+    // --- RESUMEN FINANCIERO (HISTÓRICO - TODOS LOS DÍAS) ---
     document.getElementById('corte-total-ventas').textContent = `C$${parseFloat(datos.total_ventas_historico || 0).toFixed(2)}`;
     document.getElementById('corte-total-costo').textContent = `C$${parseFloat(datos.total_costo_historico || 0).toFixed(2)}`;
     document.getElementById('corte-ganancia').textContent = `C$${parseFloat(datos.ganancia_historica || 0).toFixed(2)}`;
-
+    
+    // --- DESGLOSE POR MÉTODO DE PAGO (SOLO HOY) ---
     document.getElementById('corte-efectivo').textContent = `C$${parseFloat(datos.pagos_hoy.efectivo || 0).toFixed(2)}`;
     document.getElementById('corte-tarjeta').textContent = `C$${parseFloat(datos.pagos_hoy.tarjeta || 0).toFixed(2)}`;
     document.getElementById('corte-transferencia').textContent = `C$${parseFloat(datos.pagos_hoy.transferencia || 0).toFixed(2)}`;
     document.getElementById('corte-credito').textContent = `C$${parseFloat(datos.pagos_hoy.credito || 0).toFixed(2)}`;
-
+    
     // --- ARQUEO DE EFECTIVO ---
     document.getElementById('corte-fondo-inicial').value = datos.fondo_inicial_sugerido || 0;
     document.getElementById('corte-efectivo-sistema').value = parseFloat(datos.pagos_hoy.efectivo || 0).toFixed(2);
     
+    // Guardar datos para usarlos al procesar el corte
     window.corteDatosActuales = datos;
-    calcularEfectivoEsperado(); 
     
+    // Calcular efectivo esperado
+    calcularEfectivoEsperado();
+    
+    // Resetear inputs de usuario
     document.getElementById('corte-efectivo-real').value = '';
     document.getElementById('corte-diferencia-display').textContent = 'C$0.00';
     document.getElementById('corte-diferencia-display').style.background = '#d1ecf1';
@@ -1081,6 +1091,7 @@ function calcularEfectivoEsperado() {
     
     document.getElementById('corte-efectivo-esperado').textContent = `C$${efectivoEsperado.toFixed(2)}`;
     
+    // Si ya hay efectivo real ingresado, recalcular diferencia
     if (document.getElementById('corte-efectivo-real').value) {
         calcularDiferenciaCorte();
     }
@@ -1125,15 +1136,15 @@ async function procesarCorteCaja() {
     const efectivoEsperado = fondoInicial + efectivoSistema;
     const diferencia = efectivoReal - efectivoEsperado;
     
-    if (!confirm(`¿Confirmar el corte de caja?\n\nFondo Inicial: C$${fondoInicial.toFixed(2)}\nVentas Efectivo: C$${efectivoSistema.toFixed(2)}\nEfectivo Esperado: C$${efectivoEsperado.toFixed(2)}\nEfectivo Real: C$${efectivoReal.toFixed(2)}\nDiferencia: C$${diferencia.toFixed(2)}`)) {
+    if (!confirm(`¿Confirmar el corte de caja?\n\nFondo Inicial: C$${fondoInicial.toFixed(2)}\nVentas Efectivo Hoy: C$${efectivoSistema.toFixed(2)}\nEfectivo Esperado: C$${efectivoEsperado.toFixed(2)}\nEfectivo Real: C$${efectivoReal.toFixed(2)}\nDiferencia: C$${diferencia.toFixed(2)}`)) {
         return;
     }
     
     const corteData = {
-        total_ventas: parseFloat(window.corteDatosActuales.total_ventas || 0),
-        total_costo: parseFloat(window.corteDatosActuales.total_costo || 0),
-        ganancia: parseFloat(window.corteDatosActuales.ganancia || 0),
-        pagos: window.corteDatosActuales.pagos,
+        total_ventas: parseFloat(window.corteDatosActuales.total_ventas_historico || 0),
+        total_costo: parseFloat(window.corteDatosActuales.total_costo_historico || 0),
+        ganancia: parseFloat(window.corteDatosActuales.ganancia_historica || 0),
+        pagos: window.corteDatosActuales.pagos_hoy,
         fondo_inicial: fondoInicial,
         efectivo_sistema: efectivoSistema,
         efectivo_real: efectivoReal,
@@ -1154,7 +1165,7 @@ async function procesarCorteCaja() {
         const result = await response.json();
         
         if (result.success) {
-            alert(`✅ Corte de caja realizado exitosamente.\n\n📊 Resumen:\n- Ventas: C$${corteData.total_ventas.toFixed(2)}\n- Ganancia: C$${corteData.ganancia.toFixed(2)}\n- Fondo Inicial: C$${fondoInicial.toFixed(2)}\n- Diferencia: C$${diferencia.toFixed(2)}`);
+            alert(`✅ Corte de caja realizado exitosamente.\n\n📊 Resumen:\n- Ventas Totales: C$${corteData.total_ventas.toFixed(2)}\n- Ganancia Total: C$${corteData.ganancia.toFixed(2)}\n- Fondo Inicial: C$${fondoInicial.toFixed(2)}\n- Diferencia: C$${diferencia.toFixed(2)}`);
             closeCorteCajaModal();
         } else {
             alert('Error: ' + result.message);
@@ -1164,7 +1175,8 @@ async function procesarCorteCaja() {
         alert('Error al procesar el corte de caja');
     }
 }
-     
+
+
 
 function closeCorteCajaModal() {
     document.getElementById('corteCajaModal').style.display = 'none';
