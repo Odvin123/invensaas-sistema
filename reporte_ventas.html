@@ -7,10 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/reporte_ventas.css">
+    <script src="js/config.js"></script>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- HEADER -->
         <div class="page-header">
             <h1><i class="fas fa-chart-line"></i> Reporte Detallado de Ventas</h1>
             <a href="inventario_dashboard.html" class="btn-back">
@@ -18,7 +19,7 @@
             </a>
         </div>
 
-        <!-- Filtros -->
+        <!-- FILTROS -->
         <div class="filters">
             <div class="group">
                 <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
@@ -34,91 +35,21 @@
             </div>
         </div>
 
-        <!-- Tabla -->
+        <!-- TABLA DE VENTAS -->
         <div class="table-card">
             <div class="table-header">
                 <h3><i class="fas fa-list" style="color:var(--primary);"></i> Ventas Registradas</h3>
                 <span class="total">Total Acumulado: <span id="total-acumulado">C$0.00</span></span>
             </div>
             <div class="table-wrapper">
-                <table id="ventas-table">
-                    <thead>
-                        <tr>
-                            <th>Folio</th>
-                            <th>Fecha y Hora</th>
-                            <th>Cliente</th>
-                            <th>Vendedor</th>
-                            <th>Productos</th>
-                            <th style="text-align:right;">Subtotal</th>
-                            <th style="text-align:right;">Impuesto</th>
-                            <th style="text-align:right;">Descuento</th>
-                            <th style="text-align:right;">Total</th>
-                            <th style="text-align:center;">Factura</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ventas-tbody">
-                        <tr><td colspan="10" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando ventas...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/reporte_ventas.js"></script>
-    <script src="js/config.js"></script>
-</body>
-</html><!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Ventas | InvenSaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/reporte_ventas.css">
-    <script src="js/config.js"></script>
-</head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="page-header">
-            <h1><i class="fas fa-chart-line"></i> Reporte Detallado de Ventas</h1>
-            <a href="inventario_dashboard.html" class="btn-back">
-                <i class="fas fa-arrow-left"></i> Volver al Panel Principal
-            </a>
-        </div>
-
-        <!-- Filtros -->
-        <div class="filters">
-            <div class="group">
-                <label><i class="fas fa-calendar-alt"></i> Fecha Inicial</label>
-                <input type="date" id="fecha-inicio">
-            </div>
-            <div class="group">
-                <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
-                <input type="date" id="fecha-fin">
-            </div>
-            <div class="actions">
-                <button class="btn btn-primary" id="btn-mostrar"><i class="fas fa-eye"></i> Mostrar Detalles</button>
-                <button class="btn btn-outline" id="btn-refrescar"><i class="fas fa-sync-alt"></i> Refrescar (Todas)</button>
-            </div>
-        </div>
-
-        <!-- Tabla -->
-        <div class="table-card">
-            <div class="table-header">
-                <h3><i class="fas fa-list" style="color:var(--primary);"></i> Ventas Registradas</h3>
-                <span class="total">Total Acumulado: <span id="total-acumulado">C$0.00</span></span>
-            </div>
-            <div class="table-wrapper">
-                <table id="ventas-table">
+                <table>
                     <thead>
                         <tr>
                             <th style="text-align:center; width:60px;">Folio</th>
                             <th style="min-width:150px;">Fecha y Hora</th>
                             <th>Cliente</th>
                             <th>Vendedor</th>
-                            <th style="min-width:120px;">Productos</th>
+                            <th style="min-width:100px;">Productos</th>
                             <th style="text-align:right; width:90px;">Subtotal</th>
                             <th style="text-align:right; width:90px;">Impuesto</th>
                             <th style="text-align:right; width:90px;">Descuento</th>
@@ -154,7 +85,7 @@
             const tbody = document.getElementById('ventas-tbody');
             const totalAcumuladoEl = document.getElementById('total-acumulado');
 
-        
+           
             function formatNumber(value) {
                 const num = Number(value);
                 return isNaN(num) ? '0.00' : num.toFixed(2);
@@ -186,6 +117,7 @@
                     : '<span class="status-badge no">No</span>';
             }
 
+            // PRODUCTOS: Solo "cantidad × producto"
             function renderProductos(detalles) {
                 if (!detalles || detalles.length === 0) return '—';
                 return detalles.map(p => {
@@ -195,9 +127,10 @@
                 }).join(', ');
             }
 
+         
             function renderVentas(ventas) {
                 if (!ventas || ventas.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="10" class="empty">📭 No hay ventas que coincidan con los filtros.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="10" class="empty">📭 No hay ventas registradas.</td></tr>';
                     totalAcumuladoEl.textContent = 'C$0.00';
                     return;
                 }
@@ -231,7 +164,7 @@
                 console.log('✅ Tabla renderizada con', ventas.length, 'ventas');
             }
 
-          
+         
             async function loadVentas(filtros = {}) {
                 console.log('🔄 Cargando ventas...');
                 tbody.innerHTML = '<tr><td colspan="10" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
@@ -279,7 +212,7 @@
                 }
             }
 
-     
+            
 
             document.getElementById('btn-mostrar').addEventListener('click', () => {
                 const inicio = document.getElementById('fecha-inicio').value;
@@ -299,8 +232,7 @@
                 loadVentas({});
             });
 
-          
-
+            
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => loadVentas({}));
             } else {
