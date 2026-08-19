@@ -11,7 +11,9 @@
 </head>
 <body>
     <div class="container">
-        <!-- HEADER -->
+        <!-- ============================================
+        HEADER
+        ============================================ -->
         <div class="page-header">
             <h1><i class="fas fa-boxes"></i> Reporte de Movimientos de Inventario</h1>
             <a href="inventario_dashboard.html" class="btn-back">
@@ -19,7 +21,9 @@
             </a>
         </div>
 
-        <!-- FILTROS -->
+        <!-- ============================================
+        FILTROS
+        ============================================ -->
         <div class="filters">
             <div class="group">
                 <label><i class="fas fa-filter"></i> Tipo de Movimiento</label>
@@ -42,29 +46,31 @@
                 <label><i class="fas fa-search"></i> Buscar Producto</label>
                 <input type="text" id="buscar-producto" placeholder="Nombre del producto...">
             </div>
-           <!-- En la sección de filtros -->
-<div class="actions">
-    <button class="btn btn-execute" id="btn-ejecutar"><i class="fas fa-play"></i> Ejecutar</button>
-    <button class="btn btn-refresh" id="btn-recargar"><i class="fas fa-sync-alt"></i> Recargar</button>
-    <div class="dropdown" style="display:inline-block; position:relative;">
-        <button class="btn btn-export" id="btn-exportar">
-            <i class="fas fa-file-export"></i> Exportar ▼
-        </button>
-        <div class="dropdown-content" style="display:none; position:absolute; background:white; min-width:160px; box-shadow:0 8px 16px rgba(0,0,0,0.1); border-radius:8px; z-index:10; margin-top:4px;">
-            <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
-                <i class="fas fa-file-csv" style="color:#22c55e;"></i> CSV
-            </button>
-            <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
-                <i class="fas fa-file-excel" style="color:#22c55e;"></i> Excel (CSV)
-            </button>
-            <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
-                <i class="fas fa-print" style="color:#3b82f6;"></i> Imprimir
-            </button>
+            <div class="actions">
+                <button class="btn btn-execute" id="btn-ejecutar"><i class="fas fa-play"></i> Ejecutar</button>
+                <button class="btn btn-refresh" id="btn-recargar"><i class="fas fa-sync-alt"></i> Recargar</button>
+                <div class="dropdown" style="display:inline-block; position:relative;">
+                    <button class="btn btn-export" id="btn-exportar">
+                        <i class="fas fa-file-export"></i> Exportar ▼
+                    </button>
+                    <div class="dropdown-content" style="display:none; position:absolute; background:white; min-width:160px; box-shadow:0 8px 16px rgba(0,0,0,0.1); border-radius:8px; z-index:10; margin-top:4px;">
+                        <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
+                            <i class="fas fa-file-csv" style="color:#22c55e;"></i> CSV
+                        </button>
+                        <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
+                            <i class="fas fa-file-excel" style="color:#22c55e;"></i> Excel (CSV)
+                        </button>
+                        <button onclick="window.print()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
+                            <i class="fas fa-print" style="color:#3b82f6;"></i> Imprimir
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-        <!-- TABLA -->
+        <!-- ============================================
+        TABLA - CENTRO
+        ============================================ -->
         <div class="table-card">
             <div class="table-wrapper">
                 <table>
@@ -87,7 +93,9 @@
             </div>
         </div>
 
-        <!-- SUMMARY -->
+        <!-- ============================================
+        SUMMARY - ABAJO DE LA TABLA
+        ============================================ -->
         <div class="summary">
             <div class="card">
                 <div class="label"><i class="fas fa-arrow-down" style="color:var(--success);"></i> Entradas</div>
@@ -137,9 +145,9 @@
             function formatDate(dateStr) {
                 if (!dateStr) return '—';
                 try {
-                    return new Date(dateStr).toLocaleString('es-ES', {
+                    return new Date(dateStr).toLocaleString('es-NI', {
                         day: '2-digit', month: '2-digit', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit', hour12: true
+                        hour: '2-digit', minute: '2-digit'
                     });
                 } catch {
                     return dateStr;
@@ -228,64 +236,64 @@
                 }
             }
 
-         //Exportar CSV
-function exportarCSV() {
-    const tbody = document.getElementById('movimientos-tbody');
-    const rows = tbody.querySelectorAll('tr');
-    
-    if (rows.length === 0 || rows[0].classList.contains('empty')) {
-        alert('⚠️ No hay datos para exportar.');
-        return;
-    }
+            // ============================================
+            // EXPORTAR CSV
+            // ============================================
+            function exportarCSV() {
+                const rows = tbody.querySelectorAll('tr');
+                
+                if (rows.length === 0 || rows[0].classList.contains('empty')) {
+                    alert('⚠️ No hay datos para exportar.');
+                    return;
+                }
 
-    const data = [];
-    const headers = ['Fecha', 'Producto', 'Tipo', 'Cantidad', 'Stock Antes', 'Stock Después', 'Usuario', 'Referencia'];
-    data.push(headers);
+                const data = [];
+                const headers = ['Fecha', 'Producto', 'Tipo', 'Cantidad', 'Stock Antes', 'Stock Después', 'Usuario', 'Referencia'];
+                data.push(headers);
 
-    rows.forEach(row => {
-        const cols = row.querySelectorAll('td');
-        if (cols.length > 0) {
-            const rowData = [];
-            cols.forEach(col => {
-                let text = col.textContent.trim();
-                text = text.replace(/[^\w\s\d.,$C\-]/g, '').trim();
-                rowData.push(text);
-            });
-            if (rowData.length === 8) {
-                data.push(rowData);
+                rows.forEach(row => {
+                    const cols = row.querySelectorAll('td');
+                    if (cols.length > 0) {
+                        const rowData = [];
+                        cols.forEach(col => {
+                            let text = col.textContent.trim();
+                            text = text.replace(/[^\w\s\d.,$C\-]/g, '').trim();
+                            rowData.push(text);
+                        });
+                        if (rowData.length === 8) {
+                            data.push(rowData);
+                        }
+                    }
+                });
+
+                let csvContent = '';
+                data.forEach(row => {
+                    const escapedRow = row.map(cell => {
+                        if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
+                            return `"${cell.replace(/"/g, '""')}"`;
+                        }
+                        return cell;
+                    });
+                    csvContent += escapedRow.join(',') + '\n';
+                });
+
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                
+                const now = new Date();
+                const fechaStr = now.toISOString().slice(0, 10);
+                link.setAttribute('download', `movimientos_inventario_${fechaStr}.csv`);
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                console.log('✅ CSV exportado correctamente');
             }
-        }
-    });
 
-    let csvContent = '';
-    data.forEach(row => {
-        const escapedRow = row.map(cell => {
-            if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
-                return `"${cell.replace(/"/g, '""')}"`;
-            }
-            return cell;
-        });
-        csvContent += escapedRow.join(',') + '\n';
-    });
-
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }); 
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    
-    const now = new Date();
-    const fechaStr = now.toISOString().slice(0, 10);
-    link.setAttribute('download', `movimientos_inventario_${fechaStr}.csv`);
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    console.log('✅ CSV exportado correctamente');
-}
-
-document.getElementById('btn-exportar').addEventListener('click', exportarCSV);
             // ============================================
             // FILTROS
             // ============================================
@@ -299,12 +307,10 @@ document.getElementById('btn-exportar').addEventListener('click', exportarCSV);
 
                 let filtrados = todosLosMovimientos;
 
-                // Filtro por tipo
                 if (tipo !== 'TODOS') {
                     filtrados = filtrados.filter(m => m.tipo === tipo);
                 }
 
-                // Filtro por fecha
                 if (fechaInicio) {
                     const inicio = new Date(fechaInicio);
                     inicio.setHours(0, 0, 0, 0);
@@ -317,7 +323,6 @@ document.getElementById('btn-exportar').addEventListener('click', exportarCSV);
                     filtrados = filtrados.filter(m => new Date(m.fecha) <= fin);
                 }
 
-                // Filtro por producto
                 if (buscarProducto) {
                     filtrados = filtrados.filter(m => 
                         (m.producto_nombre && m.producto_nombre.toLowerCase().includes(buscarProducto))
@@ -328,7 +333,9 @@ document.getElementById('btn-exportar').addEventListener('click', exportarCSV);
                 renderMovimientos(filtrados);
             }
 
+            // ============================================
             // EVENTOS
+            // ============================================
             document.getElementById('btn-ejecutar').addEventListener('click', aplicarFiltros);
             document.getElementById('btn-recargar').addEventListener('click', () => {
                 document.getElementById('tipo-movimiento').value = 'TODOS';
@@ -337,17 +344,22 @@ document.getElementById('btn-exportar').addEventListener('click', exportarCSV);
                 document.getElementById('buscar-producto').value = '';
                 loadMovimientos();
             });
-            document.getElementById('btn-exportar').addEventListener('click', () => {
-                alert('📊 Exportar CSV - Próximamente');
+
+            // ✅ CORREGIDO: El evento de exportar ya está bien
+            document.getElementById('btn-exportar').addEventListener('click', function(e) {
+                e.stopPropagation();
+                // El dropdown se maneja con CSS
             });
 
-            // Filtros automáticos al cambiar
+            // Filtros automáticos
             document.getElementById('tipo-movimiento').addEventListener('change', aplicarFiltros);
             document.getElementById('fecha-inicio').addEventListener('change', aplicarFiltros);
             document.getElementById('fecha-fin').addEventListener('change', aplicarFiltros);
             document.getElementById('buscar-producto').addEventListener('input', aplicarFiltros);
 
+            // ============================================
             // INICIAR
+            // ============================================
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', loadMovimientos);
             } else {
