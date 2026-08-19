@@ -115,49 +115,62 @@
     MODALES
     ============================================ -->
 
-    <!-- Modal: Agregar Producto -->
-    <div id="movimientoVentasModal" class="modal">
-        <div class="modal-content" style="max-width: 700px;">
-            <span class="close" onclick="closeMovimientoVentasModal()">&times;</span>
-            <h3><i class="fas fa-box"></i> Agregar Producto a Venta</h3>
-            <form id="movimientoVentasForm">
-                <label for="clasificacion">Clasificación:</label>
-                <select id="clasificacion" required onchange="filterProductsByClasificacion()">
-                    <option value="TODOS">TODOS</option>
-                </select>
+   <!-- Modal: Agregar Producto -->
+<div id="movimientoVentasModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+        <span class="close" onclick="closeMovimientoVentasModal()">&times;</span>
+        <h3><i class="fas fa-box"></i> Agregar Producto a Venta</h3>
+        <form id="movimientoVentasForm">
+            <label for="clasificacion">Clasificación:</label>
+            <select id="clasificacion" required onchange="filterProductsByClasificacion()">
+                <option value="TODOS">TODOS</option>
+            </select>
 
-                <label for="producto_nombre">Producto:</label>
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <input type="text" id="producto_nombre" placeholder="Nombre o Descripción del Producto" disabled>
-                    <button type="button" class="btn" style="background:var(--primary); color:white; padding:10px 16px; border:none; border-radius:8px; cursor:pointer;" onclick="openBusquedaProductoModal()">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-
-                <div style="display: flex; gap: 20px;">
-                    <div style="flex: 1;">
-                        <label for="cantidad_venta">Cantidad a Vender:</label>
-                        <input type="number" id="cantidad_venta" required min="0.01" step="any" value="1" oninput="validateStock()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; -moz-appearance:textfield;" 
-                               onfocus="this.select()" inputmode="decimal">
-                    </div>
-                    <div style="flex: 1;">
-                        <label for="existencia_stock">Existencia (Stock):</label>
-                        <input type="text" id="existencia_stock" disabled style="background:var(--light);">
-                    </div>
-                    <div style="flex: 1;">
-                        <label for="precio_unitario">Precio (C$):</label>
-                        <input type="text" id="precio_unitario" disabled style="background:var(--light);">
-                    </div>
-                </div>
-
-                <input type="hidden" id="selected_product_id">
-                <input type="hidden" id="selected_product_clave">
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px;">
-                    <i class="fas fa-plus"></i> Añadir a la Venta
+            <label for="producto_nombre">Producto:</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <input type="text" id="producto_nombre" placeholder="Nombre o Descripción del Producto" disabled>
+                <button type="button" class="btn" style="background:var(--primary); color:white; padding:10px 16px; border:none; border-radius:8px; cursor:pointer;" onclick="openBusquedaProductoModal()">
+                    <i class="fas fa-search"></i>
                 </button>
-            </form>
-        </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div>
+                    <label for="cantidad_venta">Cantidad a Vender:</label>
+                    <input type="number" id="cantidad_venta" required min="0.01" step="any" value="1" oninput="validateStock()" style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; -moz-appearance:textfield;" 
+                           onfocus="this.select()" inputmode="decimal">
+                </div>
+                <div>
+                    <label for="existencia_stock">Existencia (Stock):</label>
+                    <input type="text" id="existencia_stock" disabled style="background:var(--light);">
+                </div>
+                <div>
+                    <label for="precio_unitario">Precio (C$):</label>
+                    <input type="text" id="precio_unitario" disabled style="background:var(--light);">
+                </div>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <label for="descuento_producto">Descuento (C$):</label>
+                <input type="number" id="descuento_producto" step="0.01" min="0" value="0" 
+                       style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif;"
+                       oninput="calcularSubtotalConDescuento()">
+                <small style="color:var(--text-light); font-size:11px;">Descuento en córdobas que se aplicará a este producto</small>
+            </div>
+
+            <div style="margin-top: 10px; background:var(--light); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:600;">Subtotal con Descuento:</span>
+                <span id="subtotal-con-descuento" style="font-weight:700; color:var(--primary); font-size:18px;">C$0.00</span>
+            </div>
+
+            <input type="hidden" id="selected_product_id">
+            <input type="hidden" id="selected_product_clave">
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px;">
+                <i class="fas fa-plus"></i> Añadir a la Venta
+            </button>
+        </form>
     </div>
+</div>
 
     <!-- Modal: Búsqueda de Producto -->
     <div id="busquedaProductoModal" class="modal">
@@ -438,16 +451,33 @@
             if (!localStorage.getItem('currentVendedorId')) localStorage.setItem('currentVendedorId', 1);
         }
 
-        // ============================================
-        // CLIENTES Y VENDEDORES - MODALES
-        // ============================================
-
+        
         function openClienteSelectionModal() {
             if (!token) { alert('Sesión no válida.'); return; }
             document.getElementById('clienteSelectionModal').style.display = 'block';
             if (clientesCachePOS.length === 0) loadClientesForPOS();
             else renderClientesForPOS(clientesCachePOS);
         }
+
+        function calcularSubtotalConDescuento() {
+    const precioStr = document.getElementById('precio_unitario').value.replace('C$', '');
+    const precio = parseFloat(precioStr) || 0;
+    const cantidad = parseFloat(document.getElementById('cantidad_venta').value) || 0;
+    const descuento = parseFloat(document.getElementById('descuento_producto').value) || 0;
+    
+    const subtotal = cantidad * precio;
+    const subtotalConDescuento = subtotal - descuento;
+    
+    document.getElementById('subtotal-con-descuento').textContent = `C$${Math.max(0, subtotalConDescuento).toFixed(2)}`;
+    
+    if (descuento > subtotal) {
+        document.getElementById('descuento_producto').style.borderColor = 'var(--danger)';
+        document.getElementById('subtotal-con-descuento').style.color = 'var(--danger)';
+    } else {
+        document.getElementById('descuento_producto').style.borderColor = 'var(--border)';
+        document.getElementById('subtotal-con-descuento').style.color = 'var(--primary)';
+    }
+}
 
         function closeClienteSelectionModal() {
             document.getElementById('clienteSelectionModal').style.display = 'none';
@@ -656,19 +686,21 @@
         }
 
         function selectProductForSale(productId) {
-            const producto = productosInventarioCache.find(p => p.id === productId);
-            if (!producto) return;
+    const producto = productosInventarioCache.find(p => p.id === productId);
+    if (!producto) return;
 
-            document.getElementById('selected_product_id').value = producto.id;
-            document.getElementById('selected_product_clave').value = producto.id;
-            document.getElementById('producto_nombre').value = producto.descripcion;
-            document.getElementById('existencia_stock').value = parseFloat(producto.stock).toFixed(2);
-            document.getElementById('precio_unitario').value = `C$${parseFloat(producto.precio).toFixed(2)}`;
-            document.getElementById('cantidad_venta').value = '1.00';
-
-            closeBusquedaProductoModal();
-            validateStock();
-        }
+    document.getElementById('selected_product_id').value = producto.id;
+    document.getElementById('selected_product_clave').value = producto.id;
+    document.getElementById('producto_nombre').value = producto.descripcion;
+    document.getElementById('existencia_stock').value = parseFloat(producto.stock).toFixed(2);
+    document.getElementById('precio_unitario').value = `C$${parseFloat(producto.precio).toFixed(2)}`;
+    document.getElementById('cantidad_venta').value = '1.00';
+    document.getElementById('descuento_producto').value = '0.00'; 
+    
+    closeBusquedaProductoModal();
+    validateStock();
+    calcularSubtotalConDescuento(); 
+}
 
         function validateStock() {
             const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
@@ -690,75 +722,99 @@
             }
         }
 
-        function clearMovimientoInputs() {
-            document.getElementById('selected_product_id').value = '';
-            document.getElementById('selected_product_clave').value = '';
-            document.getElementById('producto_nombre').value = '';
-            document.getElementById('existencia_stock').value = '--';
-            document.getElementById('precio_unitario').value = 'C$0.00';
-            document.getElementById('cantidad_venta').value = '1';
-        }
-
+       function clearMovimientoInputs() {
+    document.getElementById('selected_product_id').value = '';
+    document.getElementById('selected_product_clave').value = '';
+    document.getElementById('producto_nombre').value = '';
+    document.getElementById('existencia_stock').value = '--';
+    document.getElementById('precio_unitario').value = 'C$0.00';
+    document.getElementById('cantidad_venta').value = '1';
+    document.getElementById('descuento_producto').value = '0.00';
+    document.getElementById('subtotal-con-descuento').textContent = 'C$0.00';
+}
         // ============================================
         // VENTA ACTUAL
         // ============================================
-
         document.getElementById('movimientoVentasForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const productId = parseInt(document.getElementById('selected_product_id').value);
-            const cantidad = parseFloat(document.getElementById('cantidad_venta').value) || 0;
-            const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
-            const precioStr = document.getElementById('precio_unitario').value.replace('C$', '');
-            const precio = parseFloat(precioStr) || 0;
+    e.preventDefault();
+    const productId = parseInt(document.getElementById('selected_product_id').value);
+    const cantidad = parseFloat(document.getElementById('cantidad_venta').value) || 0;
+    const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
+    const precioStr = document.getElementById('precio_unitario').value.replace('C$', '');
+    const precio = parseFloat(precioStr) || 0;
+    const descuento = parseFloat(document.getElementById('descuento_producto').value) || 0;
 
-            if (!productId) { alert("Debe seleccionar un producto primero."); return; }
-            if (cantidad <= 0 || isNaN(cantidad)) { alert("La cantidad debe ser un número positivo."); return; }
+    if (!productId) { alert("Debe seleccionar un producto primero."); return; }
+    if (cantidad <= 0 || isNaN(cantidad)) { alert("La cantidad debe ser un número positivo."); return; }
 
-            const productoData = productosInventarioCache.find(p => p.id === productId);
-            if (!productoData) return;
+    const productoData = productosInventarioCache.find(p => p.id === productId);
+    if (!productoData) return;
 
-            const existingItem = ventaActual.find(item => item.id === productId);
-            const currentlyInSale = existingItem ? existingItem.cantidad : 0;
+    const existingItem = ventaActual.find(item => item.id === productId);
+    const currentlyInSale = existingItem ? existingItem.cantidad : 0;
 
-            if ((currentlyInSale + cantidad) > stock) {
-                alert(`Stock Insuficiente. Al añadir ${cantidad.toFixed(2)}, se superaría el stock disponible de ${stock.toFixed(2)}.`);
-                return;
-            }
+    if ((currentlyInSale + cantidad) > stock) {
+        alert(`Stock Insuficiente. Al añadir ${cantidad.toFixed(2)}, se superaría el stock disponible de ${stock.toFixed(2)}.`);
+        return;
+    }
 
-            addProductToSale(productoData, cantidad, precio);
-            closeMovimientoVentasModal();
+    const subtotal = cantidad * precio;
+    if (descuento > subtotal) {
+        alert(`❌ El descuento (C$${descuento.toFixed(2)}) no puede ser mayor al subtotal (C$${subtotal.toFixed(2)})`);
+        return;
+    }
+
+    addProductToSale(productoData, cantidad, precio, descuento);
+    closeMovimientoVentasModal();
+});
+        function addProductToSale(producto, cantidad, precio, descuento = 0) {
+    cantidad = parseFloat(cantidad) || 0;
+    precio = parseFloat(precio) || 0;
+    descuento = parseFloat(descuento) || 0;
+
+    if (cantidad <= 0) {
+        alert("La cantidad debe ser mayor a 0.");
+        return;
+    }
+
+    const subtotal = cantidad * precio;
+    
+    if (descuento > subtotal) {
+        alert(`❌ El descuento (C$${descuento.toFixed(2)}) no puede ser mayor al subtotal (C$${subtotal.toFixed(2)})`);
+        return;
+    }
+
+    const importe = subtotal - descuento;
+
+    const existingItem = ventaActual.find(item => item.id === producto.id);
+
+    if (existingItem) {
+        alert(`⚠️ El producto "${producto.descripcion}" ya está en la venta. Se agregará como nuevo item.`);
+        ventaActual.push({
+            id: producto.id,
+            clave: producto.id,
+            descripcion: producto.descripcion,
+            cantidad: cantidad,
+            precio: precio,
+            descuento: descuento, 
+            importe: importe,
+            subtotal: subtotal
         });
+    } else {
+        ventaActual.push({
+            id: producto.id,
+            clave: producto.id,
+            descripcion: producto.descripcion,
+            cantidad: cantidad,
+            precio: precio,
+            descuento: descuento, 
+            importe: importe,
+            subtotal: subtotal
+        });
+    }
 
-        function addProductToSale(producto, cantidad, precio) {
-            cantidad = parseFloat(cantidad) || 0;
-            precio = parseFloat(precio) || 0;
-
-            if (cantidad <= 0) {
-                alert("La cantidad debe ser mayor a 0.");
-                return;
-            }
-
-            const importe = cantidad * precio;
-
-            const existingItem = ventaActual.find(item => item.id === producto.id);
-
-            if (existingItem) {
-                existingItem.cantidad += cantidad;
-                existingItem.importe = existingItem.cantidad * existingItem.precio;
-            } else {
-                ventaActual.push({
-                    id: producto.id,
-                    clave: producto.id,
-                    descripcion: producto.descripcion,
-                    cantidad: cantidad,
-                    precio: precio,
-                    importe: importe
-                });
-            }
-
-            renderVentaActual();
-        }
-
+    renderVentaActual();
+}
         function removeItemFromSale() {
             if (ventaActual.length > 0) {
                 ventaActual.pop();
@@ -776,31 +832,37 @@
         }
 
         function renderVentaActual() {
-            const tbody = document.getElementById('pos-tbody');
-            tbody.innerHTML = '';
-            let totalVenta = 0;
+    const tbody = document.getElementById('pos-tbody');
+    tbody.innerHTML = '';
+    let totalVenta = 0;
 
-            if (ventaActual.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty"><i class="fas fa-search"></i> Presione 🔍 para añadir productos.</td></tr>';
-                document.getElementById('total-amount').textContent = 'C$0.00';
-                return;
-            }
+    if (ventaActual.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty"><i class="fas fa-search"></i> Presione 🔍 para añadir productos.</td></tr>';
+        document.getElementById('total-amount').textContent = 'C$0.00';
+        return;
+    }
 
-            ventaActual.forEach(item => {
-                totalVenta += item.importe;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${item.cantidad}</td>
-                    <td>${item.clave}</td>
-                    <td>${item.descripcion}</td>
-                    <td style="text-align:right;">C$${item.precio.toFixed(2)}</td>
-                    <td style="text-align:right;">C$${item.importe.toFixed(2)}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('total-amount').textContent = `C$${totalVenta.toFixed(2)}`;
+    ventaActual.forEach(item => {
+        totalVenta += item.importe;
+        const tr = document.createElement('tr');
+        
+        let descuentoTexto = '';
+        if (item.descuento && item.descuento > 0) {
+            descuentoTexto = ` (${item.cantidad} × C$${item.precio.toFixed(2)} - C$${item.descuento.toFixed(2)} = C$${item.importe.toFixed(2)})`;
         }
+        
+        tr.innerHTML = `
+            <td>${item.cantidad}</td>
+            <td>${item.clave}</td>
+            <td>${item.descripcion} ${descuentoTexto}</td>
+            <td style="text-align:right;">C$${item.precio.toFixed(2)}</td>
+            <td style="text-align:right;">C$${item.importe.toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('total-amount').textContent = `C$${totalVenta.toFixed(2)}`;
+}
 
         // ============================================
         // CAJA - COBRO
@@ -898,9 +960,12 @@
                     detalles: ventaActual.map(item => ({
                         producto_id: item.id,
                         cantidad: item.cantidad,
-                        precio_unitario: item.precio
+                        precio_unitario: item.precio, 
+                        descuento : item.descuento || 0,
+                        importe: item.importe
                     })),
-                    pagos: pagos
+                    pagos: pagos, 
+                    descuento_total : ventaActual.reduce((summ, item) => summ + (item.descuento || 0), 0)
                 };
 
                 const response = await fetch(`${API_URL}/admin/ventas`, {
