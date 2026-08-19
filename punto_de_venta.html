@@ -233,7 +233,7 @@
 
   <!-- Modal: Corte de Caja -->
 <div id="corteCajaModal" class="modal">
-    <div class="modal-content" style="max-width: 900px;">
+    <div class="modal-content" style="max-width: 800px;">
         <span class="close" onclick="closeCorteCajaModal()">&times;</span>
         <h3><i class="fas fa-cash-register" style="color:var(--primary);"></i> Corte de Caja</h3>
         
@@ -242,6 +242,7 @@
             <span id="corte-periodo">Hoy (día actual)</span>
         </div>
         
+        <!-- ⚠️ SOLO MOSTRAMOS EL TOTAL DE VENTAS DEL DÍA, NO EL RESUMEN FINANCIERO -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
             <div style="background:var(--light); padding:15px; border-radius:8px;">
                 <h4 style="margin:0 0 10px 0; color:var(--text);"><i class="fas fa-clock"></i> Período del Corte</h4>
@@ -249,39 +250,44 @@
                 <p style="margin:5px 0; font-size:14px;"><strong>Cierre:</strong> <span id="corte-fecha-fin">--</span></p>
             </div>
             <div style="background:var(--light); padding:15px; border-radius:8px;">
-                <h4 style="margin:0 0 10px 0; color:var(--text);"><i class="fas fa-chart-line"></i> Resumen Financiero</h4>
-                <p style="margin:5px 0; font-size:14px;"><strong>Total Ventas:</strong> <span id="corte-total-ventas">C$0.00</span></p>
-                <p style="margin:5px 0; font-size:14px;"><strong>Total Costo:</strong> <span id="corte-total-costo">C$0.00</span></p>
-                <p style="margin:5px 0; font-size:14px; color:var(--success);"><strong>Ganancia Neta:</strong> <span id="corte-ganancia">C$0.00</span></p>
+                <h4 style="margin:0 0 10px 0; color:var(--text);"><i class="fas fa-money-bill-wave"></i> Total Ventas del Día</h4>
+                <p style="margin:5px 0; font-size:24px; font-weight:700; color:var(--primary); text-align:center;">
+                    <span id="corte-total-ventas">C$0.00</span>
+                </p>
+                <p style="margin:5px 0; font-size:12px; color:var(--text-light); text-align:center;">
+                    <span id="corte-cantidad-ventas">0</span> transacciones
+                </p>
             </div>
         </div>
 
+        <!-- Desglose por Método de Pago -->
         <div style="background:var(--light); padding:15px; border-radius:8px; margin-bottom:20px;">
             <h4 style="margin:0 0 15px 0;"><i class="fas fa-money-bill-wave"></i> Desglose por Método de Pago</h4>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
                 <div style="text-align:center; padding:10px; background:white; border-radius:6px;">
-                    <i class="fas fa-money-bill" style="color:var(--success); font-size:24px; margin-bottom:5px;"></i>
+                    <i class="fas fa-money-bill" style="color:#28a745; font-size:24px; margin-bottom:5px;"></i>
                     <div style="font-size:12px; color:var(--text-light);">Efectivo</div>
-                    <div style="font-weight:700; color:var(--text);" id="corte-efectivo">C$0.00</div>
+                    <div style="font-weight:700; color:var(--text); font-size:18px;" id="corte-efectivo">C$0.00</div>
                 </div>
                 <div style="text-align:center; padding:10px; background:white; border-radius:6px;">
-                    <i class="fas fa-credit-card" style="color:var(--primary); font-size:24px; margin-bottom:5px;"></i>
+                    <i class="fas fa-credit-card" style="color:#007bff; font-size:24px; margin-bottom:5px;"></i>
                     <div style="font-size:12px; color:var(--text-light);">Tarjeta</div>
-                    <div style="font-weight:700; color:var(--text);" id="corte-tarjeta">C$0.00</div>
+                    <div style="font-weight:700; color:var(--text); font-size:18px;" id="corte-tarjeta">C$0.00</div>
                 </div>
                 <div style="text-align:center; padding:10px; background:white; border-radius:6px;">
-                    <i class="fas fa-exchange-alt" style="color:var(--warning); font-size:24px; margin-bottom:5px;"></i>
+                    <i class="fas fa-exchange-alt" style="color:#ffc107; font-size:24px; margin-bottom:5px;"></i>
                     <div style="font-size:12px; color:var(--text-light);">Transferencia</div>
-                    <div style="font-weight:700; color:var(--text);" id="corte-transferencia">C$0.00</div>
+                    <div style="font-weight:700; color:var(--text); font-size:18px;" id="corte-transferencia">C$0.00</div>
                 </div>
                 <div style="text-align:center; padding:10px; background:white; border-radius:6px;">
-                    <i class="fas fa-file-invoice" style="color:var(--danger); font-size:24px; margin-bottom:5px;"></i>
+                    <i class="fas fa-file-invoice" style="color:#dc3545; font-size:24px; margin-bottom:5px;"></i>
                     <div style="font-size:12px; color:var(--text-light);">Crédito</div>
-                    <div style="font-weight:700; color:var(--text);" id="corte-credito">C$0.00</div>
+                    <div style="font-weight:700; color:var(--text); font-size:18px;" id="corte-credito">C$0.00</div>
                 </div>
             </div>
         </div>
 
+        <!-- Arqueo de Efectivo -->
         <div style="background:var(--light); padding:15px; border-radius:8px; margin-bottom:20px;">
             <h4 style="margin:0 0 15px 0;"><i class="fas fa-calculator"></i> Arqueo de Efectivo</h4>
             
@@ -329,7 +335,7 @@
                 </div>
                 <div>
                     <label style="font-weight:600; font-size:13px; display:block; margin-bottom:5px;">Diferencia:</label>
-                    <div id="corte-diferencia-display" style="padding:10px; border-radius:6px; text-align:center; font-weight:700; font-size:16px;">
+                    <div id="corte-diferencia-display" style="padding:10px; border-radius:6px; text-align:center; font-weight:700; font-size:16px; background:#d1ecf1; color:#0c5460;">
                         C$0.00
                     </div>
                 </div>
@@ -337,10 +343,10 @@
         </div>
 
         <div style="display: flex; gap: 10px;">
-            <button class="btn" onclick="closeCorteCajaModal()" style="flex:1; background:var(--danger); color:white; padding:12px; border:none; border-radius:8px; font-weight:700; cursor:pointer;">
+            <button class="btn" onclick="closeCorteCajaModal()" style="flex:1; background:#dc3545; color:white; padding:12px; border:none; border-radius:8px; font-weight:700; cursor:pointer;">
                 <i class="fas fa-times"></i> Cancelar
             </button>
-            <button class="btn btn-primary" onclick="procesarCorteCaja()" style="flex:1; padding:12px; border:none; border-radius:8px; font-weight:700; cursor:pointer;">
+            <button class="btn btn-primary" onclick="procesarCorteCaja()" style="flex:1; padding:12px; border:none; border-radius:8px; font-weight:700; cursor:pointer; background:#007bff; color:white;">
                 <i class="fas fa-check"></i> Realizar Corte
             </button>
         </div>
@@ -1010,8 +1016,11 @@
             window.open(url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
         }
 
-       async function handleCorteCaja() {
-    if (!token) { alert('Sesión no válida.'); return; }
+     async function handleCorteCaja() {
+    if (!token) { 
+        alert('Sesión no válida.'); 
+        return; 
+    }
     
     try {
         const response = await fetch(`${API_URL}/admin/cortes/resumen`, {
@@ -1020,14 +1029,17 @@
         
         const data = await response.json();
         
-        if (data.success) {
+        if (data.success && data.datos) {
             console.log('✅ Datos recibidos:', data.datos);
-            console.log('💰 EFECTIVO DEL DÍA:', data.datos.pagos.efectivo);
+            console.log('💰 Pagos:', data.datos.pagos);
+            console.log('💰 EFECTIVO DEL DÍA:', data.datos.pagos?.efectivo || 0);
             mostrarCorteCajaModal(data.datos);
+        } else {
+            alert('Error al cargar los datos del corte: ' + (data.message || 'Error desconocido'));
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Error al cargar el corte');
+        console.error('Error en handleCorteCaja:', error);
+        alert('Error al cargar el corte: ' + error.message);
     }
 }
 
@@ -1039,22 +1051,28 @@ function mostrarCorteCajaModal(datos) {
     document.getElementById('corte-fecha-inicio').textContent = inicio.toLocaleString('es-NI');
     document.getElementById('corte-fecha-fin').textContent = fin.toLocaleString('es-NI');
     
-    // Eliminar o simplificar el resumen financiero
+    // Total ventas del día
     document.getElementById('corte-total-ventas').textContent = `C$${parseFloat(datos.total_ventas_hoy || 0).toFixed(2)}`;
-    document.getElementById('corte-total-costo').textContent = '-';
-    document.getElementById('corte-ganancia').textContent = '-';
     
-    // Desglose por método de pago (TODAS las facturas del día)
-    document.getElementById('corte-efectivo').textContent = `C$${parseFloat(datos.pagos.efectivo || 0).toFixed(2)}`;
-    document.getElementById('corte-tarjeta').textContent = `C$${parseFloat(datos.pagos.tarjeta || 0).toFixed(2)}`;
-    document.getElementById('corte-transferencia').textContent = `C$${parseFloat(datos.pagos.transferencia || 0).toFixed(2)}`;
-    document.getElementById('corte-credito').textContent = `C$${parseFloat(datos.pagos.credito || 0).toFixed(2)}`;
+    // ✅ Asegurar que pagos existe
+    const pagos = datos.pagos || { efectivo: 0, tarjeta: 0, transferencia: 0, credito: 0 };
+    
+    document.getElementById('corte-efectivo').textContent = `C$${parseFloat(pagos.efectivo || 0).toFixed(2)}`;
+    document.getElementById('corte-tarjeta').textContent = `C$${parseFloat(pagos.tarjeta || 0).toFixed(2)}`;
+    document.getElementById('corte-transferencia').textContent = `C$${parseFloat(pagos.transferencia || 0).toFixed(2)}`;
+    document.getElementById('corte-credito').textContent = `C$${parseFloat(pagos.credito || 0).toFixed(2)}`;
     
     // Arqueo
-    document.getElementById('corte-fondo-inicial').value = datos.fondo_inicial_sugerido || 0;
-    document.getElementById('corte-efectivo-sistema').value = parseFloat(datos.pagos.efectivo || 0).toFixed(2);
+    const fondoInicialSugerido = datos.fondo_inicial_sugerido || 0;
+    document.getElementById('corte-fondo-inicial').value = fondoInicialSugerido;
+    document.getElementById('corte-efectivo-sistema').value = parseFloat(pagos.efectivo || 0).toFixed(2);
     
-    window.corteDatosActuales = datos;
+    // ✅ Guardar TODOS los datos necesarios para el procesamiento
+    window.corteDatosActuales = {
+        total_ventas_hoy: datos.total_ventas_hoy || 0,
+        pagos_hoy: pagos
+    };
+    
     calcularEfectivoEsperado();
     
     document.getElementById('corte-efectivo-real').value = '';
@@ -1064,7 +1082,6 @@ function mostrarCorteCajaModal(datos) {
     
     document.getElementById('corteCajaModal').style.display = 'block';
 }
-
 
 function calcularEfectivoEsperado() {
     const fondoInicial = parseFloat(document.getElementById('corte-fondo-inicial').value) || 0;
@@ -1117,21 +1134,35 @@ async function procesarCorteCaja() {
     const efectivoEsperado = fondoInicial + efectivoSistema;
     const diferencia = efectivoReal - efectivoEsperado;
     
-    if (!confirm(`¿Confirmar el corte de caja?\n\nFondo Inicial: C$${fondoInicial.toFixed(2)}\nVentas Efectivo Hoy: C$${efectivoSistema.toFixed(2)}\nEfectivo Esperado: C$${efectivoEsperado.toFixed(2)}\nEfectivo Real: C$${efectivoReal.toFixed(2)}\nDiferencia: C$${diferencia.toFixed(2)}`)) {
+    // ✅ Usar los datos guardados en window.corteDatosActuales
+    const pagos = window.corteDatosActuales?.pagos_hoy || { 
+        efectivo: 0, tarjeta: 0, transferencia: 0, credito: 0 
+    };
+    
+    if (!confirm(`¿Confirmar el corte de caja?\n\n` +
+        `📊 Ventas del Día: C$${(window.corteDatosActuales?.total_ventas_hoy || 0).toFixed(2)}\n` +
+        `💰 Efectivo en Sistema: C$${efectivoSistema.toFixed(2)}\n` +
+        `💵 Fondo Inicial: C$${fondoInicial.toFixed(2)}\n` +
+        `📈 Efectivo Esperado: C$${efectivoEsperado.toFixed(2)}\n` +
+        `💲 Efectivo Real: C$${efectivoReal.toFixed(2)}\n` +
+        `📉 Diferencia: C$${diferencia.toFixed(2)}`)) {
         return;
     }
     
+    // ✅ Preparar datos para enviar
     const corteData = {
-        total_ventas: parseFloat(window.corteDatosActuales.total_ventas_historico || 0),
-        total_costo: parseFloat(window.corteDatosActuales.total_costo_historico || 0),
-        ganancia: parseFloat(window.corteDatosActuales.ganancia_historica || 0),
-        pagos: window.corteDatosActuales.pagos_hoy,
+        total_ventas: parseFloat(window.corteDatosActuales?.total_ventas_hoy || 0),
+        total_costo: 0,  // Puedes calcularlo si tienes el costo
+        ganancia: 0,     // Puedes calcularlo si tienes el costo
+        pagos: pagos,
         fondo_inicial: fondoInicial,
         efectivo_sistema: efectivoSistema,
         efectivo_real: efectivoReal,
         efectivo_esperado: efectivoEsperado,
         diferencia: diferencia
     };
+    
+    console.log('📦 Enviando al backend:', corteData);
     
     try {
         const response = await fetch(`${API_URL}/admin/cortes/realizar`, {
@@ -1146,21 +1177,21 @@ async function procesarCorteCaja() {
         const result = await response.json();
         
         if (result.success) {
-            alert(`✅ Corte de caja realizado exitosamente.\n\n📊 Resumen:\n- Ventas Totales Empresa: C$${corteData.total_ventas.toFixed(2)}\n- Ganancia Total: C$${corteData.ganancia.toFixed(2)}\n- Fondo Inicial: C$${fondoInicial.toFixed(2)}\n- Diferencia: C$${diferencia.toFixed(2)}`);
+            alert(`✅ Corte de caja realizado exitosamente.\n\n` +
+                `📊 Resumen:\n` +
+                `- Ventas del Día: C$${corteData.total_ventas.toFixed(2)}\n` +
+                `- Efectivo Sistema: C$${efectivoSistema.toFixed(2)}\n` +
+                `- Fondo Inicial: C$${fondoInicial.toFixed(2)}\n` +
+                `- Diferencia: C$${diferencia.toFixed(2)}`);
             closeCorteCajaModal();
         } else {
-            alert('Error: ' + result.message);
+            alert('Error al realizar el corte: ' + (result.message || 'Error desconocido'));
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Error al procesar el corte de caja');
+        console.error('Error en procesarCorteCaja:', error);
+        alert('Error al procesar el corte de caja: ' + error.message);
     }
 }
-
-function closeCorteCajaModal() {
-    document.getElementById('corteCajaModal').style.display = 'none';
-}
-   
 
 function closeCorteCajaModal() {
     document.getElementById('corteCajaModal').style.display = 'none';
