@@ -11,9 +11,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- ============================================
-        HEADER
-        ============================================ -->
+        <!-- HEADER -->
         <div class="page-header">
             <h1><i class="fas fa-boxes"></i> Reporte de Movimientos de Inventario</h1>
             <a href="inventario_dashboard.html" class="btn-back">
@@ -21,17 +19,15 @@
             </a>
         </div>
 
-        <!-- ============================================
-        FILTROS
-        ============================================ -->
+        <!-- FILTROS -->
         <div class="filters">
             <div class="group">
                 <label><i class="fas fa-filter"></i> Tipo de Movimiento</label>
                 <select id="tipo-movimiento">
                     <option value="TODOS">TODOS</option>
-                    <option value="ENTRADA">📥 ENTRADA</option>
-                    <option value="SALIDA">📤 SALIDA</option>
-                    <option value="AJUSTE">⚡ AJUSTE</option>
+                    <option value="ENTRADA">ENTRADA</option>
+                    <option value="SALIDA">SALIDA</option>
+                    <option value="AJUSTE">AJUSTE</option>
                 </select>
             </div>
             <div class="group">
@@ -46,49 +42,30 @@
                 <label><i class="fas fa-search"></i> Buscar Producto</label>
                 <input type="text" id="buscar-producto" placeholder="Nombre del producto...">
             </div>
-            <div class="group">
-                <label><i class="fas fa-user"></i> Usuario</label>
-                <select id="filtro-usuario">
-                    <option value="TODOS">TODOS</option>
-                </select>
-            </div>
-            <div class="actions">
-                <button class="btn btn-execute" id="btn-ejecutar">
-                    <i class="fas fa-play"></i> Ejecutar
-                </button>
-                <button class="btn btn-refresh" id="btn-recargar">
-                    <i class="fas fa-sync-alt"></i> Recargar
-                </button>
-                <div class="dropdown">
-                    <button class="btn btn-export" id="btn-exportar">
-                        <i class="fas fa-file-export"></i> Exportar ▼
-                    </button>
-                    <div class="dropdown-content">
-                        <button onclick="exportarCSV()">
-                            <i class="fas fa-file-csv" style="color:#22c55e;"></i> Exportar CSV
-                        </button>
-                        <button onclick="exportarCSV()">
-                            <i class="fas fa-file-excel" style="color:#22c55e;"></i> Exportar Excel
-                        </button>
-                        <button onclick="window.print()">
-                            <i class="fas fa-print" style="color:#3b82f6;"></i> Imprimir
-                        </button>
-                    </div>
-                </div>
-            </div>
+           <!-- En la sección de filtros -->
+<div class="actions">
+    <button class="btn btn-execute" id="btn-ejecutar"><i class="fas fa-play"></i> Ejecutar</button>
+    <button class="btn btn-refresh" id="btn-recargar"><i class="fas fa-sync-alt"></i> Recargar</button>
+    <div class="dropdown" style="display:inline-block; position:relative;">
+        <button class="btn btn-export" id="btn-exportar">
+            <i class="fas fa-file-export"></i> Exportar ▼
+        </button>
+        <div class="dropdown-content" style="display:none; position:absolute; background:white; min-width:160px; box-shadow:0 8px 16px rgba(0,0,0,0.1); border-radius:8px; z-index:10; margin-top:4px;">
+            <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
+                <i class="fas fa-file-csv" style="color:#22c55e;"></i> CSV
+            </button>
+            <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
+                <i class="fas fa-file-excel" style="color:#22c55e;"></i> Excel (CSV)
+            </button>
+            <button onclick="exportarCSV()" style="width:100%; padding:10px 16px; border:none; background:none; text-align:left; cursor:pointer; font-family:'Inter',sans-serif;">
+                <i class="fas fa-print" style="color:#3b82f6;"></i> Imprimir
+            </button>
         </div>
+    </div>
+</div>
 
-        <!-- ============================================
-        TABLA DE MOVIMIENTOS
-        ============================================ -->
+        <!-- TABLA -->
         <div class="table-card">
-            <div class="table-header">
-                <h3>
-                    <i class="fas fa-list" style="color:var(--primary);"></i> 
-                    Movimientos de Inventario
-                    <span class="info-badge" id="total-registros">0 registros</span>
-                </h3>
-            </div>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -104,48 +81,32 @@
                         </tr>
                     </thead>
                     <tbody id="movimientos-tbody">
-                        <tr>
-                            <td colspan="8" class="empty">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                Cargando movimientos...
-                            </td>
-                        </tr>
+                        <tr><td colspan="8" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando movimientos...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- ============================================
-        SUMMARY / RESUMEN
-        ============================================ -->
+        <!-- SUMMARY -->
         <div class="summary">
             <div class="card">
-                <div class="label">
-                    <i class="fas fa-arrow-down" style="color:var(--success);"></i> Entradas
-                </div>
+                <div class="label"><i class="fas fa-arrow-down" style="color:var(--success);"></i> Entradas</div>
                 <div class="value success" id="total-entradas">0.00</div>
                 <small>unidades ingresadas</small>
             </div>
             <div class="card">
-                <div class="label">
-                    <i class="fas fa-arrow-up" style="color:var(--danger);"></i> Salidas
-                </div>
+                <div class="label"><i class="fas fa-arrow-up" style="color:var(--danger);"></i> Salidas</div>
                 <div class="value danger" id="total-salidas">0.00</div>
                 <small>unidades vendidas</small>
             </div>
             <div class="card">
-                <div class="label">
-                    <i class="fas fa-balance-scale" style="color:var(--primary);"></i> Balance Neto
-                </div>
+                <div class="label"><i class="fas fa-balance-scale" style="color:var(--primary);"></i> Balance Neto</div>
                 <div class="value primary" id="balance-neto">0.00</div>
                 <small>(Entradas − Salidas)</small>
             </div>
         </div>
     </div>
 
-    <!-- ============================================
-    JAVASCRIPT
-    ============================================ -->
     <script>
         (function() {
             console.log('🚀 ===== REPORTE INVENTARIO INICIADO =====');
@@ -167,11 +128,6 @@
             const totalEntradasEl = document.getElementById('total-entradas');
             const totalSalidasEl = document.getElementById('total-salidas');
             const balanceNetoEl = document.getElementById('balance-neto');
-            const totalRegistrosEl = document.getElementById('total-registros');
-
-            // ============================================
-            // FUNCIONES AUXILIARES
-            // ============================================
 
             function formatNumber(value) {
                 const num = Number(value);
@@ -181,27 +137,18 @@
             function formatDate(dateStr) {
                 if (!dateStr) return '—';
                 try {
-                    const date = new Date(dateStr);
-                    return date.toLocaleString('es-NI', {
-                        day: '2-digit', 
-                        month: '2-digit', 
-                        year: 'numeric',
-                        hour: '2-digit', 
-                        minute: '2-digit'
+                    return new Date(dateStr).toLocaleString('es-ES', {
+                        day: '2-digit', month: '2-digit', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit', hour12: true
                     });
                 } catch {
                     return dateStr;
                 }
             }
 
-            // ============================================
-            // RENDERIZAR TABLA
-            // ============================================
-
             function renderMovimientos(movimientos) {
                 if (!movimientos || movimientos.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="8" class="empty">📭 No hay movimientos que coincidan con los filtros.</td></tr>';
-                    totalRegistrosEl.textContent = '0 registros';
                     return;
                 }
 
@@ -242,90 +189,122 @@
                 totalSalidasEl.textContent = formatNumber(totalSalidas);
                 balanceNetoEl.textContent = formatNumber(balance);
                 balanceNetoEl.style.color = balance > 0 ? '#22c55e' : (balance < 0 ? '#ef4444' : '#64748b');
-                
-                totalRegistrosEl.textContent = `${movimientos.length} registros`;
 
                 console.log('✅ Tabla renderizada con', movimientos.length, 'movimientos');
             }
 
-            // ============================================
-            // EXPORTAR CSV
-            // ============================================
+            async function loadMovimientos() {
+                console.log('🔄 Cargando movimientos...');
+                tbody.innerHTML = '<tr><td colspan="8" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
 
-            window.exportarCSV = function() {
-                const rows = tbody.querySelectorAll('tr');
-                
-                if (rows.length === 0 || rows[0].classList.contains('empty')) {
-                    alert('⚠️ No hay datos para exportar.');
-                    return;
-                }
-
-                const data = [];
-                const headers = ['Fecha', 'Producto', 'Tipo', 'Cantidad', 'Stock Antes', 'Stock Después', 'Usuario', 'Referencia'];
-                data.push(headers);
-
-                rows.forEach(row => {
-                    const cols = row.querySelectorAll('td');
-                    if (cols.length > 0) {
-                        const rowData = [];
-                        cols.forEach(col => {
-                            let text = col.textContent.trim();
-                            text = text.replace(/[^\w\s\d.,$C\-]/g, '').trim();
-                            rowData.push(text);
-                        });
-                        if (rowData.length === 8) {
-                            data.push(rowData);
-                        }
-                    }
-                });
-
-                let csvContent = '';
-                data.forEach(row => {
-                    const escapedRow = row.map(cell => {
-                        if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
-                            return `"${cell.replace(/"/g, '""')}"`;
-                        }
-                        return cell;
+                try {
+                    const response = await fetch(`${API_URL}/admin/inventario/movimientos`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    csvContent += escapedRow.join(',') + '\n';
-                });
 
-                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                
-                const now = new Date();
-                const fechaStr = now.toISOString().slice(0, 10);
-                link.setAttribute('download', `movimientos_inventario_${fechaStr}.csv`);
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
+                    console.log('📡 Status:', response.status);
 
-                console.log('✅ CSV exportado correctamente');
-            };
+                    if (response.status === 401) {
+                        tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
+                        return;
+                    }
 
+                    const data = await response.json();
+                    console.log('📦 Datos recibidos:', data);
+
+                    if (!data.success || !data.movimientos) {
+                        tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Error al cargar movimientos.</td></tr>';
+                        return;
+                    }
+
+                    todosLosMovimientos = data.movimientos;
+                    console.log('📊 Movimientos encontrados:', todosLosMovimientos.length);
+
+                    aplicarFiltros();
+
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    tbody.innerHTML = `<tr><td colspan="8" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
+                }
+            }
+
+         //Exportar CSV
+function exportarCSV() {
+    const tbody = document.getElementById('movimientos-tbody');
+    const rows = tbody.querySelectorAll('tr');
+    
+    if (rows.length === 0 || rows[0].classList.contains('empty')) {
+        alert('⚠️ No hay datos para exportar.');
+        return;
+    }
+
+    const data = [];
+    const headers = ['Fecha', 'Producto', 'Tipo', 'Cantidad', 'Stock Antes', 'Stock Después', 'Usuario', 'Referencia'];
+    data.push(headers);
+
+    rows.forEach(row => {
+        const cols = row.querySelectorAll('td');
+        if (cols.length > 0) {
+            const rowData = [];
+            cols.forEach(col => {
+                let text = col.textContent.trim();
+                text = text.replace(/[^\w\s\d.,$C\-]/g, '').trim();
+                rowData.push(text);
+            });
+            if (rowData.length === 8) {
+                data.push(rowData);
+            }
+        }
+    });
+
+    let csvContent = '';
+    data.forEach(row => {
+        const escapedRow = row.map(cell => {
+            if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
+                return `"${cell.replace(/"/g, '""')}"`;
+            }
+            return cell;
+        });
+        csvContent += escapedRow.join(',') + '\n';
+    });
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }); 
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    
+    const now = new Date();
+    const fechaStr = now.toISOString().slice(0, 10);
+    link.setAttribute('download', `movimientos_inventario_${fechaStr}.csv`);
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    console.log('✅ CSV exportado correctamente');
+}
+
+document.getElementById('btn-exportar').addEventListener('click', exportarCSV);
             // ============================================
             // FILTROS
             // ============================================
-
             function aplicarFiltros() {
                 const tipo = document.getElementById('tipo-movimiento').value;
                 const fechaInicio = document.getElementById('fecha-inicio').value;
                 const fechaFin = document.getElementById('fecha-fin').value;
                 const buscarProducto = document.getElementById('buscar-producto').value.toLowerCase().trim();
-                const filtroUsuario = document.getElementById('filtro-usuario').value;
 
-                console.log('🔍 Aplicando filtros:', { tipo, fechaInicio, fechaFin, buscarProducto, filtroUsuario });
+                console.log('🔍 Aplicando filtros:', { tipo, fechaInicio, fechaFin, buscarProducto });
 
                 let filtrados = todosLosMovimientos;
 
+                // Filtro por tipo
                 if (tipo !== 'TODOS') {
                     filtrados = filtrados.filter(m => m.tipo === tipo);
                 }
 
+                // Filtro por fecha
                 if (fechaInicio) {
                     const inicio = new Date(fechaInicio);
                     inicio.setHours(0, 0, 0, 0);
@@ -338,80 +317,28 @@
                     filtrados = filtrados.filter(m => new Date(m.fecha) <= fin);
                 }
 
+                // Filtro por producto
                 if (buscarProducto) {
                     filtrados = filtrados.filter(m => 
-                        m.producto_nombre && m.producto_nombre.toLowerCase().includes(buscarProducto)
+                        (m.producto_nombre && m.producto_nombre.toLowerCase().includes(buscarProducto))
                     );
                 }
 
-                if (filtroUsuario !== 'TODOS') {
-                    filtrados = filtrados.filter(m => m.usuario_nombre === filtroUsuario);
-                }
-
+                console.log('📊 Resultados filtrados:', filtrados.length);
                 renderMovimientos(filtrados);
             }
 
-            function cargarUsuariosFiltro() {
-                const usuarios = new Set();
-                todosLosMovimientos.forEach(m => {
-                    if (m.usuario_nombre) {
-                        usuarios.add(m.usuario_nombre);
-                    }
-                });
-                
-                const select = document.getElementById('filtro-usuario');
-                select.innerHTML = '<option value="TODOS">TODOS</option>';
-                usuarios.forEach(nombre => {
-                    select.innerHTML += `<option value="${nombre}">${nombre}</option>`;
-                });
-            }
-
-            // ============================================
-            // CARGAR MOVIMIENTOS
-            // ============================================
-
-            async function loadMovimientos() {
-                tbody.innerHTML = '<tr><td colspan="8" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
-
-                try {
-                    const response = await fetch(`${API_URL}/admin/inventario/movimientos`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-
-                    if (response.status === 401) {
-                        tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
-                        return;
-                    }
-
-                    const data = await response.json();
-
-                    if (!data.success || !data.movimientos) {
-                        tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Error al cargar movimientos.</td></tr>';
-                        return;
-                    }
-
-                    todosLosMovimientos = data.movimientos;
-                    cargarUsuariosFiltro();
-                    aplicarFiltros();
-
-                } catch (error) {
-                    console.error('❌ Error:', error);
-                    tbody.innerHTML = `<tr><td colspan="8" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
-                }
-            }
-
-            // ============================================
             // EVENTOS
-            // ============================================
-
             document.getElementById('btn-ejecutar').addEventListener('click', aplicarFiltros);
             document.getElementById('btn-recargar').addEventListener('click', () => {
                 document.getElementById('tipo-movimiento').value = 'TODOS';
                 document.getElementById('fecha-inicio').value = '';
                 document.getElementById('fecha-fin').value = '';
                 document.getElementById('buscar-producto').value = '';
-                document.getElementById('filtro-usuario').value = 'TODOS';
                 loadMovimientos();
+            });
+            document.getElementById('btn-exportar').addEventListener('click', () => {
+                alert('📊 Exportar CSV - Próximamente');
             });
 
             // Filtros automáticos al cambiar
@@ -419,12 +346,8 @@
             document.getElementById('fecha-inicio').addEventListener('change', aplicarFiltros);
             document.getElementById('fecha-fin').addEventListener('change', aplicarFiltros);
             document.getElementById('buscar-producto').addEventListener('input', aplicarFiltros);
-            document.getElementById('filtro-usuario').addEventListener('change', aplicarFiltros);
 
-            // ============================================
             // INICIAR
-            // ============================================
-
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', loadMovimientos);
             } else {
