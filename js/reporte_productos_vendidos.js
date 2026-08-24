@@ -6,7 +6,6 @@
     
     // ===== VARIABLES GLOBALES =====
     let todosLosProductos = [];
-    let productosActuales = [];
 
     console.log("🔑 Token:", token ? "✅ Sí" : "❌ No");
     console.log("🌐 API_URL:", API_URL);
@@ -50,17 +49,27 @@
 
     function highlightText(text, query) {
         if (!query || !text) return text || "";
-        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`(${escaped})`, 'gi');
-        return String(text).replace(regex, '<span class="highlight">$1</span>');
+        try {
+            const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escaped})`, 'gi');
+            return String(text).replace(regex, '<span class="highlight">$1</span>');
+        } catch {
+            return text;
+        }
+    }
+
+    // ===== FUNCIÓN SEGURA PARA OBTENER STRING =====
+    function getSafeString(value) {
+        if (value === null || value === undefined) return "";
+        return String(value);
     }
 
     // ===== RENDERIZAR TABLA CON FILTRO EN TIEMPO REAL =====
     function renderizarTabla(searchQuery = "") {
-        console.log("📊 Renderizando. Productos:", productosActuales.length, "Búsqueda:", searchQuery || "(vacío)");
+        console.log("📊 Renderizando. Productos:", todosLosProductos.length, "Búsqueda:", searchQuery || "(vacío)");
 
         // Si no hay productos, mostrar mensaje
-        if (!productosActuales || productosActuales.length === 0) {
+        if (!todosLosProductos || todosLosProductos.length === 0) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="9" class="empty">📭 No hay productos vendidos disponibles.</td>
@@ -72,15 +81,15 @@
         }
 
         // ===== APLICAR FILTRO DE BÚSQUEDA EN TIEMPO REAL =====
-        let datosMostrar = productosActuales;
+        let datosMostrar = todosLosProductos;
         if (searchQuery && searchQuery.trim()) {
             const query = searchQuery.trim().toLowerCase();
-            datosMostrar = productosActuales.filter(p => {
-                const desc = (p.descripcion || "").toLowerCase();
-                const clave = (p.clave || "").toLowerCase();
+            datosMostrar = todosLosProductos.filter(p => {
+                const desc = getSafeString(p.descripcion).toLowerCase();
+                const clave = getSafeString(p.clave).toLowerCase();
                 return desc.includes(query) || clave.includes(query);
             });
-            console.log("🔍 Filtrados a", datosMostrar.length, "productos (de", productosActuales.length, ")");
+            console.log("🔍 Filtrados a", datosMostrar.length, "productos (de", todosLosProductos.length, ")");
         }
 
         // Si no hay coincidencias
@@ -119,7 +128,7 @@
                 descuentoTexto = ` <small style="color:var(--text-light);">(Desc: C$${descuento.toFixed(2)})</small>`;
             }
 
-            const descripcion = p.descripcion || "Producto";
+            const descripcion = getSafeString(p.descripcion) || "Producto";
             const descripcionResaltada = searchQuery && searchQuery.trim() ?
                 highlightText(descripcion, searchQuery.trim()) :
                 descripcion;
@@ -127,7 +136,7 @@
             html += `
                 <tr>
                     <td>${formatDate(p.fecha_venta)}</td>
-                    <td style="text-align:center; font-weight:600;">${p.clave || "—"}</td>
+                    <td style="text-align:center; font-weight:600;">${getSafeString(p.clave) || "—"}</td>
                     <td>${descripcionResaltada} ${descuentoTexto}</td>
                     <td style="text-align:center; font-weight:600;">${formatNumber(cantidad)}</td>
                     <td style="text-align:right; font-weight:600; color:var(--primary);">${formatCurrency(venta)}</td>
@@ -210,15 +219,9 @@
                 return;
             }
 
-            // ===== GUARDAR PRODUCTOS =====
-            productosActuales = data.productos;
-            
-            // Si no hay filtro de fecha, también guardar en todosLosProductos
-            if (!inicio && !fin) {
-                todosLosProductos = data.productos;
-            }
-
-            console.log("📊 Productos cargados:", productosActuales.length);
+            // ===== GUARDAR PRODUCTOS EN LA VARIABLE GLOBAL =====
+            todosLosProductos = data.productos;
+            console.log("📊 Productos cargados:", todosLosProductos.length);
 
             // ===== APLICAR BÚSQUEDA ACTUAL =====
             const searchQuery = searchInput.value || "";
