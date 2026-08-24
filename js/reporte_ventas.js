@@ -1,151 +1,175 @@
-let token = localStorage.getItem("token");
+        (function () {
+            console.log('🚀 ===== REPORTE DE VENTAS INICIADO =====');
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (!token) {
-    alert("Sesión no válida. Redirigiendo al login...");
-    window.location.href = "login.html";
-    return;
-  }
+            const token = localStorage.getItem('token');
+            const API_URL = window.API_URL || 'https://invensaas-backend.onrender.com/api';
+            let todasLasVentas = [];
 
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            console.log('🔑 Token:', token ? '✅ Sí' : '❌ No');
+            console.log('🌐 API_URL:', API_URL);
 
-  document.getElementById("fecha-inicio").valueAsDate = startOfMonth;
-  document.getElementById("fecha-fin").valueAsDate = now;
+            if (!token) {
+                document.getElementById('ventas-tbody').innerHTML =
+                    '<tr><td colspan="10" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
+                return;
+            }
 
-  loadVentas();
+            const tbody = document.getElementById('ventas-tbody');
+            const totalAcumuladoEl = document.getElementById('total-acumulado');
 
-  document
-    .getElementById("btn-mostrar")
-    .addEventListener("click", handleFilter);
-  document
-    .getElementById("btn-refrescar")
-    .addEventListener("click", () => loadVentas());
-});
 
-function formatDate(dateString) {
-  if (!dateString) return "—";
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat("es-NI", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(date);
-}
+            function formatNumber(value) {
+                const num = Number(value);
+                return isNaN(num) ? '0.00' : num.toFixed(2);
+            }
 
-// Renderizar tabla de ventas
-function renderVentas(ventas) {
-  const tbody = document.getElementById("ventas-tbody");
-  const totalElement = document.getElementById("total-acumulado");
+            function formatCurrency(value) {
+                return `C$${formatNumber(value)}`;
+            }
 
-  if (!ventas || ventas.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: #6c757d;">No se encontraron ventas.</td></tr>`;
-    totalElement.textContent = "C$0.00";
-    return;
-  }
+            function formatDate(dateStr) {
+                if (!dateStr) return '—';
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleString('es-NI', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                } catch {
+                    return dateStr;
+                }
+            }
 
-  let totalAcumulado = 0;
-  let rows = "";
+            function getStatusBadge(esFactura) {
+                return esFactura
+                    ? '<span class="status-badge yes">Sí</span>'
+                    : '<span class="status-badge no">No</span>';
+            }
 
-  ventas.forEach((venta) => {
-    totalAcumulado += parseFloat(venta.total);
+            // PRODUCTOS: Solo "cantidad × producto"
+            function renderProductos(detalles) {
+                if (!detalles || detalles.length === 0) return '—';
+                return detalles.map(p => {
+                    const cantidad = Number(p.cantidad) || 0;
+                    const nombre = p.descripcion || 'Producto';
+                    return `${cantidad} × ${nombre}`;
+                }).join(', ');
+            }
 
-    const productosHTML =
-      venta.detalles && venta.detalles.length
-        ? `<div class="productos-lista">${venta.detalles
-            .map(
-              (d) =>
-                `<div class="producto-item">
-                    <span>${d.cantidad} × ${d.descripcion}</span>
-                    <span>C$${parseFloat(d.subtotal).toFixed(2)}</span>
-                  </div>`,
-            )
-            .join("")}</div>`
-        : "<em>Sin productos</em>";
 
-    const esFactura = venta.es_factura
-      ? '<span class="factura-yes">✔️ Sí</span>'
-      : '<span class="factura-no">❌ No</span>';
+            function renderVentas(ventas) {
+                if (!ventas || ventas.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="10" class="empty">📭 No hay ventas registradas.</td></tr>';
+                    totalAcumuladoEl.textContent = 'C$0.00';
+                    return;
+                }
 
-    rows += `
-            <tr>
-                <td><strong>${venta.folio}</strong></td>
-                <td>${formatDate(venta.fecha_venta)}</td>
-                <td>${venta.cliente_nombre || "—"}</td>
-                <td>${venta.vendedor_nombre || "—"}</td>
-                <td>${productosHTML}</td>
-                <td>C$${parseFloat(venta.subtotal).toFixed(2)}</td>
-                <td>C$${parseFloat(venta.impuesto).toFixed(2)}</td>
-                <td>C$${parseFloat(venta.descuento).toFixed(2)}</td>
-                <td><strong>C$${parseFloat(venta.total).toFixed(2)}</strong></td>
-                <td>${esFactura}</td>
-            </tr>
-        `;
-  });
+                let html = '';
+                let totalAcumulado = 0;
 
-  tbody.innerHTML = rows;
-  totalElement.textContent = `C$${totalAcumulado.toFixed(2)}`;
-}
+                ventas.forEach(v => {
+                    const total = Number(v.total) || 0;
+                    totalAcumulado += total;
 
-async function loadVentas(fecha_inicio = null, fecha_fin = null) {
-  const tbody = document.getElementById("ventas-tbody");
-  tbody.innerHTML =
-    '<tr><td colspan="10" class="loading">Cargando ventas...</td></tr>';
+                    html += `
+                        <tr>
+                            <td style="text-align:center; font-weight:700;">${v.folio || '—'}</td>
+                            <td>${formatDate(v.fecha_venta)}</td>
+                            <td>${v.cliente_nombre || 'Público General'}</td>
+                            <td>${v.vendedor_nombre || 'Mostrador'}</td>
+                            <td>${renderProductos(v.detalles)}</td>
+                            <td style="text-align:right;">${formatCurrency(v.subtotal)}</td>
+                            <td style="text-align:right;">${formatCurrency(v.impuesto)}</td>
+                            <td style="text-align:right;">${formatCurrency(v.descuento)}</td>
+                            <td style="text-align:right; font-weight:700; color:var(--primary);">${formatCurrency(v.total)}</td>
+                            <td style="text-align:center;">${getStatusBadge(v.es_factura)}</td>
+                        </tr>
+                    `;
+                });
 
-  try {
-    let url = `${API_URL}/admin/ventas/reportes`;
-    if (fecha_inicio && fecha_fin) {
-      url += `?inicio=${fecha_inicio}&fin=${fecha_fin}`;
-    }
+                tbody.innerHTML = html;
+                totalAcumuladoEl.textContent = formatCurrency(totalAcumulado);
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+                console.log('✅ Tabla renderizada con', ventas.length, 'ventas');
+            }
 
-    if (response.status === 401 || response.status === 403) {
-      alert("⚠️ Sesión expirada o sin permisos. Redirigiendo...");
-      localStorage.clear();
-      window.location.href = "login.html";
-      return;
-    }
 
-    const result = await response.json();
+            async function loadVentas(filtros = {}) {
+                console.log('🔄 Cargando ventas...');
+                tbody.innerHTML = '<tr><td colspan="10" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
 
-    if (result.success) {
-      renderVentas(result.ventas || []);
-    } else {
-      tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">${result.message || "Error al cargar ventas."}</td></tr>`;
-    }
-  } catch (error) {
-    console.error("Error en loadVentas:", error);
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: red;">Error de conexión con el servidor.</td></tr>`;
-  }
-}
+                try {
+                    let url = `${API_URL}/admin/ventas/reportes`;
+                    const params = new URLSearchParams();
 
-function handleFilter() {
-  const inicioInput = document.getElementById("fecha-inicio").value;
-  const finInput = document.getElementById("fecha-fin").value;
+                    if (filtros.inicio) params.append('inicio', filtros.inicio);
+                    if (filtros.fin) params.append('fin', filtros.fin);
 
-  if (!inicioInput || !finInput) {
-    alert("⚠️ Por favor, seleccione ambas fechas.");
-    return;
-  }
+                    if (params.toString()) {
+                        url += '?' + params.toString();
+                    }
 
-  const inicio = new Date(inicioInput);
-  const fin = new Date(finInput);
-  if (fin < inicio) {
-    alert("⚠️ La fecha final no puede ser anterior a la fecha inicial.");
-    return;
-  }
+                    console.log('📡 URL:', url);
 
-  const inicioISO = inicio.toISOString().split("T")[0];
-  const finISO = fin.toISOString().split("T")[0];
+                    const response = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
 
-  loadVentas(inicioISO, finISO);
-}
+                    console.log('📡 Status:', response.status);
+
+                    if (response.status === 401) {
+                        tbody.innerHTML = '<tr><td colspan="10" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
+                        return;
+                    }
+
+                    const data = await response.json();
+                    console.log('📦 Datos recibidos:', data);
+
+                    if (!data.success || !data.ventas) {
+                        tbody.innerHTML = '<tr><td colspan="10" class="empty">❌ Error al cargar ventas.</td></tr>';
+                        return;
+                    }
+
+                    todasLasVentas = data.ventas;
+                    console.log('📊 Ventas encontradas:', todasLasVentas.length);
+
+                    renderVentas(todasLasVentas);
+
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    tbody.innerHTML = `<tr><td colspan="10" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
+                }
+            }
+
+
+
+            document.getElementById('btn-mostrar').addEventListener('click', () => {
+                const inicio = document.getElementById('fecha-inicio').value;
+                const fin = document.getElementById('fecha-fin').value;
+
+                if (!inicio || !fin) {
+                    alert('⚠️ Selecciona ambas fechas (inicial y final) para filtrar.');
+                    return;
+                }
+
+                loadVentas({ inicio, fin });
+            });
+
+            document.getElementById('btn-refrescar').addEventListener('click', () => {
+                document.getElementById('fecha-inicio').value = '';
+                document.getElementById('fecha-fin').value = '';
+                loadVentas({});
+            });
+
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => loadVentas({}));
+            } else {
+                loadVentas({});
+            }
+
+        })();
+    
