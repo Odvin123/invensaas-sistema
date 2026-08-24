@@ -7,13 +7,16 @@
     let todosLosProductos = [];
     let productosFiltradosPorFecha = [];
     let busquedaActual = "";
+    let filtroFechaActivo = false; // 🆕 NUEVO: Controla si el filtro de fecha está aplicado
 
     console.log("🔑 Token:", token ? "✅ Sí" : "❌ No");
     console.log("🌐 API_URL:", API_URL);
 
     if (!token) {
-        document.getElementById("productos-tbody").innerHTML =
-            '<tr><td colspan="9" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
+        const tbody = document.getElementById("productos-tbody");
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
+        }
         return;
     }
 
@@ -48,52 +51,50 @@
         }
     }
 
-    // ===== RESALTAR COINCIDENCIAS =====
+    // ===== RESALTAR COINCIDENCIAS (Mejorado con estilos en línea por si falta el CSS) =====
     function highlightText(text, query) {
         if (!query || !text) return text || "";
         const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp(`(${escaped})`, 'gi');
-        return String(text).replace(regex, '<span class="highlight">$1</span>');
+        return String(text).replace(regex, '<span class="highlight" style="background-color: #ffeb3b; color: #000; font-weight: bold; border-radius: 2px; padding: 0 2px;">$1</span>');
     }
 
     // ===== RENDERIZAR TABLA =====
     function renderizarTabla(productos, searchQuery = "") {
-        console.log("📊 Renderizando tabla con", productos.length, "productos");
+        if (!tbody) return;
+        
+        console.log("📊 Renderizando tabla con", productos ? productos.length : 0, "productos");
         console.log("🔍 Búsqueda:", searchQuery);
 
-        // Si no hay productos, mostrar mensaje
         if (!productos || productos.length === 0) {
-            tbody.innerHTML =
-                '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
-            totalProductosEl.textContent = "0";
-            totalVentasEl.textContent = "C$0.00";
-            totalGananciaEl.textContent = "C$0.00";
+            tbody.innerHTML = '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
+            if (totalProductosEl) totalProductosEl.textContent = "0";
+            if (totalVentasEl) totalVentasEl.textContent = "C$0.00";
+            if (totalGananciaEl) totalGananciaEl.textContent = "C$0.00";
             return;
         }
 
-        // APLICAR FILTRO DE BÚSQUEDA
+        // APLICAR FILTRO DE BÚSQUEDA EN TIEMPO REAL
         let datosMostrar = productos;
         if (searchQuery && searchQuery.trim()) {
             const query = searchQuery.trim().toLowerCase();
             datosMostrar = productos.filter(p => {
                 const desc = (p.descripcion || "").toLowerCase();
                 const clave = (p.clave || "").toLowerCase();
+                // Puedes agregar más campos aquí si lo necesitas, ej: (p.fecha_venta || "").toLowerCase()
                 return desc.includes(query) || clave.includes(query);
             });
             console.log("🔍 Productos filtrados por búsqueda:", datosMostrar.length);
         }
 
-        // Si no hay coincidencias
         if (datosMostrar.length === 0) {
-            tbody.innerHTML =
-                `<tr><td colspan="9" class="empty">🔍 No se encontraron productos que coincidan con "<strong>${searchQuery}</strong>".</td></tr>`;
-            totalProductosEl.textContent = "0";
-            totalVentasEl.textContent = "C$0.00";
-            totalGananciaEl.textContent = "C$0.00";
+            tbody.innerHTML = `<tr><td colspan="9" class="empty">🔍 No se encontraron productos que coincidan con "<strong>${searchQuery}</strong>".</td></tr>`;
+            if (totalProductosEl) totalProductosEl.textContent = "0";
+            if (totalVentasEl) totalVentasEl.textContent = "C$0.00";
+            if (totalGananciaEl) totalGananciaEl.textContent = "C$0.00";
             return;
         }
 
-        // Generar HTML de la tabla
         let html = "";
         let totalVentas = 0;
         let totalGanancia = 0;
@@ -110,25 +111,24 @@
             totalGanancia += ganancia;
             totalUnidades += cantidad;
 
-            const gananciaColor = ganancia >= 0 ? "var(--success)" : "var(--danger)";
+            const gananciaColor = ganancia >= 0 ? "var(--success, green)" : "var(--danger, red)";
 
             let descuentoTexto = "";
             if (descuento > 0) {
-                descuentoTexto = ` <small style="color:var(--text-light);">(Desc: C$${descuento.toFixed(2)})</small>`;
+                descuentoTexto = ` <small style="color:var(--text-light, #666);">(Desc: C$${descuento.toFixed(2)})</small>`;
             }
 
             const descripcion = p.descripcion || "Producto";
             const descripcionResaltada = searchQuery && searchQuery.trim() ?
-                highlightText(descripcion, searchQuery.trim()) :
-                descripcion;
+                highlightText(descripcion, searchQuery.trim()) : descripcion;
 
             html += `
                 <tr>
                     <td>${formatDate(p.fecha_venta)}</td>
                     <td style="text-align:center; font-weight:600;">${p.clave || "—"}</td>
-                    <td>${descripcionResaltada} ${descuentoTexto}</td>
+                    <td>${descripcionResaltada}${descuentoTexto}</td>
                     <td style="text-align:center; font-weight:600;">${formatNumber(cantidad)}</td>
-                    <td style="text-align:right; font-weight:600; color:var(--primary);">${formatCurrency(venta)}</td>
+                    <td style="text-align:right; font-weight:600; color:var(--primary, blue);">${formatCurrency(venta)}</td>
                     <td style="text-align:right;">${formatCurrency(p.precio_unitario)}</td>
                     <td style="text-align:right;">${formatCurrency(costo)}</td>
                     <td style="text-align:right;">${formatCurrency(costo)}</td>
@@ -138,14 +138,11 @@
         });
 
         tbody.innerHTML = html;
-        totalProductosEl.textContent = formatNumber(totalUnidades);
-        totalVentasEl.textContent = formatCurrency(totalVentas);
-        totalGananciaEl.textContent = formatCurrency(totalGanancia);
-
-        if (totalGanancia < 0) {
-            totalGananciaEl.style.color = "var(--danger)";
-        } else {
-            totalGananciaEl.style.color = "var(--success)";
+        if (totalProductosEl) totalProductosEl.textContent = formatNumber(totalUnidades);
+        if (totalVentasEl) totalVentasEl.textContent = formatCurrency(totalVentas);
+        if (totalGananciaEl) {
+            totalGananciaEl.textContent = formatCurrency(totalGanancia);
+            totalGananciaEl.style.color = totalGanancia < 0 ? "var(--danger, red)" : "var(--success, green)";
         }
 
         console.log("✅ Tabla renderizada con", datosMostrar.length, "productos");
@@ -153,6 +150,7 @@
 
     // ===== ACTUALIZAR BOTÓN LIMPIAR =====
     function actualizarBotonLimpiar(query) {
+        if (!clearSearchBtn) return;
         if (query && query.trim()) {
             clearSearchBtn.classList.add("visible");
         } else {
@@ -161,65 +159,64 @@
     }
 
     // ===== EXPORTAR CSV =====
-    document.getElementById("btn-exportar").addEventListener("click", function () {
-        const rows = tbody.querySelectorAll("tr");
-
-        if (rows.length === 0 || rows[0].classList.contains("empty")) {
-            alert("⚠️ No hay datos para exportar.");
-            return;
-        }
-
-        const data = [];
-        const headers = ["Fecha", "Clave", "Descripción", "Cantidad", "Venta", "Precio", "Costo", "Recuperación", "Ganancia"];
-        data.push(headers);
-
-        rows.forEach((row) => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length > 0) {
-                const rowData = [];
-                cols.forEach((col) => {
-                    let text = col.textContent.trim();
-                    text = text.replace(/[^\w\s\d.,$C\-]/g, "").trim();
-                    rowData.push(text);
-                });
-                if (rowData.length === 9) {
-                    data.push(rowData);
-                }
+    const btnExportar = document.getElementById("btn-exportar");
+    if (btnExportar) {
+        btnExportar.addEventListener("click", function () {
+            const rows = tbody.querySelectorAll("tr");
+            if (rows.length === 0 || rows[0].classList.contains("empty")) {
+                alert("⚠️ No hay datos para exportar.");
+                return;
             }
-        });
 
-        let csvContent = "";
-        data.forEach((row) => {
-            const escapedRow = row.map((cell) => {
-                if (typeof cell === "string" && (cell.includes(",") || cell.includes('"') || cell.includes("\n"))) {
-                    return `"${cell.replace(/"/g, '""')}"`;
+            const data = [];
+            const headers = ["Fecha", "Clave", "Descripción", "Cantidad", "Venta", "Precio", "Costo", "Recuperación", "Ganancia"];
+            data.push(headers);
+
+            rows.forEach((row) => {
+                const cols = row.querySelectorAll("td");
+                if (cols.length > 0) {
+                    const rowData = [];
+                    cols.forEach((col) => {
+                        let text = col.textContent.trim();
+                        text = text.replace(/[^\w\s\d.,$C\-]/g, "").trim();
+                        rowData.push(text);
+                    });
+                    if (rowData.length === 9) data.push(rowData);
                 }
-                return cell;
             });
-            csvContent += escapedRow.join(",") + "\n";
+
+            let csvContent = "";
+            data.forEach((row) => {
+                const escapedRow = row.map((cell) => {
+                    if (typeof cell === "string" && (cell.includes(",") || cell.includes('"') || cell.includes("\n"))) {
+                        return `"${cell.replace(/"/g, '""')}"`;
+                    }
+                    return cell;
+                });
+                csvContent += escapedRow.join(",") + "\n";
+            });
+
+            const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+
+            const fechaStr = new Date().toISOString().slice(0, 10);
+            link.setAttribute("download", `productos_vendidos_${fechaStr}.csv`);
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            console.log("✅ CSV exportado correctamente");
         });
-
-        const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-
-        const now = new Date();
-        const fechaStr = now.toISOString().slice(0, 10);
-        link.setAttribute("download", `productos_vendidos_${fechaStr}.csv`);
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        console.log("✅ CSV exportado correctamente");
-    });
+    }
 
     // ===== FUNCIÓN PRINCIPAL PARA OBTENER DATOS =====
     async function obtenerProductos(filtros = {}) {
         console.log("🔄 Obteniendo productos...");
-        tbody.innerHTML = '<tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
 
         try {
             let url = `${API_URL}/admin/ventas/productos-vendidos`;
@@ -228,9 +225,7 @@
             if (filtros.inicio) params.append("inicio", filtros.inicio);
             if (filtros.fin) params.append("fin", filtros.fin);
 
-            if (params.toString()) {
-                url += "?" + params.toString();
-            }
+            if (params.toString()) url += "?" + params.toString();
 
             console.log("📡 URL:", url);
 
@@ -239,7 +234,7 @@
             });
 
             if (response.status === 401) {
-                tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
+                if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
                 return;
             }
 
@@ -247,103 +242,101 @@
             console.log("📦 Datos recibidos:", data);
 
             if (!data.success || !data.productos) {
-                tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td></tr>';
+                if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td></tr>';
                 return;
             }
 
-            // Guardar productos
+            // 🆕 GUARDAR PRODUCTOS Y ACTUALIZAR ESTADO DEL FILTRO
             if (filtros.inicio && filtros.fin) {
-                // Si hay filtro de fecha, guardar separado
-                productosFiltradosPorFecha = data.productos;
-                // Usar los productos filtrados para mostrar
-                const searchQuery = searchInput.value || "";
-                renderizarTabla(productosFiltradosPorFecha, searchQuery);
+                productosFiltradosPorFecha = data.productos || [];
+                filtroFechaActivo = true; // Marcamos que el filtro de fecha está activo
+                renderizarTabla(productosFiltradosPorFecha, searchInput ? searchInput.value : "");
             } else {
-                // Si no hay filtro, guardar en todosLosProductos
-                todosLosProductos = data.productos;
-                const searchQuery = searchInput.value || "";
-                renderizarTabla(todosLosProductos, searchQuery);
+                todosLosProductos = data.productos || [];
+                filtroFechaActivo = false; // Marcamos que NO hay filtro de fecha
+                renderizarTabla(todosLosProductos, searchInput ? searchInput.value : "");
             }
 
         } catch (error) {
             console.error("❌ Error:", error);
-            tbody.innerHTML = `<tr><td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
+            if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
         }
     }
 
-    // ===== EVENTO DE BÚSQUEDA EN TIEMPO REAL =====
+    // ===== 🆕 EVENTO DE BÚSQUEDA EN TIEMPO REAL OPTIMIZADO =====
     let timeoutId = null;
-    searchInput.addEventListener("input", function () {
-        const query = this.value;
-        busquedaActual = query;
-        actualizarBotonLimpiar(query);
+    if (searchInput) {
+        searchInput.addEventListener("input", function () {
+            const query = this.value;
+            busquedaActual = query;
+            actualizarBotonLimpiar(query);
 
-        console.log("🔍 Escribiendo:", query);
+            console.log("⌨️ Escribiendo:", query);
 
-        // Debounce para mejor rendimiento
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            // Determinar qué conjunto de datos usar
-            if (productosFiltradosPorFecha && productosFiltradosPorFecha.length > 0) {
-                // Si hay filtro de fecha, buscar en ese conjunto
-                renderizarTabla(productosFiltradosPorFecha, query);
-            } else if (todosLosProductos && todosLosProductos.length > 0) {
-                // Si no hay filtro, buscar en todos
-                renderizarTabla(todosLosProductos, query);
-            }
-        }, 300);
-    });
+            // 🆕 Debounce reducido a 200ms para una sensación más "instantánea" letra por letra
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                // 🆕 Lógica corregida: Siempre respeta el contexto activo (fecha o todos)
+                if (filtroFechaActivo) {
+                    renderizarTabla(productosFiltradosPorFecha, query);
+                } else {
+                    renderizarTabla(todosLosProductos, query);
+                }
+            }, 200);
+        });
+    }
 
     // ===== LIMPIAR BÚSQUEDA =====
-    clearSearchBtn.addEventListener("click", function () {
-        searchInput.value = "";
-        busquedaActual = "";
-        actualizarBotonLimpiar("");
-        
-        // Recargar la tabla sin búsqueda
-        if (productosFiltradosPorFecha && productosFiltradosPorFecha.length > 0) {
-            renderizarTabla(productosFiltradosPorFecha, "");
-        } else if (todosLosProductos && todosLosProductos.length > 0) {
-            renderizarTabla(todosLosProductos, "");
-        }
-        searchInput.focus();
-    });
+    if (clearSearchBtn && searchInput) {
+        clearSearchBtn.addEventListener("click", function () {
+            searchInput.value = "";
+            busquedaActual = "";
+            actualizarBotonLimpiar("");
+            
+            if (filtroFechaActivo) {
+                renderizarTabla(productosFiltradosPorFecha, "");
+            } else {
+                renderizarTabla(todosLosProductos, "");
+            }
+            searchInput.focus();
+        });
+    }
 
     // ===== BOTÓN MOSTRAR (CON FILTRO DE FECHA) =====
-    document.getElementById("btn-mostrar").addEventListener("click", async () => {
-        const inicio = document.getElementById("fecha-inicio").value;
-        const fin = document.getElementById("fecha-fin").value;
+    const btnMostrar = document.getElementById("btn-mostrar");
+    if (btnMostrar) {
+        btnMostrar.addEventListener("click", async () => {
+            const inicio = document.getElementById("fecha-inicio")?.value;
+            const fin = document.getElementById("fecha-fin")?.value;
 
-        if (!inicio || !fin) {
-            alert("⚠️ Selecciona ambas fechas (inicial y final) para filtrar.");
-            return;
-        }
-
-        // Limpiar búsqueda al aplicar filtro de fecha (opcional)
-        // searchInput.value = "";
-        // busquedaActual = "";
-        // actualizarBotonLimpiar("");
-
-        await obtenerProductos({ inicio, fin });
-    });
+            if (!inicio || !fin) {
+                alert("⚠️ Selecciona ambas fechas (inicial y final) para filtrar.");
+                return;
+            }
+            await obtenerProductos({ inicio, fin });
+        });
+    }
 
     // ===== BOTÓN REFRESCAR =====
-    document.getElementById("btn-refrescar").addEventListener("click", async () => {
-        // Limpiar fechas
-        document.getElementById("fecha-inicio").value = "";
-        document.getElementById("fecha-fin").value = "";
-        
-        // Limpiar búsqueda
-        searchInput.value = "";
-        busquedaActual = "";
-        actualizarBotonLimpiar("");
-        
-        // Limpiar productos filtrados por fecha
-        productosFiltradosPorFecha = [];
-        
-        // Recargar todos los productos
-        await obtenerProductos({});
-    });
+    const btnRefrescar = document.getElementById("btn-refrescar");
+    if (btnRefrescar) {
+        btnRefrescar.addEventListener("click", async () => {
+            const fechaInicio = document.getElementById("fecha-inicio");
+            const fechaFin = document.getElementById("fecha-fin");
+            
+            if (fechaInicio) fechaInicio.value = "";
+            if (fechaFin) fechaFin.value = "";
+            
+            if (searchInput) searchInput.value = "";
+            busquedaActual = "";
+            actualizarBotonLimpiar("");
+            
+            productosFiltradosPorFecha = [];
+            filtroFechaActivo = false; // 🆕 Resetear el estado del filtro
+            
+            await obtenerProductos({});
+        });
+    }
 
     // ===== INICIALIZAR =====
     async function init() {
@@ -351,7 +344,6 @@
         await obtenerProductos({});
     }
 
-    // Ejecutar cuando el DOM esté listo
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
     } else {
