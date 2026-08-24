@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InvenSaaS - Panel de Control</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -13,7 +15,11 @@
         /* ============================================
            VARIABLES Y RESET
         ============================================ */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
             --primary: #6366f1;
@@ -46,10 +52,23 @@
             min-height: 100vh;
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--light); }
-        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
 
         /* TOP BAR */
         .top-bar {
@@ -63,11 +82,16 @@
             top: 0;
             z-index: 200;
             backdrop-filter: blur(8px);
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             gap: 12px;
         }
 
-        .top-bar .brand { display: flex; align-items: center; gap: 12px; }
+        .top-bar .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .top-bar .brand .logo {
             font-size: 22px;
             font-weight: 900;
@@ -75,6 +99,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         .top-bar .brand .logo span {
             color: var(--secondary);
             -webkit-text-fill-color: var(--secondary);
@@ -94,9 +119,17 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        .hamburger-btn:hover { background: var(--border); }
 
-        .top-bar .user-info { display: flex; align-items: center; gap: 14px; }
+        .hamburger-btn:hover {
+            background: var(--border);
+        }
+
+        .top-bar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
         .top-bar .user-info .company-badge {
             background: var(--light);
             padding: 6px 16px;
@@ -105,7 +138,12 @@
             font-size: 13px;
             color: var(--text-light);
         }
-        .top-bar .user-info .company-badge i { color: var(--primary); margin-right: 6px; }
+
+        .top-bar .user-info .company-badge i {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+
         .top-bar .user-info .avatar {
             width: 36px;
             height: 36px;
@@ -151,11 +189,19 @@
             background: rgba(15, 23, 42, 0.45);
             z-index: 140;
         }
-        .sidebar-overlay.active { display: block; }
 
-        .sidebar ul { list-style: none; }
+        .sidebar-overlay.active {
+            display: block;
+        }
 
-        .sidebar > ul > li { padding: 0 10px; margin-bottom: 2px; }
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar>ul>li {
+            padding: 0 10px;
+            margin-bottom: 2px;
+        }
 
         .sidebar a {
             display: flex;
@@ -172,12 +218,13 @@
             white-space: nowrap;
         }
 
-        .sidebar > ul > li > a:hover,
-        .sidebar > ul > li > a.active {
+        .sidebar>ul>li>a:hover,
+        .sidebar>ul>li>a.active {
             background: var(--light);
             color: var(--primary);
         }
-        .sidebar > ul > li > a.active {
+
+        .sidebar>ul>li>a.active {
             background: #eef2ff;
         }
 
@@ -193,14 +240,20 @@
             font-size: 11px;
             transition: transform 0.25s ease;
         }
-        .has-submenu.open > a .submenu-arrow { transform: rotate(180deg); }
+
+        .has-submenu.open>a .submenu-arrow {
+            transform: rotate(180deg);
+        }
 
         .submenu {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
         }
-        .has-submenu.open .submenu { max-height: 400px; }
+
+        .has-submenu.open .submenu {
+            max-height: 400px;
+        }
 
         .submenu li a {
             padding: 9px 12px 9px 40px;
@@ -208,6 +261,7 @@
             font-weight: 500;
             color: var(--text-light);
         }
+
         .submenu li a:hover,
         .submenu li a.active {
             background: var(--light);
@@ -220,8 +274,14 @@
             margin: 10px 16px;
         }
 
-        .logout-item a { color: var(--danger); }
-        .logout-item a:hover { background: #fee2e2; color: var(--danger); }
+        .logout-item a {
+            color: var(--danger);
+        }
+
+        .logout-item a:hover {
+            background: #fee2e2;
+            color: var(--danger);
+        }
 
         /* CONTENIDO */
         .content-wrapper {
@@ -237,9 +297,19 @@
             margin: 0 auto;
         }
 
-        .dashboard-header { margin-bottom: 24px; }
-        .dashboard-header h1 { font-size: 26px; font-weight: 800; }
-        .dashboard-header p { color: var(--text-light); font-size: 15px; }
+        .dashboard-header {
+            margin-bottom: 24px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .dashboard-header p {
+            color: var(--text-light);
+            font-size: 15px;
+        }
 
         /* STATS CARDS - CLICABLES */
         .stats-grid {
@@ -276,15 +346,48 @@
             margin-bottom: 8px;
         }
 
-        .stat-card .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
-        .stat-card .stat-icon.green { background: #dcfce7; color: #16a34a; }
-        .stat-card .stat-icon.orange { background: #fef3c7; color: #d97706; }
-        .stat-card .stat-icon.red { background: #fee2e2; color: #dc2626; }
-        .stat-card .stat-icon.blue { background: #dbeafe; color: #2563eb; }
-        .stat-card .stat-icon.teal { background: #ccfbf1; color: #0d9488; }
+        .stat-card .stat-icon.purple {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
 
-        .stat-card .stat-number { font-size: 26px; font-weight: 900; line-height: 1.1; }
-        .stat-card .stat-label { font-size: 12px; color: var(--text-light); font-weight: 500; margin-top: 2px; }
+        .stat-card .stat-icon.green {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .stat-card .stat-icon.orange {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .stat-card .stat-icon.red {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .stat-card .stat-icon.blue {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .stat-card .stat-icon.teal {
+            background: #ccfbf1;
+            color: #0d9488;
+        }
+
+        .stat-card .stat-number {
+            font-size: 26px;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 500;
+            margin-top: 2px;
+        }
 
         .stat-card .click-hint {
             font-size: 10px;
@@ -309,10 +412,27 @@
             transition: var(--transition);
         }
 
-        .chart-card:hover { box-shadow: var(--shadow-hover); }
-        .chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .chart-card h3 i { color: var(--primary); }
-        .chart-card .chart-container { position: relative; height: 250px; }
+        .chart-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .chart-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-card h3 i {
+            color: var(--primary);
+        }
+
+        .chart-card .chart-container {
+            position: relative;
+            height: 250px;
+        }
 
         /* TABLA */
         .table-card {
@@ -332,7 +452,10 @@
             gap: 10px;
         }
 
-        .table-card .table-header h3 { font-size: 15px; font-weight: 700; }
+        .table-card .table-header h3 {
+            font-size: 15px;
+            font-weight: 700;
+        }
 
         .table-card .table-header .actions {
             display: flex;
@@ -359,28 +482,47 @@
             color: white;
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
         }
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
         }
 
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: #16a34a; transform: translateY(-2px); }
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
 
-        .btn-warning { background: var(--warning); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
+        .btn-success:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
 
         .btn-outline {
             background: transparent;
             color: var(--text-light);
             border: 2px solid var(--border);
         }
+
         .btn-outline:hover {
             border-color: var(--primary);
             color: var(--primary);
         }
 
-        .table-wrapper { overflow-x: auto; padding: 0 20px 20px; }
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 20px 20px;
+        }
 
         table {
             width: 100%;
@@ -405,7 +547,9 @@
             border-bottom: 1px solid var(--border);
         }
 
-        tbody tr:hover { background: rgba(99, 102, 241, 0.03); }
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.03);
+        }
 
         .status-badge {
             padding: 3px 12px;
@@ -414,11 +558,26 @@
             font-weight: 600;
         }
 
-        .status-badge.in-stock { background: #dcfce7; color: #16a34a; }
-        .status-badge.low-stock { background: #fef3c7; color: #d97706; }
-        .status-badge.out-of-stock { background: #fee2e2; color: #dc2626; }
+        .status-badge.in-stock {
+            background: #dcfce7;
+            color: #16a34a;
+        }
 
-        .actions-cell { display: flex; gap: 4px; flex-wrap: wrap; }
+        .status-badge.low-stock {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-badge.out-of-stock {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
 
         .btn-sm {
             padding: 4px 10px;
@@ -429,14 +588,34 @@
             font-weight: 600;
             transition: var(--transition);
         }
-        .btn-sm:hover { transform: translateY(-1px); }
-        .btn-edit { background: var(--warning); color: white; }
-        .btn-delete { background: var(--danger); color: white; }
-        .btn-view { background: var(--primary); color: white; }
+
+        .btn-sm:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-edit {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-view {
+            background: var(--primary);
+            color: white;
+        }
 
         /* VIEWS */
-        .view-content { display: none; }
-        .view-content.active { display: block; }
+        .view-content {
+            display: none;
+        }
+
+        .view-content.active {
+            display: block;
+        }
 
         /* MODALES */
         .modal {
@@ -453,8 +632,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-content {
@@ -471,8 +655,15 @@
         }
 
         @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-content .close {
@@ -483,7 +674,10 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        .modal-content .close:hover { color: var(--secondary); }
+
+        .modal-content .close:hover {
+            color: var(--secondary);
+        }
 
         .modal-content h3 {
             margin-bottom: 16px;
@@ -492,7 +686,10 @@
             align-items: center;
             gap: 8px;
         }
-        .modal-content h3 i { color: var(--primary); }
+
+        .modal-content h3 i {
+            color: var(--primary);
+        }
 
         .modal-content label {
             display: block;
@@ -523,44 +720,21 @@
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
         }
 
-        .modal-content textarea { min-height: 50px; resize: vertical; }
-        .modal-content .btn { width: 100%; margin-top: 14px; justify-content: center; }
+        .modal-content textarea {
+            min-height: 50px;
+            resize: vertical;
+        }
+
+        .modal-content .btn {
+            width: 100%;
+            margin-top: 14px;
+            justify-content: center;
+        }
+
         .modal-content .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-        }
-
-        /* MODAL DE REPORTES (ancho, con iframe) */
-        .modal-content.modal-report-content {
-            max-width: 1100px;
-            width: 95%;
-            padding: 16px 16px 20px;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .modal-report-content h3 { margin-bottom: 10px; flex-shrink: 0; }
-        .modal-report-body {
-            flex: 1;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            background: var(--light);
-        }
-        .modal-report-body iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        @media (max-width: 768px) {
-            .modal-content.modal-report-content {
-                width: 100%;
-                height: 100vh;
-                max-width: 100%;
-                margin: 0;
-                border-radius: 0;
-            }
         }
 
         /* ============================================
@@ -569,30 +743,47 @@
 
         /* Tablet: sidebar se vuelve angosta (solo iconos) */
         @media (max-width: 992px) {
-            .charts-grid { grid-template-columns: 1fr; }
-            :root { --sidebar-w: 210px; }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            :root {
+                --sidebar-w: 210px;
+            }
         }
 
         /* Móvil: sidebar se convierte en drawer con hamburguesa */
         @media (max-width: 768px) {
-            .hamburger-btn { display: flex; }
+            .hamburger-btn {
+                display: flex;
+            }
 
             .sidebar {
                 transform: translateX(-100%);
                 width: 260px;
-                box-shadow: 0 0 24px rgba(0,0,0,0.15);
+                box-shadow: 0 0 24px rgba(0, 0, 0, 0.15);
             }
-            .sidebar.open { transform: translateX(0); }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
 
             .content-wrapper {
                 margin-left: 0;
                 width: 100%;
             }
 
-            .top-bar .user-info .company-badge { display: none; }
+            .top-bar .user-info .company-badge {
+                display: none;
+            }
 
-            .dashboard { padding: 16px; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .dashboard {
+                padding: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
 
             .table-card .table-header {
                 flex-direction: column;
@@ -605,28 +796,48 @@
         }
 
         @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .modal-content { padding: 20px; margin: 10% auto; }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 20px;
+                margin: 10% auto;
+            }
         }
 
         /* UTILIDADES */
-        .text-center { text-align: center; }
-        .text-muted { color: var(--text-light); }
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--text-light);
+        }
+
         .loading-state {
             text-align: center;
             padding: 30px;
             color: var(--text-light);
         }
+
         .loading-state i {
             animation: spin 1s linear infinite;
             font-size: 24px;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         .empty-state {
             text-align: center;
             padding: 40px;
             color: var(--text-light);
         }
+
         .empty-state i {
             font-size: 40px;
             opacity: 0.3;
@@ -634,6 +845,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- ============================================
@@ -647,7 +859,8 @@
             <span class="logo">Inven<span>SaaS</span></span>
         </div>
         <div class="user-info">
-            <span class="company-badge"><i class="fas fa-building"></i> <span id="company-name-display">Cargando...</span></span>
+            <span class="company-badge"><i class="fas fa-building"></i> <span
+                    id="company-name-display">Cargando...</span></span>
             <div class="avatar" id="avatar-initial">A</div>
         </div>
     </header>
@@ -679,10 +892,14 @@
                         <i class="fas fa-chevron-down submenu-arrow"></i>
                     </a>
                     <ul class="submenu">
-                        <li><a href="#" data-view="categorias"><i class="fas fa-tags menu-icon" style="color:#0d9488;"></i> Categorías</a></li>
-                        <li><a href="#" data-view="proveedores"><i class="fas fa-truck menu-icon" style="color:#d97706;"></i> Proveedores</a></li>
-                        <li><a href="#" data-view="clientes"><i class="fas fa-users menu-icon" style="color:#2563eb;"></i> Clientes</a></li>
-                        <li><a href="#" data-view="vendedores"><i class="fas fa-user-tie menu-icon" style="color:#7c3aed;"></i> Vendedores</a></li>
+                        <li><a href="#" data-view="categorias"><i class="fas fa-tags menu-icon"
+                                    style="color:#0d9488;"></i> Categorías</a></li>
+                        <li><a href="#" data-view="proveedores"><i class="fas fa-truck menu-icon"
+                                    style="color:#d97706;"></i> Proveedores</a></li>
+                        <li><a href="#" data-view="clientes"><i class="fas fa-users menu-icon"
+                                    style="color:#2563eb;"></i> Clientes</a></li>
+                        <li><a href="#" data-view="vendedores"><i class="fas fa-user-tie menu-icon"
+                                    style="color:#7c3aed;"></i> Vendedores</a></li>
                     </ul>
                 </li>
 
@@ -698,12 +915,18 @@
                         <i class="fas fa-chevron-down submenu-arrow"></i>
                     </a>
                     <ul class="submenu">
-                        <li><a href="#" onclick="event.preventDefault(); openReport('reporte_general.html','📊 Reporte General')"><i class="fas fa-chart-pie menu-icon" style="color:#7c3aed;"></i> Reporte General</a></li>
-                        <li><a href="#" onclick="event.preventDefault(); openReport('reporte_cajas.html','Cortes de Caja')"><i class="fas fa-cash-register menu-icon" style="color:#dc2626;"></i> Cortes de Caja</a></li>
-                        <li><a href="#" onclick="event.preventDefault(); openReport('reporte_inventario.html','Movimientos de Inventario')"><i class="fas fa-boxes menu-icon" style="color:#6366f1;"></i> Movimientos de Inventario</a></li>
-                        <li><a href="#" onclick="event.preventDefault(); openReport('reporte_ventas.html','Reporte de Ventas')"><i class="fas fa-chart-line menu-icon" style="color:#16a34a;"></i> Reporte de Ventas</a></li>
-                        <li><a href="#" onclick="event.preventDefault(); openReport('reporte_productos_vendidos.html','Productos Vendidos')"><i class="fas fa-shopping-bag menu-icon" style="color:#d97706;"></i> Productos Vendidos</a></li>
-                        <li><a href="#" onclick="event.preventDefault(); openReport('historial_facturas.html','Historial de Facturas')"><i class="fas fa-file-invoice menu-icon" style="color:#6366f1;"></i> Historial de Facturas</a></li>
+                        <li><a href="reporte_general.html"><i class="fas fa-chart-pie menu-icon"
+                                    style="color:#7c3aed;"></i> Reporte General</a></li>
+                        <li><a href="reporte_cajas.html"><i class="fas fa-cash-register menu-icon"
+                                    style="color:#dc2626;"></i> Cortes de Caja</a></li>
+                        <li><a href="reporte_inventario.html"><i class="fas fa-boxes menu-icon"
+                                    style="color:#6366f1;"></i> Movimientos de Inventario</a></li>
+                        <li><a href="reporte_ventas.html"><i class="fas fa-chart-line menu-icon"
+                                    style="color:#16a34a;"></i> Reporte de Ventas</a></li>
+                        <li><a href="reporte_productos_vendidos.html"><i class="fas fa-shopping-bag menu-icon"
+                                    style="color:#d97706;"></i> Productos Vendidos</a></li>
+                        <li><a href="historial_facturas.html"><i class="fas fa-file-invoice menu-icon"
+                                    style="color:#6366f1;"></i> Historial de Facturas</a></li>
                     </ul>
                 </li>
 
@@ -743,13 +966,15 @@
                         <div class="stat-label">Total Productos</div>
                         <div class="click-hint">👆 Click para ver</div>
                     </div>
-                    <div class="stat-card" onclick="filtrarPorEstado('stock-normal')" title="Ver productos con stock normal">
+                    <div class="stat-card" onclick="filtrarPorEstado('stock-normal')"
+                        title="Ver productos con stock normal">
                         <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
                         <div class="stat-number" id="stock-normal">0</div>
                         <div class="stat-label">Stock Normal</div>
                         <div class="click-hint">👆 Click para ver</div>
                     </div>
-                    <div class="stat-card" onclick="filtrarPorEstado('stock-bajo')" title="Ver productos con stock bajo">
+                    <div class="stat-card" onclick="filtrarPorEstado('stock-bajo')"
+                        title="Ver productos con stock bajo">
                         <div class="stat-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
                         <div class="stat-number" id="stock-bajo-count">0</div>
                         <div class="stat-label">Stock Bajo</div>
@@ -796,8 +1021,10 @@
                     <div class="table-header">
                         <h3><i class="fas fa-list" style="color:var(--primary);"></i> Últimos Productos</h3>
                         <div class="actions">
-                            <button class="btn btn-success" onclick="openModal('product')"><i class="fas fa-plus"></i> Nuevo</button>
-                            <button class="btn btn-primary" onclick="exportCSV()"><i class="fas fa-file-export"></i> Exportar</button>
+                            <button class="btn btn-success" onclick="openModal('product')"><i class="fas fa-plus"></i>
+                                Nuevo</button>
+                            <button class="btn btn-primary" onclick="exportCSV()"><i class="fas fa-file-export"></i>
+                                Exportar</button>
                         </div>
                     </div>
                     <div class="table-wrapper">
@@ -814,7 +1041,10 @@
                                 </tr>
                             </thead>
                             <tbody id="inventory-tbody">
-                                <tr><td colspan="7" class="loading-state"><i class="fas fa-spinner"></i> Cargando productos...</td></tr>
+                                <tr>
+                                    <td colspan="7" class="loading-state"><i class="fas fa-spinner"></i> Cargando
+                                        productos...</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -825,9 +1055,12 @@
             <div class="dashboard view-content" id="view-productos">
                 <div class="table-card">
                     <div class="table-header">
-                        <h3><i class="fas fa-boxes" style="color:var(--primary);"></i> <span id="productos-titulo">Todos los Productos</span> <span id="productos-contador" style="font-size:12px;color:var(--text-light);font-weight:400;"></span></h3>
+                        <h3><i class="fas fa-boxes" style="color:var(--primary);"></i> <span id="productos-titulo">Todos
+                                los Productos</span> <span id="productos-contador"
+                                style="font-size:12px;color:var(--text-light);font-weight:400;"></span></h3>
                         <div class="actions">
-                            <button class="btn btn-success" onclick="openModal('product')"><i class="fas fa-plus"></i> Nuevo Producto</button>
+                            <button class="btn btn-success" onclick="openModal('product')"><i class="fas fa-plus"></i>
+                                Nuevo Producto</button>
                             <button class="btn btn-outline" onclick="limpiarFiltroProductos()" style="font-size:12px;">
                                 <i class="fas fa-undo"></i> Limpiar filtro
                             </button>
@@ -835,9 +1068,12 @@
                     </div>
                     <div style="padding:0 20px 12px;">
                         <div style="position:relative; max-width:320px;">
-                            <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:13px;"></i>
-                            <input type="text" id="productos-buscar-input" placeholder="Buscar por nombre, ID, categoría o proveedor..." oninput="filtrarProductosView()"
-                                   style="width:100%; padding:10px 14px 10px 34px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:13px;">
+                            <i class="fas fa-search"
+                                style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:13px;"></i>
+                            <input type="text" id="productos-buscar-input"
+                                placeholder="Buscar por nombre, ID, categoría o proveedor..."
+                                oninput="filtrarProductosView()"
+                                style="width:100%; padding:10px 14px 10px 34px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:13px;">
                         </div>
                     </div>
                     <div class="table-wrapper">
@@ -855,7 +1091,10 @@
                                 </tr>
                             </thead>
                             <tbody id="productos-tbody">
-                                <tr><td colspan="8" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                                <tr>
+                                    <td colspan="8" class="loading-state"><i class="fas fa-spinner"></i> Cargando...
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -868,16 +1107,24 @@
                     <div class="table-header">
                         <h3><i class="fas fa-tags" style="color:var(--primary);"></i> Gestión de Categorías</h3>
                         <div class="actions">
-                            <button class="btn btn-success" onclick="openModal('categoria')"><i class="fas fa-plus"></i> Nueva Categoría</button>
+                            <button class="btn btn-success" onclick="openModal('categoria')"><i class="fas fa-plus"></i>
+                                Nueva Categoría</button>
                         </div>
                     </div>
                     <div class="table-wrapper">
                         <table>
                             <thead>
-                                <tr><th>ID</th><th>Nombre</th><th style="text-align:center;">Acciones</th></tr>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th style="text-align:center;">Acciones</th>
+                                </tr>
                             </thead>
                             <tbody id="categorias-tbody">
-                                <tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                                <tr>
+                                    <td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -890,16 +1137,26 @@
                     <div class="table-header">
                         <h3><i class="fas fa-truck" style="color:var(--primary);"></i> Gestión de Proveedores</h3>
                         <div class="actions">
-                            <button class="btn btn-success" onclick="openModal('proveedor')"><i class="fas fa-plus"></i> Nuevo Proveedor</button>
+                            <button class="btn btn-success" onclick="openModal('proveedor')"><i class="fas fa-plus"></i>
+                                Nuevo Proveedor</button>
                         </div>
                     </div>
                     <div class="table-wrapper">
                         <table>
                             <thead>
-                                <tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th style="text-align:center;">Acciones</th></tr>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Teléfono</th>
+                                    <th>Correo</th>
+                                    <th style="text-align:center;">Acciones</th>
+                                </tr>
                             </thead>
                             <tbody id="proveedores-tbody">
-                                <tr><td colspan="5" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                                <tr>
+                                    <td colspan="5" class="loading-state"><i class="fas fa-spinner"></i> Cargando...
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -912,16 +1169,24 @@
                     <div class="table-header">
                         <h3><i class="fas fa-users" style="color:var(--primary);"></i> Gestión de Clientes</h3>
                         <div class="actions">
-                            <button class="btn btn-success" onclick="openModal('cliente')"><i class="fas fa-plus"></i> Nuevo Cliente</button>
+                            <button class="btn btn-success" onclick="openModal('cliente')"><i class="fas fa-plus"></i>
+                                Nuevo Cliente</button>
                         </div>
                     </div>
                     <div class="table-wrapper">
                         <table>
                             <thead>
-                                <tr><th>ID</th><th>Nombre</th><th style="text-align:center;">Acciones</th></tr>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th style="text-align:center;">Acciones</th>
+                                </tr>
                             </thead>
                             <tbody id="clientes-tbody">
-                                <tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                                <tr>
+                                    <td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -934,16 +1199,24 @@
                     <div class="table-header">
                         <h3><i class="fas fa-user-tie" style="color:var(--primary);"></i> Gestión de Vendedores</h3>
                         <div class="actions">
-                            <button class="btn btn-success" onclick="openModal('vendedor')"><i class="fas fa-plus"></i> Nuevo Vendedor</button>
+                            <button class="btn btn-success" onclick="openModal('vendedor')"><i class="fas fa-plus"></i>
+                                Nuevo Vendedor</button>
                         </div>
                     </div>
                     <div class="table-wrapper">
                         <table>
                             <thead>
-                                <tr><th>ID</th><th>Nombre</th><th style="text-align:center;">Acciones</th></tr>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th style="text-align:center;">Acciones</th>
+                                </tr>
                             </thead>
                             <tbody id="vendedores-tbody">
-                                <tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                                <tr>
+                                    <td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -954,48 +1227,71 @@
             <div class="dashboard view-content" id="view-entrada">
                 <div class="table-card">
                     <div class="table-header">
-                        <h3><i class="fas fa-right-to-bracket" style="color:var(--primary);"></i> Registrar Entrada de Inventario</h3>
+                        <h3><i class="fas fa-right-to-bracket" style="color:var(--primary);"></i> Registrar Entrada de
+                            Inventario</h3>
                     </div>
                     <div class="table-wrapper" style="padding:20px;">
                         <form id="entradaForm" style="max-width:600px; margin:0 auto;">
                             <div style="margin-bottom:12px;">
                                 <label style="font-weight:600;font-size:13px;">Referencia (opcional):</label>
-                                <input type="text" id="entrada-referencia" placeholder="ej: OC-2025-001" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;">
+                                <input type="text" id="entrada-referencia" placeholder="ej: OC-2025-001"
+                                    style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;">
                             </div>
                             <div style="margin-bottom:12px;">
                                 <label style="font-weight:600;font-size:13px;">Motivo / Notas (opcional):</label>
-                                <textarea id="entrada-motivo" rows="2" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;font-family:inherit;"></textarea>
+                                <textarea id="entrada-motivo" rows="2"
+                                    style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;font-family:inherit;"></textarea>
                             </div>
 
                             <div style="margin-bottom:12px;">
-                                <button type="button" class="btn btn-success" onclick="agregarProductoEntrada()"><i class="fas fa-plus"></i> Agregar Producto</button>
+                                <button type="button" class="btn btn-success" onclick="agregarProductoEntrada()"><i
+                                        class="fas fa-plus"></i> Agregar Producto</button>
                             </div>
 
-                            <div style="margin-bottom:12px; font-size:11px; color:var(--text-light); background:var(--light); padding:8px 12px; border-radius:8px;">
+                            <div
+                                style="margin-bottom:12px; font-size:11px; color:var(--text-light); background:var(--light); padding:8px 12px; border-radius:8px;">
                                 <i class="fas fa-circle-info" style="color:var(--primary);"></i>
-                                Costo y Precio se cargan con el valor actual del producto. Si los cambias, se calculará automáticamente un
-                                <strong>promedio ponderado</strong> entre el stock/valor anterior y lo que estás ingresando.
+                                Costo y Precio se cargan con el valor actual del producto. Si los cambias, se calculará
+                                automáticamente un
+                                <strong>promedio ponderado</strong> entre el stock/valor anterior y lo que estás
+                                ingresando.
                             </div>
 
                             <div style="overflow-x:auto; margin-bottom:16px;">
                                 <table style="width:100%;border-collapse:collapse;">
                                     <thead>
                                         <tr>
-                                            <th style="text-align:left;padding:8px;border-bottom:2px solid var(--border);">Producto</th>
-                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Cantidad</th>
-                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Costo Unit. (C$)</th>
-                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Precio Venta (C$)</th>
-                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Resultante</th>
-                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Acción</th>
+                                            <th
+                                                style="text-align:left;padding:8px;border-bottom:2px solid var(--border);">
+                                                Producto</th>
+                                            <th
+                                                style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">
+                                                Cantidad</th>
+                                            <th
+                                                style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">
+                                                Costo Unit. (C$)</th>
+                                            <th
+                                                style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">
+                                                Precio Venta (C$)</th>
+                                            <th
+                                                style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">
+                                                Resultante</th>
+                                            <th
+                                                style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">
+                                                Acción</th>
                                         </tr>
                                     </thead>
                                     <tbody id="entrada-productos-tbody">
-                                        <tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted" style="padding:20px;">Haz
+                                                clic en "Agregar Producto"</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> Registrar Entrada</button>
+                            <button type="submit" class="btn btn-primary" style="width:100%;"><i
+                                    class="fas fa-save"></i> Registrar Entrada</button>
                         </form>
                     </div>
                 </div>
@@ -1005,7 +1301,7 @@
             <div class="dashboard view-content" id="view-reportes">
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
 
-                    <a href="#" onclick="event.preventDefault(); openReport('reporte_general.html','📊 Reporte General')" style="
+                    <a href="reporte_general.html" style="
                         padding:24px;
                         display:flex;
                         flex-direction:column;
@@ -1021,13 +1317,12 @@
                         min-height:120px;
                         box-shadow: 0 4px 12px rgba(99,102,241,0.3);
                         transition: all 0.3s ease;
-                        cursor:pointer;
                     ">
                         <i class="fas fa-chart-pie" style="font-size:32px;"></i>
                         <span>📊 Reporte General</span>
                         <small style="font-size:10px; opacity:0.8;">Inversión · Ganancia · Valor</small>
                     </a>
-                    <a href="#" onclick="event.preventDefault(); openReport('reporte_cajas.html','Cortes de Caja')" style="
+                    <a href="reporte_cajas.html" style="
                         padding:24px;
                         display:flex;
                         flex-direction:column;
@@ -1043,14 +1338,13 @@
                         min-height:120px;
                         box-shadow: 0 4px 12px rgba(239,68,68,0.3);
                         transition: all 0.3s ease;
-                        cursor:pointer;
                     ">
                         <i class="fas fa-cash-register" style="font-size:32px;"></i>
                         <span>Cortes de Caja</span>
                         <small style="font-size:10px; opacity:0.8;">Historial · Ganancias · Arqueos</small>
                     </a>
 
-                    <a href="#" onclick="event.preventDefault(); openReport('reporte_inventario.html','Movimientos de Inventario')" style="
+                    <a href="reporte_inventario.html" style="
                         padding:24px;
                         display:flex;
                         flex-direction:column;
@@ -1066,13 +1360,12 @@
                         min-height:120px;
                         box-shadow: 0 4px 12px rgba(99,102,241,0.3);
                         transition: all 0.3s ease;
-                        cursor:pointer;
                     ">
                         <i class="fas fa-boxes" style="font-size:32px;"></i>
                         <span>Movimientos de Inventario</span>
                     </a>
 
-                    <a href="#" onclick="event.preventDefault(); openReport('reporte_ventas.html','Reporte de Ventas')" style="
+                    <a href="reporte_ventas.html" style="
                         padding:24px;
                         display:flex;
                         flex-direction:column;
@@ -1088,13 +1381,12 @@
                         min-height:120px;
                         box-shadow: 0 4px 12px rgba(34,197,94,0.3);
                         transition: all 0.3s ease;
-                        cursor:pointer;
                     ">
                         <i class="fas fa-chart-line" style="font-size:32px;"></i>
                         <span>Reporte de Ventas</span>
                     </a>
 
-                    <a href="#" onclick="event.preventDefault(); openReport('reporte_productos_vendidos.html','Productos Vendidos')" style="
+                    <a href="reporte_productos_vendidos.html" style="
                         padding:24px;
                         display:flex;
                         flex-direction:column;
@@ -1110,12 +1402,12 @@
                         min-height:120px;
                         box-shadow: 0 4px 12px rgba(245,158,11,0.3);
                         transition: all 0.3s ease;
-                        cursor:pointer;
                     ">
                         <i class="fas fa-shopping-bag" style="font-size:32px;"></i>
                         <span>Productos Vendidos</span>
                     </a>
-                    <a href="#" onclick="event.preventDefault(); openReport('historial_facturas.html','Historial de Facturas')" class="btn btn-primary" style="padding:24px; justify-content:center; font-size:15px; text-decoration:none; flex-direction:column; gap:8px; border-radius:var(--radius); background:var(--primary); cursor:pointer;">
+                    <a href="historial_facturas.html" class="btn btn-primary"
+                        style="padding:24px; justify-content:center; font-size:15px; text-decoration:none; flex-direction:column; gap:8px; border-radius:var(--radius); background:var(--primary);">
                         <i class="fas fa-file-invoice" style="font-size:32px;"></i>
                         <span>Historial de Facturas</span>
                     </a>
@@ -1138,16 +1430,23 @@
             <form id="productForm">
                 <input type="hidden" id="product-id">
                 <label>Proveedor <span style="color:var(--danger);">*</span></label>
-                <select id="product-proveedor" required><option value="">-- Seleccionar --</option></select>
+                <select id="product-proveedor" required>
+                    <option value="">-- Seleccionar --</option>
+                </select>
                 <label>Categoría <span style="color:var(--danger);">*</span></label>
-                <select id="product-categoria" required><option value="">-- Seleccionar --</option></select>
+                <select id="product-categoria" required>
+                    <option value="">-- Seleccionar --</option>
+                </select>
                 <label>Descripción <span style="color:var(--danger);">*</span></label>
                 <textarea id="product-descripcion" required></textarea>
                 <div class="form-row">
                     <div>
-                        <label>Stock <span id="stock-label" style="color:var(--text-light); font-weight:400; font-size:11px;">(solo al crear)</span></label>
+                        <label>Stock <span id="stock-label"
+                                style="color:var(--text-light); font-weight:400; font-size:11px;">(solo al
+                                crear)</span></label>
                         <input type="number" id="product-stock" step="0.01" min="0" value="0">
-                        <small style="color:var(--text-light); font-size:10px;">Para modificar stock usa <strong>"Entrada"</strong></small>
+                        <small style="color:var(--text-light); font-size:10px;">Para modificar stock usa
+                            <strong>"Entrada"</strong></small>
                     </div>
                     <div>
                         <label>Costo (C$)</label>
@@ -1161,7 +1460,8 @@
                     </div>
                     <div>
                         <label>Clave/ID</label>
-                        <input type="text" id="product-clave" disabled style="background:#f1f5f9;" value="Auto-Generada">
+                        <input type="text" id="product-clave" disabled style="background:#f1f5f9;"
+                            value="Auto-Generada">
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar Producto</button>
@@ -1234,7 +1534,9 @@
         <div class="modal-content" style="max-width:700px;">
             <span class="close" onclick="closeModal('buscar-producto')">&times;</span>
             <h3><i class="fas fa-search"></i> Buscar Producto</h3>
-            <input type="text" id="buscar-producto-filtro" placeholder="Buscar por nombre o ID..." style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;margin-bottom:12px;" oninput="filtrarProductosBusqueda()">
+            <input type="text" id="buscar-producto-filtro" placeholder="Buscar por nombre o ID..."
+                style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;margin-bottom:12px;"
+                oninput="filtrarProductosBusqueda()">
             <div style="overflow-x:auto; max-height:300px; overflow-y:auto;">
                 <table style="width:100%;border-collapse:collapse;">
                     <thead>
@@ -1248,20 +1550,12 @@
                         </tr>
                     </thead>
                     <tbody id="buscar-productos-tbody">
-                        <tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Cargando productos...</td></tr>
+                        <tr>
+                            <td colspan="6" class="text-center text-muted" style="padding:20px;">Cargando productos...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: REPORTES (se abre centrado, carga el reporte en un iframe) -->
-    <div id="modal-report" class="modal">
-        <div class="modal-content modal-report-content">
-            <span class="close" onclick="closeReport()">&times;</span>
-            <h3><i class="fas fa-chart-bar"></i> <span id="report-modal-title">Reporte</span></h3>
-            <div class="modal-report-body">
-                <iframe id="report-iframe" src="about:blank" title="Reporte"></iframe>
             </div>
         </div>
     </div>
@@ -1294,21 +1588,9 @@
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('sidebarOverlay').classList.remove('active');
         }
-
-        // Abre un reporte en modal centrado (no navega, no abre pestaña nueva)
-        function openReport(url, titulo) {
-            document.getElementById('report-modal-title').textContent = titulo || 'Reporte';
-            document.getElementById('report-iframe').src = url;
-            document.getElementById('modal-report').style.display = 'block';
-            if (window.innerWidth <= 768) toggleSidebarClose();
-        }
-
-        function closeReport() {
-            document.getElementById('modal-report').style.display = 'none';
-            document.getElementById('report-iframe').src = 'about:blank';
-        }
     </script>
 
     <script src="js/inventario_dashboard.js"></script>
 </body>
+
 </html>
