@@ -2,13 +2,11 @@
     console.log("🚀 ===== REPORTE DE PRODUCTOS VENDIDOS INICIADO =====");
 
     const token = localStorage.getItem("token");
-    const API_URL =
-        window.API_URL || "https://invensaas-backend.onrender.com/api";
+    const API_URL = window.API_URL || "https://invensaas-backend.onrender.com/api";
+    
     let todosLosProductos = [];
-    let productosConFiltroFecha = [];
+    let productosFiltradosPorFecha = [];
     let busquedaActual = "";
-    let filtrosActivos = {};
-    let datosCargados = false;
 
     console.log("🔑 Token:", token ? "✅ Sí" : "❌ No");
     console.log("🌐 API_URL:", API_URL);
@@ -58,40 +56,34 @@
         return String(text).replace(regex, '<span class="highlight">$1</span>');
     }
 
-    // ===== RENDERIZAR TABLA CON FILTRO DE BÚSQUEDA =====
-    function renderProductosConBusqueda(searchQuery = "") {
-        // Determinar qué productos usar como base
-        let productosBase = [];
-        
-        // Si hay productos con filtro de fecha, usarlos
-        if (productosConFiltroFecha && productosConFiltroFecha.length > 0) {
-            productosBase = productosConFiltroFecha;
-        } 
-        // Si no hay filtro de fecha pero hay todos los productos, usarlos
-        else if (todosLosProductos && todosLosProductos.length > 0) {
-            productosBase = todosLosProductos;
-        }
-        // Si no hay datos, mostrar mensaje
-        else {
+    // ===== RENDERIZAR TABLA =====
+    function renderizarTabla(productos, searchQuery = "") {
+        console.log("📊 Renderizando tabla con", productos.length, "productos");
+        console.log("🔍 Búsqueda:", searchQuery);
+
+        // Si no hay productos, mostrar mensaje
+        if (!productos || productos.length === 0) {
             tbody.innerHTML =
-                '<tr><td colspan="9" class="empty">📭 No hay productos vendidos disponibles.</td></tr>';
+                '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
             totalProductosEl.textContent = "0";
             totalVentasEl.textContent = "C$0.00";
             totalGananciaEl.textContent = "C$0.00";
             return;
         }
 
-        // Aplicar filtro de búsqueda por descripción o clave
-        let datosMostrar = productosBase;
-        if (searchQuery.trim()) {
+        // APLICAR FILTRO DE BÚSQUEDA
+        let datosMostrar = productos;
+        if (searchQuery && searchQuery.trim()) {
             const query = searchQuery.trim().toLowerCase();
-            datosMostrar = productosBase.filter(p => {
+            datosMostrar = productos.filter(p => {
                 const desc = (p.descripcion || "").toLowerCase();
                 const clave = (p.clave || "").toLowerCase();
                 return desc.includes(query) || clave.includes(query);
             });
+            console.log("🔍 Productos filtrados por búsqueda:", datosMostrar.length);
         }
 
+        // Si no hay coincidencias
         if (datosMostrar.length === 0) {
             tbody.innerHTML =
                 `<tr><td colspan="9" class="empty">🔍 No se encontraron productos que coincidan con "<strong>${searchQuery}</strong>".</td></tr>`;
@@ -101,6 +93,7 @@
             return;
         }
 
+        // Generar HTML de la tabla
         let html = "";
         let totalVentas = 0;
         let totalGanancia = 0;
@@ -121,13 +114,11 @@
 
             let descuentoTexto = "";
             if (descuento > 0) {
-                descuentoTexto =
-                    ` <small style="color:var(--text-light);">(Desc: C$${descuento.toFixed(2)})</small>`;
+                descuentoTexto = ` <small style="color:var(--text-light);">(Desc: C$${descuento.toFixed(2)})</small>`;
             }
 
-            // Descripción con resaltado
             const descripcion = p.descripcion || "Producto";
-            const descripcionResaltada = searchQuery.trim() ?
+            const descripcionResaltada = searchQuery && searchQuery.trim() ?
                 highlightText(descripcion, searchQuery.trim()) :
                 descripcion;
 
@@ -157,10 +148,10 @@
             totalGananciaEl.style.color = "var(--success)";
         }
 
-        console.log("✅ Tabla renderizada con", datosMostrar.length, "productos (filtrados de", productosBase.length, ")");
+        console.log("✅ Tabla renderizada con", datosMostrar.length, "productos");
     }
 
-    // ===== ACTUALIZAR VISIBILIDAD DEL BOTÓN LIMPIAR =====
+    // ===== ACTUALIZAR BOTÓN LIMPIAR =====
     function actualizarBotonLimpiar(query) {
         if (query && query.trim()) {
             clearSearchBtn.classList.add("visible");
@@ -179,17 +170,7 @@
         }
 
         const data = [];
-        const headers = [
-            "Fecha",
-            "Clave",
-            "Descripción",
-            "Cantidad",
-            "Venta",
-            "Precio",
-            "Costo",
-            "Recuperación",
-            "Ganancia",
-        ];
+        const headers = ["Fecha", "Clave", "Descripción", "Cantidad", "Venta", "Precio", "Costo", "Recuperación", "Ganancia"];
         data.push(headers);
 
         rows.forEach((row) => {
@@ -210,10 +191,7 @@
         let csvContent = "";
         data.forEach((row) => {
             const escapedRow = row.map((cell) => {
-                if (
-                    typeof cell === "string" &&
-                    (cell.includes(",") || cell.includes('"') || cell.includes("\n"))
-                ) {
+                if (typeof cell === "string" && (cell.includes(",") || cell.includes('"') || cell.includes("\n"))) {
                     return `"${cell.replace(/"/g, '""')}"`;
                 }
                 return cell;
@@ -221,9 +199,7 @@
             csvContent += escapedRow.join(",") + "\n";
         });
 
-        const blob = new Blob(["\uFEFF" + csvContent], {
-            type: "text/csv;charset=utf-8;",
-        });
+        const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
@@ -240,10 +216,11 @@
         console.log("✅ CSV exportado correctamente");
     });
 
-    // ===== CARGAR PRODUCTOS CON FILTRO DE FECHA =====
-    async function loadProductosConFecha(filtros = {}) {
-        console.log("🔄 Cargando productos con filtro de fecha...");
-        
+    // ===== FUNCIÓN PRINCIPAL PARA OBTENER DATOS =====
+    async function obtenerProductos(filtros = {}) {
+        console.log("🔄 Obteniendo productos...");
+        tbody.innerHTML = '<tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+
         try {
             let url = `${API_URL}/admin/ventas/productos-vendidos`;
             const params = new URLSearchParams();
@@ -255,81 +232,42 @@
                 url += "?" + params.toString();
             }
 
-            console.log("📡 URL con filtro:", url);
+            console.log("📡 URL:", url);
 
             const response = await fetch(url, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
             if (response.status === 401) {
-                tbody.innerHTML =
-                    '<tr><td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
                 return;
             }
 
             const data = await response.json();
-            console.log("📦 Datos con filtro recibidos:", data);
+            console.log("📦 Datos recibidos:", data);
 
             if (!data.success || !data.productos) {
-                tbody.innerHTML =
-                    '<tr><td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td></tr>';
                 return;
             }
 
-            // Guardar productos con filtro de fecha
-            productosConFiltroFecha = data.productos;
-            console.log("📊 Productos con filtro:", productosConFiltroFecha.length);
-
-            // Aplicar búsqueda actual si existe
-            const searchQuery = searchInput.value || "";
-            renderProductosConBusqueda(searchQuery);
+            // Guardar productos
+            if (filtros.inicio && filtros.fin) {
+                // Si hay filtro de fecha, guardar separado
+                productosFiltradosPorFecha = data.productos;
+                // Usar los productos filtrados para mostrar
+                const searchQuery = searchInput.value || "";
+                renderizarTabla(productosFiltradosPorFecha, searchQuery);
+            } else {
+                // Si no hay filtro, guardar en todosLosProductos
+                todosLosProductos = data.productos;
+                const searchQuery = searchInput.value || "";
+                renderizarTabla(todosLosProductos, searchQuery);
+            }
 
         } catch (error) {
             console.error("❌ Error:", error);
-            tbody.innerHTML =
-                `<tr><td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
-        }
-    }
-
-    // ===== CARGAR TODOS LOS PRODUCTOS (SIN FILTRO) =====
-    async function loadTodosLosProductos() {
-        console.log("🔄 Cargando todos los productos (sin filtro)...");
-        
-        try {
-            const response = await fetch(`${API_URL}/admin/ventas/productos-vendidos`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.status === 401) {
-                tbody.innerHTML =
-                    '<tr><td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
-                return;
-            }
-
-            const data = await response.json();
-            console.log("📦 Todos los productos recibidos:", data);
-
-            if (!data.success || !data.productos) {
-                tbody.innerHTML =
-                    '<tr><td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td></tr>';
-                return;
-            }
-
-            // Guardar todos los productos
-            todosLosProductos = data.productos;
-            productosConFiltroFecha = data.productos; // Inicialmente, los productos con filtro son todos
-            datosCargados = true;
-            
-            console.log("📊 Todos los productos:", todosLosProductos.length);
-
-            // Aplicar búsqueda actual si existe
-            const searchQuery = searchInput.value || "";
-            renderProductosConBusqueda(searchQuery);
-
-        } catch (error) {
-            console.error("❌ Error:", error);
-            tbody.innerHTML =
-                `<tr><td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
         }
     }
 
@@ -340,11 +278,19 @@
         busquedaActual = query;
         actualizarBotonLimpiar(query);
 
+        console.log("🔍 Escribiendo:", query);
+
         // Debounce para mejor rendimiento
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
-            // Siempre aplicar la búsqueda sobre los datos actuales
-            renderProductosConBusqueda(query);
+            // Determinar qué conjunto de datos usar
+            if (productosFiltradosPorFecha && productosFiltradosPorFecha.length > 0) {
+                // Si hay filtro de fecha, buscar en ese conjunto
+                renderizarTabla(productosFiltradosPorFecha, query);
+            } else if (todosLosProductos && todosLosProductos.length > 0) {
+                // Si no hay filtro, buscar en todos
+                renderizarTabla(todosLosProductos, query);
+            }
         }, 300);
     });
 
@@ -353,7 +299,13 @@
         searchInput.value = "";
         busquedaActual = "";
         actualizarBotonLimpiar("");
-        renderProductosConBusqueda("");
+        
+        // Recargar la tabla sin búsqueda
+        if (productosFiltradosPorFecha && productosFiltradosPorFecha.length > 0) {
+            renderizarTabla(productosFiltradosPorFecha, "");
+        } else if (todosLosProductos && todosLosProductos.length > 0) {
+            renderizarTabla(todosLosProductos, "");
+        }
         searchInput.focus();
     });
 
@@ -367,8 +319,12 @@
             return;
         }
 
-        // Cargar productos con el filtro de fecha
-        await loadProductosConFecha({ inicio, fin });
+        // Limpiar búsqueda al aplicar filtro de fecha (opcional)
+        // searchInput.value = "";
+        // busquedaActual = "";
+        // actualizarBotonLimpiar("");
+
+        await obtenerProductos({ inicio, fin });
     });
 
     // ===== BOTÓN REFRESCAR =====
@@ -382,16 +338,20 @@
         busquedaActual = "";
         actualizarBotonLimpiar("");
         
+        // Limpiar productos filtrados por fecha
+        productosFiltradosPorFecha = [];
+        
         // Recargar todos los productos
-        await loadTodosLosProductos();
+        await obtenerProductos({});
     });
 
     // ===== INICIALIZAR =====
     async function init() {
-        // Cargar todos los productos al inicio
-        await loadTodosLosProductos();
+        console.log("🚀 Inicializando...");
+        await obtenerProductos({});
     }
 
+    // Ejecutar cuando el DOM esté listo
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
     } else {
