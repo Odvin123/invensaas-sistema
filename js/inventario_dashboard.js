@@ -300,12 +300,12 @@ function openModal(type, data = null) {
 || productosVistaBase.find((p) => p.id == data.id)
 || data;
 
-document.getElementById("product-id").value = data.id;
-document.getElementById("product-descripcion").value = data.descripcion || "";
-document.getElementById("product-stock").value = formatStock(data.stock);
-document.getElementById("product-costo").value = parseFloat(data.costo).toFixed(2);
-document.getElementById("product-precio").value = parseFloat(data.precio).toFixed(2);
-document.getElementById("product-clave").value = data.id;
+document.getElementById("product-id").value = producto.id;
+document.getElementById("product-descripcion").value = producto.descripcion || "";
+document.getElementById("product-stock").value = formatStock(producto.stock);
+document.getElementById("product-costo").value = parseFloat(producto.costo).toFixed(2);
+document.getElementById("product-precio").value = parseFloat(producto.precio).toFixed(2);
+document.getElementById("product-clave").value = producto.id;
     } else {
       stockInput.disabled = false;
       stockInput.style.background = "";
