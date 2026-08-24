@@ -1,139 +1,148 @@
 (function () {
-    console.log("🚀 ===== REPORTE DE PRODUCTOS VENDIDOS INICIADO =====");
+  console.log("🚀 ===== REPORTE DE PRODUCTOS VENDIDOS INICIADO =====");
 
-    const token = localStorage.getItem("token");
-    const API_URL = window.API_URL || "https://invensaas-backend.onrender.com/api";
-    
-    // ===== VARIABLES GLOBALES =====
-    let todosLosProductos = [];
+  const token = localStorage.getItem("token");
+  const API_URL =
+    window.API_URL || "https://invensaas-backend.onrender.com/api";
 
-    console.log("🔑 Token:", token ? "✅ Sí" : "❌ No");
-    console.log("🌐 API_URL:", API_URL);
+  // ===== VARIABLES GLOBALES =====
+  let todosLosProductos = [];
 
-    if (!token) {
-        document.getElementById("productos-tbody").innerHTML =
-            '<tr><td colspan="9" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
-        return;
+  console.log("🔑 Token:", token ? "✅ Sí" : "❌ No");
+  console.log("🌐 API_URL:", API_URL);
+
+  if (!token) {
+    document.getElementById("productos-tbody").innerHTML =
+      '<tr><td colspan="9" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
+    return;
+  }
+
+  const tbody = document.getElementById("productos-tbody");
+  const totalProductosEl = document.getElementById("total-productos");
+  const totalVentasEl = document.getElementById("total-ventas");
+  const totalGananciaEl = document.getElementById("total-ganancia");
+  const searchInput = document.getElementById("search-producto");
+  const clearSearchBtn = document.getElementById("clear-search");
+
+  // ===== FUNCIONES DE UTILIDAD =====
+  function formatNumber(value) {
+    const num = Number(value);
+    return isNaN(num) ? "0.00" : num.toFixed(2);
+  }
+
+  function formatCurrency(value) {
+    return `C$${formatNumber(value)}`;
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return "—";
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("es-NI", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    } catch {
+      return dateStr;
     }
+  }
 
-    const tbody = document.getElementById("productos-tbody");
-    const totalProductosEl = document.getElementById("total-productos");
-    const totalVentasEl = document.getElementById("total-ventas");
-    const totalGananciaEl = document.getElementById("total-ganancia");
-    const searchInput = document.getElementById("search-producto");
-    const clearSearchBtn = document.getElementById("clear-search");
-
-    // ===== FUNCIONES DE UTILIDAD =====
-    function formatNumber(value) {
-        const num = Number(value);
-        return isNaN(num) ? "0.00" : num.toFixed(2);
+  function highlightText(text, query) {
+    if (!query || !text) return text || "";
+    try {
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`(${escaped})`, "gi");
+      return String(text).replace(regex, '<span class="highlight">$1</span>');
+    } catch {
+      return text;
     }
+  }
 
-    function formatCurrency(value) {
-        return `C$${formatNumber(value)}`;
-    }
+  function getSafeString(value) {
+    if (value === null || value === undefined) return "";
+    return String(value);
+  }
 
-    function formatDate(dateStr) {
-        if (!dateStr) return "—";
-        try {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString("es-NI", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-            });
-        } catch {
-            return dateStr;
-        }
-    }
+  function renderizarTabla(searchQuery = "") {
+    console.log(
+      "📊 Renderizando. Productos:",
+      todosLosProductos.length,
+      "Búsqueda:",
+      searchQuery || "(vacío)",
+    );
 
-    function highlightText(text, query) {
-        if (!query || !text) return text || "";
-        try {
-            const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`(${escaped})`, 'gi');
-            return String(text).replace(regex, '<span class="highlight">$1</span>');
-        } catch {
-            return text;
-        }
-    }
-
-    // ===== FUNCIÓN SEGURA PARA OBTENER STRING =====
-    function getSafeString(value) {
-        if (value === null || value === undefined) return "";
-        return String(value);
-    }
-
-    // ===== RENDERIZAR TABLA CON FILTRO EN TIEMPO REAL =====
-    function renderizarTabla(searchQuery = "") {
-        console.log("📊 Renderizando. Productos:", todosLosProductos.length, "Búsqueda:", searchQuery || "(vacío)");
-
-        // Si no hay productos, mostrar mensaje
-        if (!todosLosProductos || todosLosProductos.length === 0) {
-            tbody.innerHTML = `
+    if (!todosLosProductos || todosLosProductos.length === 0) {
+      tbody.innerHTML = `
                 <tr>
                     <td colspan="9" class="empty">📭 No hay productos vendidos disponibles.</td>
                 </tr>`;
-            totalProductosEl.textContent = "0";
-            totalVentasEl.textContent = "C$0.00";
-            totalGananciaEl.textContent = "C$0.00";
-            return;
-        }
+      totalProductosEl.textContent = "0";
+      totalVentasEl.textContent = "C$0.00";
+      totalGananciaEl.textContent = "C$0.00";
+      return;
+    }
 
-        // ===== APLICAR FILTRO DE BÚSQUEDA EN TIEMPO REAL =====
-        let datosMostrar = todosLosProductos;
-        if (searchQuery && searchQuery.trim()) {
-            const query = searchQuery.trim().toLowerCase();
-            datosMostrar = todosLosProductos.filter(p => {
-                const desc = getSafeString(p.descripcion).toLowerCase();
-                const clave = getSafeString(p.clave).toLowerCase();
-                return desc.includes(query) || clave.includes(query);
-            });
-            console.log("🔍 Filtrados a", datosMostrar.length, "productos (de", todosLosProductos.length, ")");
-        }
+    let datosMostrar = todosLosProductos;
+    if (searchQuery && searchQuery.trim()) {
+      const query = searchQuery.trim().toLowerCase();
+      datosMostrar = todosLosProductos.filter((p) => {
+        const desc = getSafeString(p.descripcion).toLowerCase();
+        const clave = getSafeString(p.clave).toLowerCase();
+        return desc.includes(query) || clave.includes(query);
+      });
+      console.log(
+        "🔍 Filtrados a",
+        datosMostrar.length,
+        "productos (de",
+        todosLosProductos.length,
+        ")",
+      );
+    }
 
-        // Si no hay coincidencias
-        if (datosMostrar.length === 0) {
-            tbody.innerHTML = `
+    // Si no hay coincidencias
+    if (datosMostrar.length === 0) {
+      tbody.innerHTML = `
                 <tr>
                     <td colspan="9" class="empty">🔍 No se encontraron productos que coincidan con "<strong>${searchQuery}</strong>"</td>
                 </tr>`;
-            totalProductosEl.textContent = "0";
-            totalVentasEl.textContent = "C$0.00";
-            totalGananciaEl.textContent = "C$0.00";
-            return;
-        }
+      totalProductosEl.textContent = "0";
+      totalVentasEl.textContent = "C$0.00";
+      totalGananciaEl.textContent = "C$0.00";
+      return;
+    }
 
-        // Generar HTML de la tabla
-        let html = "";
-        let totalVentas = 0;
-        let totalGanancia = 0;
-        let totalUnidades = 0;
+    // Generar HTML de la tabla
+    let html = "";
+    let totalVentas = 0;
+    let totalGanancia = 0;
+    let totalUnidades = 0;
 
-        datosMostrar.forEach((p) => {
-            const cantidad = Number(p.cantidad) || 0;
-            const venta = Number(p.venta) || 0;
-            const costo = Number(p.costo) || 0;
-            const ganancia = Number(p.ganancia) || 0;
-            const descuento = Number(p.descuento) || 0;
+    datosMostrar.forEach((p) => {
+      const cantidad = Number(p.cantidad) || 0;
+      const venta = Number(p.venta) || 0;
+      const costo = Number(p.costo) || 0;
+      const ganancia = Number(p.ganancia) || 0;
+      const descuento = Number(p.descuento) || 0;
 
-            totalVentas += venta;
-            totalGanancia += ganancia;
-            totalUnidades += cantidad;
+      totalVentas += venta;
+      totalGanancia += ganancia;
+      totalUnidades += cantidad;
 
-            const gananciaColor = ganancia >= 0 ? "var(--success)" : "var(--danger)";
+      const gananciaColor = ganancia >= 0 ? "var(--success)" : "var(--danger)";
 
-            let descuentoTexto = "";
-            if (descuento > 0) {
-                descuentoTexto = ` <small style="color:var(--text-light);">(Desc: C$${descuento.toFixed(2)})</small>`;
-            }
+      let descuentoTexto = "";
+      if (descuento > 0) {
+        descuentoTexto = ` <small style="color:var(--text-light);">(Desc: C$${descuento.toFixed(2)})</small>`;
+      }
 
-            const descripcion = getSafeString(p.descripcion) || "Producto";
-            const descripcionResaltada = searchQuery && searchQuery.trim() ?
-                highlightText(descripcion, searchQuery.trim()) :
-                descripcion;
+      const descripcion = getSafeString(p.descripcion) || "Producto";
+      const descripcionResaltada =
+        searchQuery && searchQuery.trim()
+          ? highlightText(descripcion, searchQuery.trim())
+          : descripcion;
 
-            html += `
+      html += `
                 <tr>
                     <td>${formatDate(p.fecha_venta)}</td>
                     <td style="text-align:center; font-weight:600;">${getSafeString(p.clave) || "—"}</td>
@@ -146,222 +155,225 @@
                     <td style="text-align:right; font-weight:700; color:${gananciaColor};">${formatCurrency(ganancia)}</td>
                 </tr>
             `;
-        });
+    });
 
-        tbody.innerHTML = html;
-        totalProductosEl.textContent = formatNumber(totalUnidades);
-        totalVentasEl.textContent = formatCurrency(totalVentas);
-        totalGananciaEl.textContent = formatCurrency(totalGanancia);
+    tbody.innerHTML = html;
+    totalProductosEl.textContent = formatNumber(totalUnidades);
+    totalVentasEl.textContent = formatCurrency(totalVentas);
+    totalGananciaEl.textContent = formatCurrency(totalGanancia);
 
-        if (totalGanancia < 0) {
-            totalGananciaEl.style.color = "var(--danger)";
-        } else {
-            totalGananciaEl.style.color = "var(--success)";
-        }
+    if (totalGanancia < 0) {
+      totalGananciaEl.style.color = "var(--danger)";
+    } else {
+      totalGananciaEl.style.color = "var(--success)";
     }
+  }
 
-    // ===== ACTUALIZAR BOTÓN LIMPIAR =====
-    function actualizarBotonLimpiar(query) {
-        if (query && query.trim()) {
-            clearSearchBtn.classList.add("visible");
-        } else {
-            clearSearchBtn.classList.remove("visible");
-        }
+  // ===== ACTUALIZAR BOTÓN LIMPIAR =====
+  function actualizarBotonLimpiar(query) {
+    if (query && query.trim()) {
+      clearSearchBtn.classList.add("visible");
+    } else {
+      clearSearchBtn.classList.remove("visible");
     }
+  }
 
-    // ===== CARGAR PRODUCTOS =====
-    async function cargarProductos(inicio = null, fin = null) {
-        console.log("🔄 Cargando productos...");
-        tbody.innerHTML = `
+  async function cargarProductos(inicio = null, fin = null) {
+    console.log("🔄 Cargando productos...");
+    tbody.innerHTML = `
             <tr>
                 <td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td>
             </tr>`;
 
-        try {
-            let url = `${API_URL}/admin/ventas/productos-vendidos`;
-            const params = new URLSearchParams();
+    try {
+      let url = `${API_URL}/admin/ventas/productos-vendidos`;
+      const params = new URLSearchParams();
 
-            // Solo agregar fechas si ambas están presentes
-            if (inicio && fin) {
-                params.append("inicio", inicio);
-                params.append("fin", fin);
-                console.log("📅 Con filtro de fecha:", inicio, "a", fin);
-            } else {
-                console.log("📅 Sin filtro de fecha (todos los productos)");
-            }
+      // Solo agregar fechas si ambas están presentes
+      if (inicio && fin) {
+        params.append("inicio", inicio);
+        params.append("fin", fin);
+        console.log("📅 Con filtro de fecha:", inicio, "a", fin);
+      } else {
+        console.log("📅 Sin filtro de fecha (todos los productos)");
+      }
 
-            if (params.toString()) {
-                url += "?" + params.toString();
-            }
+      if (params.toString()) {
+        url += "?" + params.toString();
+      }
 
-            console.log("📡 URL:", url);
+      console.log("📡 URL:", url);
 
-            const response = await fetch(url, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-            if (response.status === 401) {
-                tbody.innerHTML = `
+      if (response.status === 401) {
+        tbody.innerHTML = `
                     <tr>
                         <td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td>
                     </tr>`;
-                return;
-            }
+        return;
+      }
 
-            const data = await response.json();
-            console.log("📦 Datos recibidos:", data);
+      const data = await response.json();
+      console.log("📦 Datos recibidos:", data);
 
-            if (!data.success || !data.productos) {
-                tbody.innerHTML = `
+      if (!data.success || !data.productos) {
+        tbody.innerHTML = `
                     <tr>
                         <td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td>
                     </tr>`;
-                return;
-            }
+        return;
+      }
 
-            // ===== GUARDAR PRODUCTOS EN LA VARIABLE GLOBAL =====
-            todosLosProductos = data.productos;
-            console.log("📊 Productos cargados:", todosLosProductos.length);
+      todosLosProductos = data.productos;
+      console.log("📊 Productos cargados:", todosLosProductos.length);
 
-            // ===== APLICAR BÚSQUEDA ACTUAL =====
-            const searchQuery = searchInput.value || "";
-            renderizarTabla(searchQuery);
-
-        } catch (error) {
-            console.error("❌ Error:", error);
-            tbody.innerHTML = `
+      const searchQuery = searchInput.value || "";
+      renderizarTabla(searchQuery);
+    } catch (error) {
+      console.error("❌ Error:", error);
+      tbody.innerHTML = `
                 <tr>
                     <td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td>
                 </tr>`;
-        }
     }
+  }
 
-    // ===== EXPORTAR CSV =====
-    document.getElementById("btn-exportar").addEventListener("click", function () {
-        const rows = tbody.querySelectorAll("tr");
+  document
+    .getElementById("btn-exportar")
+    .addEventListener("click", function () {
+      const rows = tbody.querySelectorAll("tr");
 
-        if (rows.length === 0 || rows[0].classList.contains("empty")) {
-            alert("⚠️ No hay datos para exportar.");
-            return;
+      if (rows.length === 0 || rows[0].classList.contains("empty")) {
+        alert("⚠️ No hay datos para exportar.");
+        return;
+      }
+
+      const data = [];
+      const headers = [
+        "Fecha",
+        "Clave",
+        "Descripción",
+        "Cantidad",
+        "Venta",
+        "Precio",
+        "Costo",
+        "Recuperación",
+        "Ganancia",
+      ];
+      data.push(headers);
+
+      rows.forEach((row) => {
+        const cols = row.querySelectorAll("td");
+        if (cols.length > 0) {
+          const rowData = [];
+          cols.forEach((col) => {
+            let text = col.textContent.trim();
+            text = text.replace(/[^\w\s\d.,$C\-]/g, "").trim();
+            rowData.push(text);
+          });
+          if (rowData.length === 9) {
+            data.push(rowData);
+          }
         }
+      });
 
-        const data = [];
-        const headers = ["Fecha", "Clave", "Descripción", "Cantidad", "Venta", "Precio", "Costo", "Recuperación", "Ganancia"];
-        data.push(headers);
-
-        rows.forEach((row) => {
-            const cols = row.querySelectorAll("td");
-            if (cols.length > 0) {
-                const rowData = [];
-                cols.forEach((col) => {
-                    let text = col.textContent.trim();
-                    text = text.replace(/[^\w\s\d.,$C\-]/g, "").trim();
-                    rowData.push(text);
-                });
-                if (rowData.length === 9) {
-                    data.push(rowData);
-                }
-            }
+      let csvContent = "";
+      data.forEach((row) => {
+        const escapedRow = row.map((cell) => {
+          if (
+            typeof cell === "string" &&
+            (cell.includes(",") || cell.includes('"') || cell.includes("\n"))
+          ) {
+            return `"${cell.replace(/"/g, '""')}"`;
+          }
+          return cell;
         });
+        csvContent += escapedRow.join(",") + "\n";
+      });
 
-        let csvContent = "";
-        data.forEach((row) => {
-            const escapedRow = row.map((cell) => {
-                if (typeof cell === "string" && (cell.includes(",") || cell.includes('"') || cell.includes("\n"))) {
-                    return `"${cell.replace(/"/g, '""')}"`;
-                }
-                return cell;
-            });
-            csvContent += escapedRow.join(",") + "\n";
-        });
+      const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
 
-        const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
+      const now = new Date();
+      const fechaStr = now.toISOString().slice(0, 10);
+      link.setAttribute("download", `productos_vendidos_${fechaStr}.csv`);
 
-        const now = new Date();
-        const fechaStr = now.toISOString().slice(0, 10);
-        link.setAttribute("download", `productos_vendidos_${fechaStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        console.log("✅ CSV exportado correctamente");
+      console.log("✅ CSV exportado correctamente");
     });
 
-    // ===== EVENTO DE BÚSQUEDA EN TIEMPO REAL =====
-    let timeoutId = null;
-    searchInput.addEventListener("input", function () {
-        const query = this.value;
-        console.log("✏️ Input detectado:", query || "(vacío)");
-        
-        actualizarBotonLimpiar(query);
+  let timeoutId = null;
+  searchInput.addEventListener("input", function () {
+    const query = this.value;
+    console.log("✏️ Input detectado:", query || "(vacío)");
 
-        // Debounce para mejor rendimiento
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            // ===== FILTRAR EN TIEMPO REAL =====
-            renderizarTabla(query);
-        }, 300);
-    });
+    actualizarBotonLimpiar(query);
 
-    // ===== LIMPIAR BÚSQUEDA =====
-    clearSearchBtn.addEventListener("click", function () {
-        console.log("🧹 Limpiando búsqueda");
-        searchInput.value = "";
-        actualizarBotonLimpiar("");
-        renderizarTabla("");
-        searchInput.focus();
-    });
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      renderizarTabla(query);
+    }, 300);
+  });
 
-    // ===== BOTÓN MOSTRAR (CON FILTRO DE FECHA) =====
-    document.getElementById("btn-mostrar").addEventListener("click", async () => {
-        const inicio = document.getElementById("fecha-inicio").value;
-        const fin = document.getElementById("fecha-fin").value;
+  clearSearchBtn.addEventListener("click", function () {
+    console.log("🧹 Limpiando búsqueda");
+    searchInput.value = "";
+    actualizarBotonLimpiar("");
+    renderizarTabla("");
+    searchInput.focus();
+  });
 
-        // Si no hay fechas, cargar todos los productos
-        if (!inicio || !fin) {
-            console.log("⚠️ No hay fechas seleccionadas, cargando todos los productos...");
-            await cargarProductos();
-            return;
-        }
+  document.getElementById("btn-mostrar").addEventListener("click", async () => {
+    const inicio = document.getElementById("fecha-inicio").value;
+    const fin = document.getElementById("fecha-fin").value;
 
-        console.log("📅 Aplicando filtro de fecha:", inicio, "a", fin);
-        
-        // Cargar productos con el filtro de fecha
-        await cargarProductos(inicio, fin);
-    });
-
-    // ===== BOTÓN REFRESCAR =====
-    document.getElementById("btn-refrescar").addEventListener("click", async () => {
-        console.log("🔄 Refrescando...");
-        
-        // Limpiar fechas
-        document.getElementById("fecha-inicio").value = "";
-        document.getElementById("fecha-fin").value = "";
-        
-        // Limpiar búsqueda
-        searchInput.value = "";
-        actualizarBotonLimpiar("");
-        
-        // Cargar todos los productos (sin filtro de fecha)
-        await cargarProductos();
-    });
-
-    // ===== INICIALIZAR =====
-    async function init() {
-        console.log("🚀 Inicializando...");
-        // Cargar todos los productos al inicio (sin filtro de fecha)
-        await cargarProductos();
+    if (!inicio || !fin) {
+      console.log(
+        "⚠️ No hay fechas seleccionadas, cargando todos los productos...",
+      );
+      await cargarProductos();
+      return;
     }
 
-    // Ejecutar cuando el DOM esté listo
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-    } else {
-        init();
-    }
+    console.log("📅 Aplicando filtro de fecha:", inicio, "a", fin);
+
+    await cargarProductos(inicio, fin);
+  });
+
+  document
+    .getElementById("btn-refrescar")
+    .addEventListener("click", async () => {
+      console.log("🔄 Refrescando...");
+
+      document.getElementById("fecha-inicio").value = "";
+      document.getElementById("fecha-fin").value = "";
+
+      searchInput.value = "";
+      actualizarBotonLimpiar("");
+
+      await cargarProductos();
+    });
+
+  // ===== INICIALIZAR =====
+  async function init() {
+    console.log("🚀 Inicializando...");
+    await cargarProductos();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();
