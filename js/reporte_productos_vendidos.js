@@ -5,7 +5,9 @@
     const API_URL =
         window.API_URL || "https://invensaas-backend.onrender.com/api";
     let todosLosProductos = [];
+    let productosConFiltroFecha = [];
     let busquedaActual = "";
+    let filtrosActivos = {};
 
     console.log("🔑 Token:", token ? "✅ Sí" : "❌ No");
     console.log("🌐 API_URL:", API_URL);
@@ -55,11 +57,14 @@
         return String(text).replace(regex, '<span class="highlight">$1</span>');
     }
 
-    // ===== RENDERIZAR TABLA CON FILTRO =====
-    function renderProductos(productos, searchQuery = "") {
-        const filtered = productos || todosLosProductos;
+    // ===== RENDERIZAR TABLA CON FILTRO DE BÚSQUEDA =====
+    function renderProductosConBusqueda(searchQuery = "") {
+        // Primero, obtener los productos base (todos o con filtro de fecha)
+        const productosBase = productosConFiltroFecha.length > 0 ? 
+            productosConFiltroFecha : 
+            todosLosProductos;
 
-        if (!filtered || filtered.length === 0) {
+        if (!productosBase || productosBase.length === 0) {
             tbody.innerHTML =
                 '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
             totalProductosEl.textContent = "0";
@@ -69,10 +74,10 @@
         }
 
         // Aplicar filtro de búsqueda por descripción o clave
-        let datosMostrar = filtered;
+        let datosMostrar = productosBase;
         if (searchQuery.trim()) {
             const query = searchQuery.trim().toLowerCase();
-            datosMostrar = filtered.filter(p => {
+            datosMostrar = productosBase.filter(p => {
                 const desc = (p.descripcion || "").toLowerCase();
                 const clave = (p.clave || "").toLowerCase();
                 return desc.includes(query) || clave.includes(query);
@@ -144,7 +149,7 @@
             totalGananciaEl.style.color = "var(--success)";
         }
 
-        console.log("✅ Tabla renderizada con", datosMostrar.length, "productos (filtrados de", filtered.length, ")");
+        console.log("✅ Tabla renderizada con", datosMostrar.length, "productos (filtrados de", productosBase.length, ")");
     }
 
     // ===== ACTUALIZAR VISIBILIDAD DEL BOTÓN LIMPIAR =====
@@ -267,18 +272,53 @@
                 return;
             }
 
-            todosLosProductos = data.productos;
-            console.log("📊 Productos encontrados:", todosLosProductos.length);
+            // Guardar los productos con el filtro de fecha aplicado (o vacío si no hay filtro)
+            productosConFiltroFecha = data.productos;
+            
+            // Si NO hay filtros de fecha, guardar también en todosLosProductos
+            if (!filtros.inicio && !filtros.fin) {
+                todosLosProductos = data.productos;
+            } else {
+                // Si hay filtros de fecha, TODOS los productos originales deben mantenerse
+                // para cuando se quite el filtro de fecha
+                if (todosLosProductos.length === 0) {
+                    // Solo cargar todos si es la primera vez
+                    // Para este caso, necesitamos cargar todos los productos sin filtro
+                    await cargarTodosLosProductos();
+                }
+            }
 
-            // Aplicar búsqueda actual si existe
+            console.log("📊 Productos encontrados:", data.productos.length);
+            console.log("📊 Todos los productos:", todosLosProductos.length);
+
+            // Aplicar búsqueda actual
             const searchQuery = searchInput.value || "";
-            renderProductos(todosLosProductos, searchQuery);
+            renderProductosConBusqueda(searchQuery);
             actualizarBotonLimpiar(searchQuery);
+
+            // Guardar filtros activos
+            filtrosActivos = filtros;
 
         } catch (error) {
             console.error("❌ Error:", error);
             tbody.innerHTML =
                 `<tr><td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
+        }
+    }
+
+    // ===== FUNCIÓN PARA CARGAR TODOS LOS PRODUCTOS (SIN FILTRO) =====
+    async function cargarTodosLosProductos() {
+        try {
+            const response = await fetch(`${API_URL}/admin/ventas/productos-vendidos`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await response.json();
+            if (data.success && data.productos) {
+                todosLosProductos = data.productos;
+                console.log("📊 Todos los productos cargados:", todosLosProductos.length);
+            }
+        } catch (error) {
+            console.error("❌ Error cargando todos los productos:", error);
         }
     }
 
@@ -289,11 +329,10 @@
         busquedaActual = query;
         actualizarBotonLimpiar(query);
 
+        // Debounce para mejor rendimiento
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
-            if (todosLosProductos.length > 0) {
-                renderProductos(todosLosProductos, query);
-            }
+            renderProductosConBusqueda(query);
         }, 300);
     });
 
@@ -302,14 +341,12 @@
         searchInput.value = "";
         busquedaActual = "";
         actualizarBotonLimpiar("");
-        if (todosLosProductos.length > 0) {
-            renderProductos(todosLosProductos, "");
-        }
+        renderProductosConBusqueda("");
         searchInput.focus();
     });
 
-    // ===== BOTÓN MOSTRAR =====
-    document.getElementById("btn-mostrar").addEventListener("click", () => {
+    // ===== BOTÓN MOSTRAR (CON FILTRO DE FECHA) =====
+    document.getElementById("btn-mostrar").addEventListener("click", async () => {
         const inicio = document.getElementById("fecha-inicio").value;
         const fin = document.getElementById("fecha-fin").value;
 
@@ -318,28 +355,40 @@
             return;
         }
 
-        // Limpiar búsqueda al aplicar filtro de fecha
-        searchInput.value = "";
-        busquedaActual = "";
-        actualizarBotonLimpiar("");
+        // Limpiar búsqueda (opcional - puedes decidir si mantenerla)
+        // searchInput.value = "";
+        // busquedaActual = "";
+        // actualizarBotonLimpiar("");
 
-        loadProductos({ inicio, fin });
+        await loadProductos({ inicio, fin });
     });
 
     // ===== BOTÓN REFRESCAR =====
-    document.getElementById("btn-refrescar").addEventListener("click", () => {
+    document.getElementById("btn-refrescar").addEventListener("click", async () => {
         document.getElementById("fecha-inicio").value = "";
         document.getElementById("fecha-fin").value = "";
-        searchInput.value = "";
-        busquedaActual = "";
-        actualizarBotonLimpiar("");
-        loadProductos({});
+        
+        // Mantener la búsqueda si existe
+        // Si quieres limpiar la búsqueda también, descomenta estas líneas:
+        // searchInput.value = "";
+        // busquedaActual = "";
+        // actualizarBotonLimpiar("");
+        
+        productosConFiltroFecha = todosLosProductos;
+        await loadProductos({});
     });
 
     // ===== INICIALIZAR =====
+    async function init() {
+        // Primero cargar todos los productos sin filtro
+        await cargarTodosLosProductos();
+        productosConFiltroFecha = todosLosProductos;
+        renderProductosConBusqueda("");
+    }
+
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => loadProductos({}));
+        document.addEventListener("DOMContentLoaded", init);
     } else {
-        loadProductos({});
+        init();
     }
 })();
