@@ -297,20 +297,15 @@ function openModal(type, data = null) {
       stockLabel.textContent = "(no editable, usa Entrada)";
 
       const producto = productosCache.find((p) => p.id == data.id)
-      || productosVistaBase.find((p) => p.id == data.id)
-      || data;
+|| productosVistaBase.find((p) => p.id == data.id)
+|| data;
 
-      document.getElementById("product-id").value = data.id;
-      document.getElementById("product-descripcion").value =
-        data.descripcion || "";
-      document.getElementById("product-stock").value = formatStock(data.stock);
-      document.getElementById("product-costo").value = parseFloat(
-        data.costo,
-      ).toFixed(2);
-      document.getElementById("product-precio").value = parseFloat(
-        data.precio,
-      ).toFixed(2);
-      document.getElementById("product-clave").value = data.id;
+document.getElementById("product-id").value = data.id;
+document.getElementById("product-descripcion").value = data.descripcion || "";
+document.getElementById("product-stock").value = formatStock(data.stock);
+document.getElementById("product-costo").value = parseFloat(data.costo).toFixed(2);
+document.getElementById("product-precio").value = parseFloat(data.precio).toFixed(2);
+document.getElementById("product-clave").value = data.id;
     } else {
       stockInput.disabled = false;
       stockInput.style.background = "";
