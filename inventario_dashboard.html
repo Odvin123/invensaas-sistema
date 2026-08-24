@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <script src="js/config.js"></script>
     <style>
         /* ============================================
@@ -29,12 +29,14 @@
             --success: #22c55e;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --teal: #0d9488;
+            --blue: #2563eb;
             --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
             --shadow-hover: 0 8px 32px rgba(99, 102, 241, 0.15);
             --radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --sidebar-width: 260px;
-            --sidebar-collapsed: 70px;
+            --topbar-h: 61px;
+            --sidebar-w: 250px;
         }
 
         body {
@@ -42,7 +44,6 @@
             background: var(--light);
             color: var(--text);
             min-height: 100vh;
-            display: flex;
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -50,304 +51,52 @@
         ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        /* ============================================
-           SIDEBAR VERTICAL
-        ============================================ */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: var(--sidebar-width);
-            background: var(--secondary);
-            color: white;
-            overflow-y: auto;
-            overflow-x: hidden;
-            transition: width 0.3s ease, transform 0.3s ease;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-brand {
-            padding: 20px 20px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            flex-shrink: 0;
-        }
-
-        .sidebar-brand .logo {
-            font-size: 22px;
-            font-weight: 900;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .sidebar-brand .logo span {
-            color: white;
-            -webkit-text-fill-color: white;
-        }
-
-        .sidebar-brand .company-badge {
-            font-size: 10px;
-            color: rgba(255,255,255,0.6);
-            background: rgba(255,255,255,0.1);
-            padding: 2px 10px;
-            border-radius: 12px;
-            white-space: nowrap;
-        }
-
-        .sidebar-toggle {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.6);
-            font-size: 18px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: var(--transition);
-            margin-left: auto;
-        }
-        .sidebar-toggle:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        .sidebar-user {
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            flex-shrink: 0;
-        }
-
-        .sidebar-user .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        .sidebar-user .user-name {
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .sidebar-user .user-role {
-            font-size: 11px;
-            color: rgba(255,255,255,0.5);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* MENÚ NAVEGACIÓN */
-        .sidebar-nav {
-            flex: 1;
-            padding: 12px 12px 20px;
-            overflow-y: auto;
-        }
-
-        .sidebar-nav .nav-section {
-            margin-bottom: 8px;
-        }
-
-        .sidebar-nav .nav-section-title {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: rgba(255,255,255,0.3);
-            padding: 8px 12px 4px;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border-radius: 10px;
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: var(--transition);
-            cursor: pointer;
-            position: relative;
-            margin-bottom: 2px;
-            white-space: nowrap;
-        }
-
-        .sidebar-nav a:hover {
-            background: rgba(255,255,255,0.08);
-            color: white;
-        }
-
-        .sidebar-nav a.active {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
-        }
-
-        .sidebar-nav a i {
-            font-size: 18px;
-            width: 24px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .sidebar-nav a .nav-text {
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .sidebar-nav a .badge {
-            background: var(--danger);
-            color: white;
-            font-size: 10px;
-            padding: 1px 8px;
-            border-radius: 12px;
-            font-weight: 700;
-        }
-
-        /* SUBMENU */
-        .sidebar-nav .submenu {
-            padding-left: 12px;
-            overflow: hidden;
-            max-height: 0;
-            transition: max-height 0.3s ease;
-        }
-
-        .sidebar-nav .submenu.open {
-            max-height: 500px;
-        }
-
-        .sidebar-nav .submenu a {
-            font-size: 13px;
-            padding: 8px 14px 8px 20px;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .sidebar-nav .submenu a:hover {
-            color: white;
-            background: rgba(255,255,255,0.05);
-        }
-
-        .sidebar-nav .submenu a.active {
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--primary-light);
-        }
-
-        .sidebar-nav .submenu a i {
-            font-size: 14px;
-            width: 20px;
-        }
-
-        /* Toggle submenu */
-        .sidebar-nav .has-submenu > a::after {
-            content: '\f078';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 12px;
-            opacity: 0.5;
-            transition: transform 0.3s ease;
-            margin-left: auto;
-        }
-
-        .sidebar-nav .has-submenu.open > a::after {
-            transform: rotate(180deg);
-        }
-
-        /* BOTÓN SALIR */
-        .sidebar-footer {
-            padding: 12px 12px 20px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            flex-shrink: 0;
-        }
-
-        .sidebar-footer a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border-radius: 10px;
-            color: rgba(255,255,255,0.5);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .sidebar-footer a:hover {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-        }
-
-        .sidebar-footer a i {
-            font-size: 18px;
-            width: 24px;
-            text-align: center;
-        }
-
-        /* ============================================
-           CONTENIDO PRINCIPAL
-        ============================================ */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            min-height: 100vh;
-            transition: margin-left 0.3s ease;
-        }
-
-        /* TOP BAR (encabezado) */
+        /* TOP BAR */
         .top-bar {
             background: var(--white);
-            padding: 12px 32px;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 200;
             backdrop-filter: blur(8px);
             background: rgba(255,255,255,0.95);
-            min-height: 64px;
+            gap: 12px;
         }
 
-        .top-bar .page-title {
-            font-size: 18px;
-            font-weight: 700;
+        .top-bar .brand { display: flex; align-items: center; gap: 12px; }
+        .top-bar .brand .logo {
+            font-size: 22px;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .top-bar .brand .logo span {
+            color: var(--secondary);
+            -webkit-text-fill-color: var(--secondary);
         }
 
-        .top-bar .page-title i {
-            color: var(--primary);
-            margin-right: 8px;
-        }
-
-        .top-bar .user-info {
-            display: flex;
+        .hamburger-btn {
+            display: none;
+            background: var(--light);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            font-size: 16px;
+            color: var(--text);
+            cursor: pointer;
             align-items: center;
-            gap: 14px;
+            justify-content: center;
+            flex-shrink: 0;
         }
+        .hamburger-btn:hover { background: var(--border); }
 
+        .top-bar .user-info { display: flex; align-items: center; gap: 14px; }
         .top-bar .user-info .company-badge {
             background: var(--light);
             padding: 6px 16px;
@@ -356,45 +105,134 @@
             font-size: 13px;
             color: var(--text-light);
         }
-        .top-bar .user-info .company-badge i {
-            color: var(--primary);
-            margin-right: 6px;
-        }
-
-        /* MENÚ HAMBURGUESA (visible en móvil) */
-        .hamburger-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: var(--text);
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: var(--transition);
-        }
-        .hamburger-btn:hover {
-            background: var(--light);
-        }
-
-        /* Overlay para móvil */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            backdrop-filter: blur(4px);
+        .top-bar .user-info .company-badge i { color: var(--primary); margin-right: 6px; }
+        .top-bar .user-info .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            flex-shrink: 0;
         }
 
         /* ============================================
-           DASHBOARD
+           APP LAYOUT: SIDEBAR + CONTENIDO
         ============================================ */
+        .app-layout {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* SIDEBAR VERTICAL */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: var(--topbar-h);
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            padding: 14px 0 24px;
+            z-index: 150;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            top: var(--topbar-h);
+            background: rgba(15, 23, 42, 0.45);
+            z-index: 140;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        .sidebar ul { list-style: none; }
+
+        .sidebar > ul > li { padding: 0 10px; margin-bottom: 2px; }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 13.5px;
+            border-radius: 10px;
+            transition: var(--transition);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .sidebar > ul > li > a:hover,
+        .sidebar > ul > li > a.active {
+            background: var(--light);
+            color: var(--primary);
+        }
+        .sidebar > ul > li > a.active {
+            background: #eef2ff;
+        }
+
+        .sidebar a i.menu-icon {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .sidebar a .submenu-arrow {
+            margin-left: auto;
+            font-size: 11px;
+            transition: transform 0.25s ease;
+        }
+        .has-submenu.open > a .submenu-arrow { transform: rotate(180deg); }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .has-submenu.open .submenu { max-height: 400px; }
+
+        .submenu li a {
+            padding: 9px 12px 9px 40px;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        .submenu li a:hover,
+        .submenu li a.active {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 10px 16px;
+        }
+
+        .logout-item a { color: var(--danger); }
+        .logout-item a:hover { background: #fee2e2; color: var(--danger); }
+
+        /* CONTENIDO */
+        .content-wrapper {
+            margin-left: var(--sidebar-w);
+            width: calc(100% - var(--sidebar-w));
+            min-height: calc(100vh - var(--topbar-h));
+        }
+
+        /* DASHBOARD */
         .dashboard {
-            padding: 24px 32px;
+            padding: 24px 28px;
             max-width: 1440px;
             margin: 0 auto;
         }
@@ -403,7 +241,7 @@
         .dashboard-header h1 { font-size: 26px; font-weight: 800; }
         .dashboard-header p { color: var(--text-light); font-size: 15px; }
 
-        /* STATS CARDS */
+        /* STATS CARDS - CLICABLES */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -696,61 +534,33 @@
         /* ============================================
            RESPONSIVE
         ============================================ */
+
+        /* Tablet: sidebar se vuelve angosta (solo iconos) */
         @media (max-width: 992px) {
             .charts-grid { grid-template-columns: 1fr; }
+            :root { --sidebar-w: 210px; }
         }
 
+        /* Móvil: sidebar se convierte en drawer con hamburguesa */
         @media (max-width: 768px) {
+            .hamburger-btn { display: flex; }
+
             .sidebar {
                 transform: translateX(-100%);
-                width: 280px;
+                width: 260px;
+                box-shadow: 0 0 24px rgba(0,0,0,0.15);
             }
+            .sidebar.open { transform: translateX(0); }
 
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .sidebar-overlay.active {
-                display: block;
-            }
-
-            .main-content {
+            .content-wrapper {
                 margin-left: 0;
+                width: 100%;
             }
 
-            .hamburger-btn {
-                display: block;
-            }
+            .top-bar .user-info .company-badge { display: none; }
 
-            .top-bar {
-                padding: 10px 16px;
-            }
-
-            .top-bar .page-title {
-                font-size: 15px;
-            }
-
-            .top-bar .user-info .company-badge {
-                font-size: 11px;
-                padding: 4px 12px;
-            }
-
-            .dashboard {
-                padding: 16px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-
-            .stat-card {
-                padding: 14px 16px;
-            }
-
-            .stat-card .stat-number {
-                font-size: 20px;
-            }
+            .dashboard { padding: 16px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
 
             .table-card .table-header {
                 flex-direction: column;
@@ -760,41 +570,14 @@
             .modal-content .form-row {
                 grid-template-columns: 1fr;
             }
-
-            .modal-content {
-                margin: 10% auto;
-                padding: 20px;
-            }
         }
 
         @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .stat-card .stat-number {
-                font-size: 18px;
-            }
-
-            .stat-card .stat-icon {
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-            }
-
-            .top-bar .page-title {
-                font-size: 13px;
-            }
-
-            .dashboard {
-                padding: 12px;
-            }
+            .stats-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px; margin: 10% auto; }
         }
 
-        /* ============================================
-           UTILIDADES
-        ============================================ */
+        /* UTILIDADES */
         .text-center { text-align: center; }
         .text-muted { color: var(--text-light); }
         .loading-state {
@@ -822,627 +605,649 @@
 <body>
 
     <!-- ============================================
-    SIDEBAR OVERLAY (móvil)
+    TOP BAR
     ============================================ -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
-    <!-- ============================================
-    SIDEBAR VERTICAL
-    ============================================ -->
-    <aside class="sidebar" id="sidebar">
-        <!-- Brand -->
-        <div class="sidebar-brand">
-            <span class="logo">Inven<span>SaaS</span></span>
-            <button class="sidebar-toggle" onclick="toggleSidebar()" title="Colapsar">
-                <i class="fas fa-chevron-left"></i>
+    <header class="top-bar">
+        <div class="brand">
+            <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Abrir menú">
+                <i class="fas fa-bars"></i>
             </button>
+            <span class="logo">Inven<span>SaaS</span></span>
         </div>
-
-        <!-- Usuario -->
-        <div class="sidebar-user">
+        <div class="user-info">
+            <span class="company-badge"><i class="fas fa-building"></i> <span id="company-name-display">Cargando...</span></span>
             <div class="avatar" id="avatar-initial">A</div>
-            <div style="flex:1; min-width:0;">
-                <div class="user-name" id="sidebar-user-name">Administrador</div>
-                <div class="user-role" id="sidebar-user-role">Super Admin</div>
-            </div>
         </div>
+    </header>
 
-        <!-- Navegación -->
-        <nav class="sidebar-nav" id="mainMenu">
-            <!-- Dashboard -->
-            <a href="#" class="active" data-view="dashboard">
-                <i class="fas fa-home"></i>
-                <span class="nav-text">Dashboard</span>
-            </a>
+    <div class="app-layout">
 
-            <!-- Registro de Productos -->
-            <a href="#" data-view="productos">
-                <i class="fas fa-boxes" style="color: #818cf8;"></i>
-                <span class="nav-text">Registrar Productos</span>
-            </a>
+        <!-- ============================================
+        SIDEBAR VERTICAL
+        ============================================ -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        <nav class="sidebar" id="sidebar">
+            <ul class="main-menu" id="mainMenu">
 
-            <!-- Gestión (submenú) -->
-            <div class="has-submenu" id="submenu-gestion">
-                <a href="#" onclick="toggleSubmenu('submenu-gestion')">
-                    <i class="fas fa-cogs" style="color: #f59e0b;"></i>
-                    <span class="nav-text">Gestión</span>
-                </a>
-                <div class="submenu" id="submenu-gestion-items">
-                    <a href="#" data-view="categorias"><i class="fas fa-tag"></i> Categorías</a>
-                    <a href="#" data-view="proveedores"><i class="fas fa-truck"></i> Proveedores</a>
-                    <a href="#" data-view="clientes"><i class="fas fa-users"></i> Clientes</a>
-                    <a href="#" data-view="vendedores"><i class="fas fa-user-tie"></i> Vendedores</a>
-                </div>
-            </div>
+                <li>
+                    <a href="#" class="active" data-view="dashboard">
+                        <i class="fas fa-home menu-icon" style="color:#7c3aed;"></i> Dashboard
+                    </a>
+                </li>
 
-            <!-- Registrar Entradas -->
-            <a href="#" data-view="entrada">
-                <i class="fas fa-arrow-right" style="color: #22c55e;"></i>
-                <span class="nav-text">Registrar Entradas</span>
-            </a>
+                <li>
+                    <a href="#" data-view="productos">
+                        <i class="fas fa-box menu-icon" style="color:#16a34a;"></i> Registrar Producto
+                    </a>
+                </li>
 
-            <!-- Registrar Ventas (POS) -->
-            <a href="punto_de_venta.html">
-                <i class="fas fa-shopping-cart" style="color: #ec4899;"></i>
-                <span class="nav-text">Registrar Ventas</span>
-            </a>
+                <li class="has-submenu">
+                    <a href="#" onclick="toggleSubmenu(event, this)">
+                        <i class="fas fa-layer-group menu-icon" style="color:#2563eb;"></i> Catálogos
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#" data-view="categorias"><i class="fas fa-tags menu-icon" style="color:#0d9488;"></i> Categorías</a></li>
+                        <li><a href="#" data-view="proveedores"><i class="fas fa-truck menu-icon" style="color:#d97706;"></i> Proveedores</a></li>
+                        <li><a href="#" data-view="clientes"><i class="fas fa-users menu-icon" style="color:#2563eb;"></i> Clientes</a></li>
+                        <li><a href="#" data-view="vendedores"><i class="fas fa-user-tie menu-icon" style="color:#7c3aed;"></i> Vendedores</a></li>
+                    </ul>
+                </li>
 
-            <!-- Reportes (submenú) -->
-            <div class="has-submenu" id="submenu-reportes">
-                <a href="#" onclick="toggleSubmenu('submenu-reportes')">
-                    <i class="fas fa-chart-bar" style="color: #8b5cf6;"></i>
-                    <span class="nav-text">Reportes</span>
-                </a>
-                <div class="submenu" id="submenu-reportes-items">
-                    <a href="reporte_general.html"><i class="fas fa-chart-pie"></i> Reporte General</a>
-                    <a href="reporte_cajas.html"><i class="fas fa-cash-register"></i> Cortes de Caja</a>
-                    <a href="reporte_inventario.html"><i class="fas fa-boxes"></i> Movimientos Inventario</a>
-                    <a href="reporte_ventas.html"><i class="fas fa-chart-line"></i> Reporte de Ventas</a>
-                    <a href="reporte_productos_vendidos.html"><i class="fas fa-shopping-bag"></i> Productos Vendidos</a>
-                    <a href="historial_facturas.html"><i class="fas fa-file-invoice"></i> Historial Facturas</a>
-                </div>
-            </div>
+                <li>
+                    <a href="#" data-view="entrada">
+                        <i class="fas fa-right-to-bracket menu-icon" style="color:#0d9488;"></i> Registrar Entradas
+                    </a>
+                </li>
+
+                <li class="has-submenu">
+                    <a href="#" onclick="toggleSubmenu(event, this)">
+                        <i class="fas fa-chart-bar menu-icon" style="color:#6366f1;"></i> Reportes
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="reporte_general.html"><i class="fas fa-chart-pie menu-icon" style="color:#7c3aed;"></i> Reporte General</a></li>
+                        <li><a href="reporte_cajas.html"><i class="fas fa-cash-register menu-icon" style="color:#dc2626;"></i> Cortes de Caja</a></li>
+                        <li><a href="reporte_inventario.html"><i class="fas fa-boxes menu-icon" style="color:#6366f1;"></i> Movimientos de Inventario</a></li>
+                        <li><a href="reporte_ventas.html"><i class="fas fa-chart-line menu-icon" style="color:#16a34a;"></i> Reporte de Ventas</a></li>
+                        <li><a href="reporte_productos_vendidos.html"><i class="fas fa-shopping-bag menu-icon" style="color:#d97706;"></i> Productos Vendidos</a></li>
+                        <li><a href="historial_facturas.html"><i class="fas fa-file-invoice menu-icon" style="color:#6366f1;"></i> Historial de Facturas</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="punto_de_venta.html">
+                        <i class="fas fa-cash-register menu-icon" style="color:#dc2626;"></i> Registrar Ventas
+                    </a>
+                </li>
+
+                <div class="sidebar-divider"></div>
+
+                <li class="logout-item">
+                    <a href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt menu-icon"></i> Salir
+                    </a>
+                </li>
+            </ul>
         </nav>
 
-        <!-- Footer / Salir -->
-        <div class="sidebar-footer">
-            <a href="#" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i>
-                <span class="nav-text">Salir</span>
-            </a>
-        </div>
-    </aside>
+        <!-- ============================================
+        CONTENIDO
+        ============================================ -->
+        <div class="content-wrapper" id="content-wrapper">
+
+            <!-- DASHBOARD VIEW -->
+            <div class="dashboard view-content active" id="view-dashboard">
+                <div class="dashboard-header">
+                    <h1 id="welcome-message">Bienvenido, Administrador</h1>
+                    <p id="company-subtitle">Panel de control de tu inventario</p>
+                </div>
+
+                <!-- Stats - CLICABLES -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card" onclick="filtrarPorEstado('todos')" title="Ver todos los productos">
+                        <div class="stat-icon purple"><i class="fas fa-boxes"></i></div>
+                        <div class="stat-number" id="total-productos">0</div>
+                        <div class="stat-label">Total Productos</div>
+                        <div class="click-hint">👆 Click para ver</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarPorEstado('stock-normal')" title="Ver productos con stock normal">
+                        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-number" id="stock-normal">0</div>
+                        <div class="stat-label">Stock Normal</div>
+                        <div class="click-hint">👆 Click para ver</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarPorEstado('stock-bajo')" title="Ver productos con stock bajo">
+                        <div class="stat-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="stat-number" id="stock-bajo-count">0</div>
+                        <div class="stat-label">Stock Bajo</div>
+                        <div class="click-hint">👆 Click para ver</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarPorEstado('agotados')" title="Ver productos agotados">
+                        <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
+                        <div class="stat-number" id="stock-agotados">0</div>
+                        <div class="stat-label">Agotados</div>
+                        <div class="click-hint">👆 Click para ver</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarPorEstado('todos')" title="Ver valor total del inventario">
+                        <div class="stat-icon blue"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="stat-number" id="valor-inventario">C$0</div>
+                        <div class="stat-label">Valor Inventario</div>
+                        <div class="click-hint">👆 Click para ver</div>
+                    </div>
+                    <div class="stat-card" onclick="showView('proveedores')" title="Ver todos los proveedores">
+                        <div class="stat-icon teal"><i class="fas fa-truck"></i></div>
+                        <div class="stat-number" id="total-proveedores">0</div>
+                        <div class="stat-label">Proveedores</div>
+                        <div class="click-hint">👆 Click para ver</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-line"></i> Top 10 Productos con más stock</h3>
+                        <div class="chart-container">
+                            <canvas id="topProductsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-pie"></i> Distribución por Categoría</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Productos -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-list" style="color:var(--primary);"></i> Últimos Productos</h3>
+                        <div class="actions">
+                            <button class="btn btn-success" onclick="openModal('product')"><i class="fas fa-plus"></i> Nuevo</button>
+                            <button class="btn btn-primary" onclick="exportCSV()"><i class="fas fa-file-export"></i> Exportar</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Descripción</th>
+                                    <th>Categoría</th>
+                                    <th style="text-align:center;">Stock</th>
+                                    <th style="text-align:right;">Precio</th>
+                                    <th>Estado</th>
+                                    <th style="text-align:center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-tbody">
+                                <tr><td colspan="7" class="loading-state"><i class="fas fa-spinner"></i> Cargando productos...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: PRODUCTOS -->
+            <div class="dashboard view-content" id="view-productos">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-boxes" style="color:var(--primary);"></i> <span id="productos-titulo">Todos los Productos</span> <span id="productos-contador" style="font-size:12px;color:var(--text-light);font-weight:400;"></span></h3>
+                        <div class="actions">
+                            <button class="btn btn-success" onclick="openModal('product')"><i class="fas fa-plus"></i> Nuevo Producto</button>
+                            <button class="btn btn-outline" onclick="limpiarFiltroProductos()" style="font-size:12px;">
+                                <i class="fas fa-undo"></i> Limpiar filtro
+                            </button>
+                        </div>
+                    </div>
+                    <div style="padding:0 20px 12px;">
+                        <div style="position:relative; max-width:320px;">
+                            <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:13px;"></i>
+                            <input type="text" id="productos-buscar-input" placeholder="Buscar por nombre, ID, categoría o proveedor..." oninput="filtrarProductosView()"
+                                   style="width:100%; padding:10px 14px 10px 34px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:13px;">
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Descripción</th>
+                                    <th>Categoría</th>
+                                    <th>Proveedor</th>
+                                    <th style="text-align:center;">Stock</th>
+                                    <th style="text-align:right;">Precio</th>
+                                    <th style="text-align:right;">Costo</th>
+                                    <th style="text-align:center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productos-tbody">
+                                <tr><td colspan="8" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: CATEGORÍAS -->
+            <div class="dashboard view-content" id="view-categorias">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-tags" style="color:var(--primary);"></i> Gestión de Categorías</h3>
+                        <div class="actions">
+                            <button class="btn btn-success" onclick="openModal('categoria')"><i class="fas fa-plus"></i> Nueva Categoría</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Nombre</th><th style="text-align:center;">Acciones</th></tr>
+                            </thead>
+                            <tbody id="categorias-tbody">
+                                <tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: PROVEEDORES -->
+            <div class="dashboard view-content" id="view-proveedores">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-truck" style="color:var(--primary);"></i> Gestión de Proveedores</h3>
+                        <div class="actions">
+                            <button class="btn btn-success" onclick="openModal('proveedor')"><i class="fas fa-plus"></i> Nuevo Proveedor</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th style="text-align:center;">Acciones</th></tr>
+                            </thead>
+                            <tbody id="proveedores-tbody">
+                                <tr><td colspan="5" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: CLIENTES -->
+            <div class="dashboard view-content" id="view-clientes">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-users" style="color:var(--primary);"></i> Gestión de Clientes</h3>
+                        <div class="actions">
+                            <button class="btn btn-success" onclick="openModal('cliente')"><i class="fas fa-plus"></i> Nuevo Cliente</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Nombre</th><th style="text-align:center;">Acciones</th></tr>
+                            </thead>
+                            <tbody id="clientes-tbody">
+                                <tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: VENDEDORES -->
+            <div class="dashboard view-content" id="view-vendedores">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-user-tie" style="color:var(--primary);"></i> Gestión de Vendedores</h3>
+                        <div class="actions">
+                            <button class="btn btn-success" onclick="openModal('vendedor')"><i class="fas fa-plus"></i> Nuevo Vendedor</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Nombre</th><th style="text-align:center;">Acciones</th></tr>
+                            </thead>
+                            <tbody id="vendedores-tbody">
+                                <tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: ENTRADA DE INVENTARIO -->
+            <div class="dashboard view-content" id="view-entrada">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3><i class="fas fa-right-to-bracket" style="color:var(--primary);"></i> Registrar Entrada de Inventario</h3>
+                    </div>
+                    <div class="table-wrapper" style="padding:20px;">
+                        <form id="entradaForm" style="max-width:600px; margin:0 auto;">
+                            <div style="margin-bottom:12px;">
+                                <label style="font-weight:600;font-size:13px;">Referencia (opcional):</label>
+                                <input type="text" id="entrada-referencia" placeholder="ej: OC-2025-001" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;">
+                            </div>
+                            <div style="margin-bottom:12px;">
+                                <label style="font-weight:600;font-size:13px;">Motivo / Notas (opcional):</label>
+                                <textarea id="entrada-motivo" rows="2" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;font-family:inherit;"></textarea>
+                            </div>
+
+                            <div style="margin-bottom:12px;">
+                                <button type="button" class="btn btn-success" onclick="agregarProductoEntrada()"><i class="fas fa-plus"></i> Agregar Producto</button>
+                            </div>
+
+                            <div style="margin-bottom:12px; font-size:11px; color:var(--text-light); background:var(--light); padding:8px 12px; border-radius:8px;">
+                                <i class="fas fa-circle-info" style="color:var(--primary);"></i>
+                                Costo y Precio se cargan con el valor actual del producto. Si los cambias, se calculará automáticamente un
+                                <strong>promedio ponderado</strong> entre el stock/valor anterior y lo que estás ingresando.
+                            </div>
+
+                            <div style="overflow-x:auto; margin-bottom:16px;">
+                                <table style="width:100%;border-collapse:collapse;">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:left;padding:8px;border-bottom:2px solid var(--border);">Producto</th>
+                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Cantidad</th>
+                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Costo Unit. (C$)</th>
+                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Precio Venta (C$)</th>
+                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Resultante</th>
+                                            <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="entrada-productos-tbody">
+                                        <tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> Registrar Entrada</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: REPORTES (acceso directo, además del submenú lateral) -->
+            <div class="dashboard view-content" id="view-reportes">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+
+                    <a href="reporte_general.html" style="
+                        padding:24px;
+                        display:flex;
+                        flex-direction:column;
+                        align-items:center;
+                        justify-content:center;
+                        gap:8px;
+                        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                        color:white;
+                        border-radius:16px;
+                        text-decoration:none;
+                        font-size:15px;
+                        font-weight:600;
+                        min-height:120px;
+                        box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+                        transition: all 0.3s ease;
+                    ">
+                        <i class="fas fa-chart-pie" style="font-size:32px;"></i>
+                        <span>📊 Reporte General</span>
+                        <small style="font-size:10px; opacity:0.8;">Inversión · Ganancia · Valor</small>
+                    </a>
+                    <a href="reporte_cajas.html" style="
+                        padding:24px;
+                        display:flex;
+                        flex-direction:column;
+                        align-items:center;
+                        justify-content:center;
+                        gap:8px;
+                        background: linear-gradient(135deg, #ef4444, #f97316);
+                        color:white;
+                        border-radius:16px;
+                        text-decoration:none;
+                        font-size:15px;
+                        font-weight:600;
+                        min-height:120px;
+                        box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+                        transition: all 0.3s ease;
+                    ">
+                        <i class="fas fa-cash-register" style="font-size:32px;"></i>
+                        <span>Cortes de Caja</span>
+                        <small style="font-size:10px; opacity:0.8;">Historial · Ganancias · Arqueos</small>
+                    </a>
+
+                    <a href="reporte_inventario.html" style="
+                        padding:24px;
+                        display:flex;
+                        flex-direction:column;
+                        align-items:center;
+                        justify-content:center;
+                        gap:8px;
+                        background: #6366f1;
+                        color:white;
+                        border-radius:16px;
+                        text-decoration:none;
+                        font-size:15px;
+                        font-weight:600;
+                        min-height:120px;
+                        box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+                        transition: all 0.3s ease;
+                    ">
+                        <i class="fas fa-boxes" style="font-size:32px;"></i>
+                        <span>Movimientos de Inventario</span>
+                    </a>
+
+                    <a href="reporte_ventas.html" style="
+                        padding:24px;
+                        display:flex;
+                        flex-direction:column;
+                        align-items:center;
+                        justify-content:center;
+                        gap:8px;
+                        background: #22c55e;
+                        color:white;
+                        border-radius:16px;
+                        text-decoration:none;
+                        font-size:15px;
+                        font-weight:600;
+                        min-height:120px;
+                        box-shadow: 0 4px 12px rgba(34,197,94,0.3);
+                        transition: all 0.3s ease;
+                    ">
+                        <i class="fas fa-chart-line" style="font-size:32px;"></i>
+                        <span>Reporte de Ventas</span>
+                    </a>
+
+                    <a href="reporte_productos_vendidos.html" style="
+                        padding:24px;
+                        display:flex;
+                        flex-direction:column;
+                        align-items:center;
+                        justify-content:center;
+                        gap:8px;
+                        background: #f59e0b;
+                        color:white;
+                        border-radius:16px;
+                        text-decoration:none;
+                        font-size:15px;
+                        font-weight:600;
+                        min-height:120px;
+                        box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+                        transition: all 0.3s ease;
+                    ">
+                        <i class="fas fa-shopping-bag" style="font-size:32px;"></i>
+                        <span>Productos Vendidos</span>
+                    </a>
+                    <a href="historial_facturas.html" class="btn btn-primary" style="padding:24px; justify-content:center; font-size:15px; text-decoration:none; flex-direction:column; gap:8px; border-radius:var(--radius); background:var(--primary);">
+                        <i class="fas fa-file-invoice" style="font-size:32px;"></i>
+                        <span>Historial de Facturas</span>
+                    </a>
+
+                </div>
+            </div>
+
+        </div><!-- /content-wrapper -->
+    </div><!-- /app-layout -->
 
     <!-- ============================================
-    CONTENIDO PRINCIPAL
+    MODALES (Producto, Categoría, Proveedor, Cliente, Vendedor, Buscar Producto)
     ============================================ -->
-    <div class="main-content" id="mainContent">
 
-        <!-- TOP BAR -->
-        <header class="top-bar">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <button class="hamburger-btn" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <span class="page-title" id="pageTitle">
-                    <i class="fas fa-home"></i> Dashboard
-                </span>
-            </div>
-            <div class="user-info">
-                <span class="company-badge"><i class="fas fa-building"></i> <span id="company-name-display">Cargando...</span></span>
-            </div>
-        </header>
-
-        <!-- ============================================
-        DASHBOARD VIEW
-        ============================================ -->
-        <div class="dashboard view-content active" id="view-dashboard">
-            <div class="dashboard-header">
-                <h1 id="welcome-message">Bienvenido, Administrador</h1>
-                <p id="company-subtitle">Panel de control de tu inventario</p>
-            </div>
-
-            <!-- Stats - CLICABLES -->
-            <div class="stats-grid" id="statsGrid">
-                <div class="stat-card" onclick="filtrarPorEstado('todos')" title="Ver todos los productos">
-                    <div class="stat-icon purple"><i class="fas fa-boxes"></i></div>
-                    <div class="stat-number" id="total-productos">0</div>
-                    <div class="stat-label">Total Productos</div>
-                    <div class="click-hint">👆 Click para ver</div>
-                </div>
-                <div class="stat-card" onclick="filtrarPorEstado('stock-normal')" title="Ver productos con stock normal">
-                    <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
-                    <div class="stat-number" id="stock-normal">0</div>
-                    <div class="stat-label">Stock Normal</div>
-                    <div class="click-hint">👆 Click para ver</div>
-                </div>
-                <div class="stat-card" onclick="filtrarPorEstado('stock-bajo')" title="Ver productos con stock bajo">
-                    <div class="stat-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
-                    <div class="stat-number" id="stock-bajo-count">0</div>
-                    <div class="stat-label">Stock Bajo</div>
-                    <div class="click-hint">👆 Click para ver</div>
-                </div>
-                <div class="stat-card" onclick="filtrarPorEstado('agotados')" title="Ver productos agotados">
-                    <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
-                    <div class="stat-number" id="stock-agotados">0</div>
-                    <div class="stat-label">Agotados</div>
-                    <div class="click-hint">👆 Click para ver</div>
-                </div>
-                <div class="stat-card" onclick="filtrarPorEstado('todos')" title="Ver valor total del inventario">
-                    <div class="stat-icon blue"><i class="fas fa-dollar-sign"></i></div>
-                    <div class="stat-number" id="valor-inventario">C$0</div>
-                    <div class="stat-label">Valor Inventario</div>
-                    <div class="click-hint">👆 Click para ver</div>
-                </div>
-                <div class="stat-card" onclick="showView('proveedores')" title="Ver todos los proveedores">
-                    <div class="stat-icon teal"><i class="fas fa-truck"></i></div>
-                    <div class="stat-number" id="total-proveedores">0</div>
-                    <div class="stat-label">Proveedores</div>
-                    <div class="click-hint">👆 Click para ver</div>
-                </div>
-            </div>
-
-            <!-- Charts -->
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <h3><i class="fas fa-chart-line"></i> Top 10 Productos con más stock</h3>
-                    <div class="chart-container">
-                        <canvas id="topProductsChart"></canvas>
+    <!-- MODAL: PRODUCTO -->
+    <div id="modal-product" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('product')">&times;</span>
+            <h3><i class="fas fa-box"></i> <span id="product-modal-title">Agregar Producto</span></h3>
+            <form id="productForm">
+                <input type="hidden" id="product-id">
+                <label>Proveedor <span style="color:var(--danger);">*</span></label>
+                <select id="product-proveedor" required><option value="">-- Seleccionar --</option></select>
+                <label>Categoría <span style="color:var(--danger);">*</span></label>
+                <select id="product-categoria" required><option value="">-- Seleccionar --</option></select>
+                <label>Descripción <span style="color:var(--danger);">*</span></label>
+                <textarea id="product-descripcion" required></textarea>
+                <div class="form-row">
+                    <div>
+                        <label>Stock <span id="stock-label" style="color:var(--text-light); font-weight:400; font-size:11px;">(solo al crear)</span></label>
+                        <input type="number" id="product-stock" step="0.01" min="0" value="0">
+                        <small style="color:var(--text-light); font-size:10px;">Para modificar stock usa <strong>"Entrada"</strong></small>
+                    </div>
+                    <div>
+                        <label>Costo (C$)</label>
+                        <input type="number" id="product-costo" step="0.01" min="0" value="0.00">
                     </div>
                 </div>
-                <div class="chart-card">
-                    <h3><i class="fas fa-chart-pie"></i> Distribución por Categoría</h3>
-                    <div class="chart-container">
-                        <canvas id="categoryChart"></canvas>
+                <div class="form-row">
+                    <div>
+                        <label>Precio Venta (C$)</label>
+                        <input type="number" id="product-precio" step="0.01" min="0" value="0.00">
+                    </div>
+                    <div>
+                        <label>Clave/ID</label>
+                        <input type="text" id="product-clave" disabled style="background:#f1f5f9;" value="Auto-Generada">
                     </div>
                 </div>
-            </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar Producto</button>
+            </form>
+        </div>
+    </div>
 
-            <!-- Tabla de Productos -->
-            <div class="table-card">
-                <div class="table-header">
-                    <h3><i class="fas fa-list" style="color:var(--primary);"></i> Últimos Productos</h3>
-                    <div class="actions">
-                        <button class="btn btn-success" onclick="openModal('product')"><i class="fas fa-plus"></i> Nuevo</button>
-                        <button class="btn btn-primary" onclick="exportCSV()"><i class="fas fa-file-export"></i> Exportar</button>
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Descripción</th>
-                                <th>Categoría</th>
-                                <th style="text-align:center;">Stock</th>
-                                <th style="text-align:right;">Precio</th>
-                                <th>Estado</th>
-                                <th style="text-align:center;">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventory-tbody">
-                            <tr><td colspan="7" class="loading-state"><i class="fas fa-spinner"></i> Cargando productos...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+    <!-- MODAL: CATEGORÍA -->
+    <div id="modal-categoria" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('categoria')">&times;</span>
+            <h3><i class="fas fa-tag"></i> <span id="categoria-modal-title">Nueva Categoría</span></h3>
+            <form id="categoriaForm">
+                <input type="hidden" id="categoria-id">
+                <label>Nombre <span style="color:var(--danger);">*</span></label>
+                <input type="text" id="categoria-nombre" required placeholder="Ej: Electrónicos">
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PROVEEDOR -->
+    <div id="modal-proveedor" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('proveedor')">&times;</span>
+            <h3><i class="fas fa-truck"></i> <span id="proveedor-modal-title">Nuevo Proveedor</span></h3>
+            <form id="proveedorForm">
+                <input type="hidden" id="proveedor-id">
+                <label>Nombre <span style="color:var(--danger);">*</span></label>
+                <input type="text" id="proveedor-nombre" required placeholder="Nombre del proveedor">
+                <label>Teléfono</label>
+                <input type="text" id="proveedor-telefono" placeholder="Ej: 8888-8888">
+                <label>Correo</label>
+                <input type="email" id="proveedor-correo" placeholder="contacto@proveedor.com">
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CLIENTE -->
+    <div id="modal-cliente" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('cliente')">&times;</span>
+            <h3><i class="fas fa-user"></i> <span id="cliente-modal-title">Nuevo Cliente</span></h3>
+            <form id="clienteForm">
+                <input type="hidden" id="cliente-id">
+                <label>Nombre <span style="color:var(--danger);">*</span></label>
+                <input type="text" id="cliente-nombre" required placeholder="Nombre del cliente">
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: VENDEDOR -->
+    <div id="modal-vendedor" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('vendedor')">&times;</span>
+            <h3><i class="fas fa-user-tie"></i> <span id="vendedor-modal-title">Nuevo Vendedor</span></h3>
+            <form id="vendedorForm">
+                <input type="hidden" id="vendedor-id">
+                <label>Nombre <span style="color:var(--danger);">*</span></label>
+                <input type="text" id="vendedor-nombre" required placeholder="Nombre del vendedor">
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: BUSCAR PRODUCTO PARA ENTRADA -->
+    <div id="modal-buscar-producto" class="modal">
+        <div class="modal-content" style="max-width:700px;">
+            <span class="close" onclick="closeModal('buscar-producto')">&times;</span>
+            <h3><i class="fas fa-search"></i> Buscar Producto</h3>
+            <input type="text" id="buscar-producto-filtro" placeholder="Buscar por nombre o ID..." style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;margin-bottom:12px;" oninput="filtrarProductosBusqueda()">
+            <div style="overflow-x:auto; max-height:300px; overflow-y:auto;">
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;padding:8px;">ID</th>
+                            <th style="text-align:left;padding:8px;">Producto</th>
+                            <th style="text-align:center;padding:8px;">Stock</th>
+                            <th style="text-align:right;padding:8px;">Precio</th>
+                            <th style="text-align:right;padding:8px;">Costo</th>
+                            <th style="text-align:center;padding:8px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="buscar-productos-tbody">
+                        <tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Cargando productos...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
 
-        <!-- ============================================
-        VIEW: REGISTRAR PRODUCTOS
-        ============================================ -->
-        <div class="dashboard view-content" id="view-productos">
-            <div class="table-card">
-                <div class="table-header">
-                    <h3><i class="fas fa-boxes" style="color:var(--primary);"></i> <span id="productos-titulo">Todos los Productos</span> <span id="productos-contador" style="font-size:12px;color:var(--text-light);font-weight:400;"></span></h3>
-                    <div class="actions">
-                        <button class="btn btn-success" onclick="openModal('product')"><i class="fas fa-plus"></i> Nuevo Producto</button>
-                        <button class="btn btn-outline" onclick="limpiarFiltroProductos()" style="font-size:12px;">
-                            <i class="fas fa-undo"></i> Limpiar filtro
-                        </button>
-                    </div>
-                </div>
-                <div style="padding:0 20px 12px;">
-                    <div style="position:relative; max-width:320px;">
-                        <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:13px;"></i>
-                        <input type="text" id="productos-buscar-input" placeholder="Buscar por nombre, ID, categoría o proveedor..." oninput="filtrarProductosView()"
-                               style="width:100%; padding:10px 14px 10px 34px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:13px;">
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Descripción</th>
-                                <th>Categoría</th>
-                                <th>Proveedor</th>
-                                <th style="text-align:center;">Stock</th>
-                                <th style="text-align:right;">Precio</th>
-                                <th style="text-align:right;">Costo</th>
-                                <th style="text-align:center;">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productos-tbody">
-                            <tr><td colspan="8" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================
-        VIEW: CATEGORÍAS
-        ============================================ -->
-        <div class="dashboard view-content" id="view-categorias">
-            <div class="table-card">
-                <div class="table-header">
-                    <h3><i class="fas fa-tags" style="color:var(--primary);"></i> Gestión de Categorías</h3>
-                    <div class="actions">
-                        <button class="btn btn-success" onclick="openModal('categoria')"><i class="fas fa-plus"></i> Nueva Categoría</button>
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr><th>ID</th><th>Nombre</th><th style="text-align:center;">Acciones</th></tr>
-                        </thead>
-                        <tbody id="categorias-tbody">
-                            <tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================
-        VIEW: PROVEEDORES
-        ============================================ -->
-        <div class="dashboard view-content" id="view-proveedores">
-            <div class="table-card">
-                <div class="table-header">
-                    <h3><i class="fas fa-truck" style="color:var(--primary);"></i> Gestión de Proveedores</h3>
-                    <div class="actions">
-                        <button class="btn btn-success" onclick="openModal('proveedor')"><i class="fas fa-plus"></i> Nuevo Proveedor</button>
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th style="text-align:center;">Acciones</th></tr>
-                        </thead>
-                        <tbody id="proveedores-tbody">
-                            <tr><td colspan="5" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================
-        VIEW: CLIENTES
-        ============================================ -->
-        <div class="dashboard view-content" id="view-clientes">
-            <div class="table-card">
-                <div class="table-header">
-                    <h3><i class="fas fa-users" style="color:var(--primary);"></i> Gestión de Clientes</h3>
-                    <div class="actions">
-                        <button class="btn btn-success" onclick="openModal('cliente')"><i class="fas fa-plus"></i> Nuevo Cliente</button>
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr><th>ID</th><th>Nombre</th><th style="text-align:center;">Acciones</th></tr>
-                        </thead>
-                        <tbody id="clientes-tbody">
-                            <tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================
-        VIEW: VENDEDORES
-        ============================================ -->
-        <div class="dashboard view-content" id="view-vendedores">
-            <div class="table-card">
-                <div class="table-header">
-                    <h3><i class="fas fa-user-tie" style="color:var(--primary);"></i> Gestión de Vendedores</h3>
-                    <div class="actions">
-                        <button class="btn btn-success" onclick="openModal('vendedor')"><i class="fas fa-plus"></i> Nuevo Vendedor</button>
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr><th>ID</th><th>Nombre</th><th style="text-align:center;">Acciones</th></tr>
-                        </thead>
-                        <tbody id="vendedores-tbody">
-                            <tr><td colspan="3" class="loading-state"><i class="fas fa-spinner"></i> Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================
-        VIEW: REGISTRAR ENTRADAS
-        ============================================ -->
-        <div class="dashboard view-content" id="view-entrada">
-            <div class="table-card">
-                <div class="table-header">
-                    <h3><i class="fas fa-arrow-right" style="color:var(--primary);"></i> Registrar Entrada de Inventario</h3>
-                </div>
-                <div class="table-wrapper" style="padding:20px;">
-                    <form id="entradaForm" style="max-width:600px; margin:0 auto;">
-                        <div style="margin-bottom:12px;">
-                            <label style="font-weight:600;font-size:13px;">Referencia (opcional):</label>
-                            <input type="text" id="entrada-referencia" placeholder="ej: OC-2025-001" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;">
-                        </div>
-                        <div style="margin-bottom:12px;">
-                            <label style="font-weight:600;font-size:13px;">Motivo / Notas (opcional):</label>
-                            <textarea id="entrada-motivo" rows="2" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;font-family:inherit;"></textarea>
-                        </div>
-                        
-                        <div style="margin-bottom:12px;">
-                            <button type="button" class="btn btn-success" onclick="agregarProductoEntrada()"><i class="fas fa-plus"></i> Agregar Producto</button>
-                        </div>
-
-                        <div style="margin-bottom:12px; font-size:11px; color:var(--text-light); background:var(--light); padding:8px 12px; border-radius:8px;">
-                            <i class="fas fa-circle-info" style="color:var(--primary);"></i>
-                            Costo y Precio se cargan con el valor actual del producto. Si los cambias, se calculará automáticamente un
-                            <strong>promedio ponderado</strong> entre el stock/valor anterior y lo que estás ingresando.
-                        </div>
-
-                        <div style="overflow-x:auto; margin-bottom:16px;">
-                            <table style="width:100%;border-collapse:collapse;">
-                                <thead>
-                                    <tr>
-                                        <th style="text-align:left;padding:8px;border-bottom:2px solid var(--border);">Producto</th>
-                                        <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Cantidad</th>
-                                        <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Costo Unit. (C$)</th>
-                                        <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Precio Venta (C$)</th>
-                                        <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Resultante</th>
-                                        <th style="text-align:center;padding:8px;border-bottom:2px solid var(--border);">Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="entrada-productos-tbody">
-                                    <tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Haz clic en "Agregar Producto"</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> Registrar Entrada</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================
-        VIEW: REPORTES (submenú - ya no es vista directa, solo redirige)
-        ============================================ -->
-        <!-- Esta vista ya no se usa, los reportes se acceden desde el submenú -->
-
-        <!-- ============================================
-        MODALES
-        ============================================ -->
-
-        <!-- MODAL: PRODUCTO -->
-        <div id="modal-product" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('product')">&times;</span>
-                <h3><i class="fas fa-box"></i> <span id="product-modal-title">Agregar Producto</span></h3>
-                <form id="productForm">
-                    <input type="hidden" id="product-id">
-                    <label>Proveedor <span style="color:var(--danger);">*</span></label>
-                    <select id="product-proveedor" required><option value="">-- Seleccionar --</option></select>
-                    <label>Categoría <span style="color:var(--danger);">*</span></label>
-                    <select id="product-categoria" required><option value="">-- Seleccionar --</option></select>
-                    <label>Descripción <span style="color:var(--danger);">*</span></label>
-                    <textarea id="product-descripcion" required></textarea>
-                    <div class="form-row">
-                        <div>
-                            <label>Stock <span id="stock-label" style="color:var(--text-light); font-weight:400; font-size:11px;">(solo al crear)</span></label>
-                            <input type="number" id="product-stock" step="0.01" min="0" value="0">
-                            <small style="color:var(--text-light); font-size:10px;">Para modificar stock usa <strong>"Entrada"</strong></small>
-                        </div>
-                        <div>
-                            <label>Costo (C$)</label>
-                            <input type="number" id="product-costo" step="0.01" min="0" value="0.00">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div>
-                            <label>Precio Venta (C$)</label>
-                            <input type="number" id="product-precio" step="0.01" min="0" value="0.00">
-                        </div>
-                        <div>
-                            <label>Clave/ID</label>
-                            <input type="text" id="product-clave" disabled style="background:#f1f5f9;" value="Auto-Generada">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar Producto</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- MODAL: CATEGORÍA -->
-        <div id="modal-categoria" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('categoria')">&times;</span>
-                <h3><i class="fas fa-tag"></i> <span id="categoria-modal-title">Nueva Categoría</span></h3>
-                <form id="categoriaForm">
-                    <input type="hidden" id="categoria-id">
-                    <label>Nombre <span style="color:var(--danger);">*</span></label>
-                    <input type="text" id="categoria-nombre" required placeholder="Ej: Electrónicos">
-                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- MODAL: PROVEEDOR -->
-        <div id="modal-proveedor" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('proveedor')">&times;</span>
-                <h3><i class="fas fa-truck"></i> <span id="proveedor-modal-title">Nuevo Proveedor</span></h3>
-                <form id="proveedorForm">
-                    <input type="hidden" id="proveedor-id">
-                    <label>Nombre <span style="color:var(--danger);">*</span></label>
-                    <input type="text" id="proveedor-nombre" required placeholder="Nombre del proveedor">
-                    <label>Teléfono</label>
-                    <input type="text" id="proveedor-telefono" placeholder="Ej: 8888-8888">
-                    <label>Correo</label>
-                    <input type="email" id="proveedor-correo" placeholder="contacto@proveedor.com">
-                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- MODAL: CLIENTE -->
-        <div id="modal-cliente" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('cliente')">&times;</span>
-                <h3><i class="fas fa-user"></i> <span id="cliente-modal-title">Nuevo Cliente</span></h3>
-                <form id="clienteForm">
-                    <input type="hidden" id="cliente-id">
-                    <label>Nombre <span style="color:var(--danger);">*</span></label>
-                    <input type="text" id="cliente-nombre" required placeholder="Nombre del cliente">
-                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- MODAL: VENDEDOR -->
-        <div id="modal-vendedor" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('vendedor')">&times;</span>
-                <h3><i class="fas fa-user-tie"></i> <span id="vendedor-modal-title">Nuevo Vendedor</span></h3>
-                <form id="vendedorForm">
-                    <input type="hidden" id="vendedor-id">
-                    <label>Nombre <span style="color:var(--danger);">*</span></label>
-                    <input type="text" id="vendedor-nombre" required placeholder="Nombre del vendedor">
-                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- MODAL: BUSCAR PRODUCTO PARA ENTRADA -->
-        <div id="modal-buscar-producto" class="modal">
-            <div class="modal-content" style="max-width:700px;">
-                <span class="close" onclick="closeModal('buscar-producto')">&times;</span>
-                <h3><i class="fas fa-search"></i> Buscar Producto</h3>
-                <input type="text" id="buscar-producto-filtro" placeholder="Buscar por nombre o ID..." style="width:100%;padding:10px;border:2px solid var(--border);border-radius:8px;margin-bottom:12px;" oninput="filtrarProductosBusqueda()">
-                <div style="overflow-x:auto; max-height:300px; overflow-y:auto;">
-                    <table style="width:100%;border-collapse:collapse;">
-                        <thead>
-                            <tr>
-                                <th style="text-align:left;padding:8px;">ID</th>
-                                <th style="text-align:left;padding:8px;">Producto</th>
-                                <th style="text-align:center;padding:8px;">Stock</th>
-                                <th style="text-align:right;padding:8px;">Precio</th>
-                                <th style="text-align:right;padding:8px;">Costo</th>
-                                <th style="text-align:center;padding:8px;">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="buscar-productos-tbody">
-                            <tr><td colspan="6" class="text-center text-muted" style="padding:20px;">Cargando productos...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-    </div><!-- /main-content -->
-
-    <script src="js/inventario_dashboard.js"></script>
+    <!-- Script del sidebar (nuevo, no requiere tocar tu inventario_dashboard.js) -->
     <script>
-        // ============================================
-        // FUNCIONES DEL SIDEBAR
-        // ============================================
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
         }
 
-        function toggleSubmenu(id) {
-            const container = document.getElementById(id);
-            const items = document.getElementById(id + '-items');
-            container.classList.toggle('open');
-            if (items) {
-                items.classList.toggle('open');
-            }
+        function toggleSubmenu(e, el) {
+            e.preventDefault();
+            const li = el.closest('.has-submenu');
+            const wasOpen = li.classList.contains('open');
+            document.querySelectorAll('.sidebar .has-submenu.open').forEach(item => {
+                if (item !== li) item.classList.remove('open');
+            });
+            li.classList.toggle('open', !wasOpen);
         }
 
-        // Cerrar sidebar al hacer clic en un enlace (móvil)
-        document.querySelectorAll('.sidebar-nav a[data-view], .sidebar-nav .submenu a[data-view]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                    const sidebar = document.getElementById('sidebar');
-                    const overlay = document.getElementById('sidebarOverlay');
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('active');
-                }
+        // Cierra el drawer al elegir una vista en móvil
+        document.querySelectorAll('.sidebar a[data-view]').forEach(a => {
+            a.addEventListener('click', () => {
+                if (window.innerWidth <= 768) toggleSidebarClose();
             });
         });
 
-        // Actualizar título de página al cambiar de vista
-        const pageTitles = {
-            'dashboard': 'Dashboard',
-            'productos': 'Registrar Productos',
-            'categorias': 'Categorías',
-            'proveedores': 'Proveedores',
-            'clientes': 'Clientes',
-            'vendedores': 'Vendedores',
-            'entrada': 'Registrar Entradas'
-        };
-
-        // Sobrescribir showView para actualizar el título
-        const originalShowView = window.showView;
-        window.showView = function(viewId) {
-            if (originalShowView) originalShowView(viewId);
-            const title = pageTitles[viewId] || 'Dashboard';
-            document.getElementById('pageTitle').innerHTML = `<i class="fas fa-${getIconForView(viewId)}"></i> ${title}`;
-        };
-
-        function getIconForView(viewId) {
-            const icons = {
-                'dashboard': 'home',
-                'productos': 'box',
-                'categorias': 'tag',
-                'proveedores': 'truck',
-                'clientes': 'users',
-                'vendedores': 'user-tie',
-                'entrada': 'arrow-right'
-            };
-            return icons[viewId] || 'file';
+        function toggleSidebarClose() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
         }
-
-        // Inicializar sidebar colapsable en desktop
-        document.querySelector('.sidebar-toggle').addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const isCollapsed = sidebar.style.width === '70px';
-            
-            if (isCollapsed) {
-                sidebar.style.width = 'var(--sidebar-width)';
-                mainContent.style.marginLeft = 'var(--sidebar-width)';
-                this.innerHTML = '<i class="fas fa-chevron-left"></i>';
-            } else {
-                sidebar.style.width = '70px';
-                mainContent.style.marginLeft = '70px';
-                this.innerHTML = '<i class="fas fa-chevron-right"></i>';
-            }
-        });
-
-        // Cargar nombre de empresa
-        document.addEventListener('DOMContentLoaded', function() {
-            const companyName = localStorage.getItem('companyName') || 'Mi Empresa';
-            document.getElementById('company-name-display').textContent = companyName;
-        });
     </script>
+
+    <script src="js/inventario_dashboard.js"></script>
 </body>
 </html>
