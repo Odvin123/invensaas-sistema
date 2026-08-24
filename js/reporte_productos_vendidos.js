@@ -1,211 +1,252 @@
-let token = localStorage.getItem("token");
+(function () {
+  console.log("🚀 ===== REPORTE DE PRODUCTOS VENDIDOS INICIADO =====");
 
-document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("token");
+  const API_URL =
+    window.API_URL || "https://invensaas-backend.onrender.com/api";
+  let todosLosProductos = [];
+
+  console.log("🔑 Token:", token ? "✅ Sí" : "❌ No");
+  console.log("🌐 API_URL:", API_URL);
+
   if (!token) {
-    alert("⚠️ Sesión no válida. Redirigiendo al login...");
-    window.location.href = "login.html";
+    document.getElementById("productos-tbody").innerHTML =
+      '<tr><td colspan="9" class="empty">❌ Sesión no válida. <a href="login.html">Iniciar sesión</a></td></tr>';
     return;
   }
 
-  // Establecer fechas predeterminadas: mes actual
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-  document.getElementById("fecha-inicio").valueAsDate = startOfMonth;
-  document.getElementById("fecha-fin").valueAsDate = now;
-
-  // Cargar datos iniciales
-  loadReporte();
-
-  // Event listeners
-  document
-    .getElementById("btn-ejecutar")
-    .addEventListener("click", handleEjecutar);
-  document
-    .getElementById("btn-recargar")
-    .addEventListener("click", loadReporte);
-  document
-    .getElementById("btn-imprimir")
-    .addEventListener("click", handleImprimir);
-  document
-    .getElementById("btn-exportar")
-    .addEventListener("click", handleExportar);
-});
-
-// Formatear fecha dd/mm/yyyy
-function formatDate(dateString) {
-  if (!dateString) return "—";
-  const d = new Date(dateString);
-  return d.toLocaleDateString("es-NI", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-}
-
-// Formatear moneda C$
-function formatCurrency(value) {
-  return `C$${parseFloat(value || 0).toFixed(2)}`;
-}
-
-// Renderizar tabla
-function renderReporte(data) {
   const tbody = document.getElementById("productos-tbody");
-  const ventaTotalEl = document.getElementById("venta-total");
-  const recuperacionEl = document.getElementById("recuperacion-total");
-  const gananciaEl = document.getElementById("ganancia-total");
+  const totalProductosEl = document.getElementById("total-productos");
+  const totalVentasEl = document.getElementById("total-ventas");
+  const totalGananciaEl = document.getElementById("total-ganancia");
 
-  if (!data || data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #6c757d;">No hay productos vendidos en el rango seleccionado.</td></tr>`;
-    ventaTotalEl.textContent = "C$0.00";
-    recuperacionEl.textContent = "C$0.00";
-    gananciaEl.textContent = "C$0.00";
-    return;
+  function formatNumber(value) {
+    const num = Number(value);
+    return isNaN(num) ? "0.00" : num.toFixed(2);
   }
 
-  let ventaTotal = 0;
-  let recuperacionTotal = 0;
-  let gananciaTotal = 0;
+  function formatCurrency(value) {
+    return `C$${formatNumber(value)}`;
+  }
 
-  let rows = "";
-  data.forEach((item) => {
-    const venta = parseFloat(item.venta) || 0;
-    const costo = parseFloat(item.costo) || 0;
-    const ganancia = venta - costo;
-
-    ventaTotal += venta;
-    recuperacionTotal += costo;
-    gananciaTotal += ganancia;
-
-    rows += `
-            <tr>
-                <td>${formatDate(item.fecha_venta)}</td>
-                <td>${item.clave || "—"}</td>
-                <td>${item.descripcion || "—"}</td>
-                <td>${item.cantidad}</td>
-                <td>${formatCurrency(venta)}</td>
-                <td>${formatCurrency(item.precio_unitario)}</td>
-                <td>${formatCurrency(costo)}</td>
-                <td>${formatCurrency(costo)}</td>
-                <td style="color: ${ganancia >= 0 ? "green" : "red"};">${formatCurrency(ganancia)}</td>
-            </tr>
-        `;
-  });
-
-  tbody.innerHTML = rows;
-  ventaTotalEl.textContent = formatCurrency(ventaTotal);
-  recuperacionEl.textContent = formatCurrency(recuperacionTotal);
-  gananciaEl.textContent = formatCurrency(gananciaTotal);
-  gananciaEl.style.color = gananciaTotal >= 0 ? "green" : "red";
-}
-
-// Cargar reporte (todos o por rango)
-async function loadReporte(inicio = null, fin = null) {
-  const tbody = document.getElementById("productos-tbody");
-  tbody.innerHTML =
-    '<tr><td colspan="9" class="loading">Cargando productos vendidos...</td></tr>';
-
-  try {
-    let url = `${API_URL}/admin/ventas/productos-vendidos`;
-    if (inicio && fin) {
-      url += `?inicio=${inicio}&fin=${fin}`;
+  function formatDate(dateStr) {
+    if (!dateStr) return "—";
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("es-NI", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    } catch {
+      return dateStr;
     }
+  }
 
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (response.status === 401 || response.status === 403) {
-      alert("⚠️ Sesión expirada o sin permisos. Redirigiendo...");
-      localStorage.clear();
-      window.location.href = "login.html";
+  function renderProductos(productos) {
+    if (!productos || productos.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
+      totalProductosEl.textContent = "0";
+      totalVentasEl.textContent = "C$0.00";
+      totalGananciaEl.textContent = "C$0.00";
       return;
     }
 
-    const result = await response.json();
+    let html = "";
+    let totalVentas = 0;
+    let totalGanancia = 0;
+    let totalUnidades = 0;
 
-    if (result.success) {
-      renderReporte(result.productos || []);
-    } else {
-      tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: red;">${result.message || "Error al cargar el reporte."}</td></tr>`;
-    }
-  } catch (error) {
-    console.error("Error en loadReporte:", error);
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: red;">Error de conexión con el servidor.</td></tr>`;
-  }
-}
+    productos.forEach((p) => {
+      const cantidad = Number(p.cantidad) || 0;
+      const venta = Number(p.venta) || 0;
+      const costo = Number(p.costo) || 0;
+      const ganancia = Number(p.ganancia) || 0;
+      const descuento = Number(p.descuento) || 0;
 
-// Ejecutar con fechas seleccionadas
-function handleEjecutar() {
-  const inicioInput = document.getElementById("fecha-inicio").value;
-  const finInput = document.getElementById("fecha-fin").value;
+      totalVentas += venta;
+      totalGanancia += ganancia;
+      totalUnidades += cantidad;
 
-  if (!inicioInput || !finInput) {
-    alert("⚠️ Por favor, seleccione ambas fechas.");
-    return;
-  }
+      const gananciaColor = ganancia >= 0 ? "var(--success)" : "var(--danger)";
 
-  const inicio = new Date(inicioInput);
-  const fin = new Date(finInput);
-  if (fin < inicio) {
-    alert("⚠️ La fecha final no puede ser anterior a la inicial.");
-    return;
-  }
+      let descuentoTexto = "";
+      if (descuento > 0) {
+        descuentoTexto = ` <small style="color:var(--text-light);">(Desc: C$${descuento.toFixed(2)})</small>`;
+      }
 
-  const inicioISO = inicio.toISOString().split("T")[0];
-  const finISO = fin.toISOString().split("T")[0];
-
-  loadReporte(inicioISO, finISO);
-}
-
-// Imprimir
-function handleImprimir() {
-  window.print();
-}
-
-// Exportar a Excel (requiere SheetJS - lo añadiremos en el HTML si quieres, o uso CSV temporal)
-function handleExportar() {
-  const data = [];
-  const headers = [
-    "FECHA",
-    "CLAVE",
-    "DESCRIPCIÓN",
-    "CANTIDAD",
-    "VENTA",
-    "PRECIO",
-    "COSTO",
-    "RECUPERACIÓN",
-    "GANANCIA",
-  ];
-  data.push(headers);
-
-  const rows = document.querySelectorAll("#productos-tbody tr");
-  if (rows.length === 0 || rows[0].querySelector("td").colSpan) {
-    alert("⚠️ No hay datos para exportar.");
-    return;
-  }
-
-  rows.forEach((row) => {
-    const cols = row.querySelectorAll("td");
-    const rowData = [];
-    cols.forEach((col, i) => {
-      let text = col.innerText.trim();
-      // Eliminar "C$" para dejar solo número
-      if (i >= 4 && i <= 8) text = text.replace("C$", "").replace(",", "");
-      rowData.push(text);
+      html += `
+            <tr>
+                <td>${formatDate(p.fecha_venta)}</td>
+                <td style="text-align:center; font-weight:600;">${p.clave || "—"}</td>
+                <td>${p.descripcion || "Producto"} ${descuentoTexto}</td>
+                <td style="text-align:center; font-weight:600;">${formatNumber(cantidad)}</td>
+                <td style="text-align:right; font-weight:600; color:var(--primary);">${formatCurrency(venta)}</td>
+                <td style="text-align:right;">${formatCurrency(p.precio_unitario)}</td>
+                <td style="text-align:right;">${formatCurrency(costo)}</td>
+                <td style="text-align:right;">${formatCurrency(costo)}</td>
+                <td style="text-align:right; font-weight:700; color:${gananciaColor};">${formatCurrency(ganancia)}</td>
+            </tr>
+        `;
     });
-    data.push(rowData);
+
+    tbody.innerHTML = html;
+    totalProductosEl.textContent = formatNumber(totalUnidades);
+    totalVentasEl.textContent = formatCurrency(totalVentas);
+    totalGananciaEl.textContent = formatCurrency(totalGanancia);
+
+    if (totalGanancia < 0) {
+      totalGananciaEl.style.color = "var(--danger)";
+    } else {
+      totalGananciaEl.style.color = "var(--success)";
+    }
+
+    console.log("✅ Tabla renderizada con", productos.length, "productos");
+  }
+
+  document
+    .getElementById("btn-exportar")
+    .addEventListener("click", function () {
+      const rows = tbody.querySelectorAll("tr");
+
+      if (rows.length === 0 || rows[0].classList.contains("empty")) {
+        alert("⚠️ No hay datos para exportar.");
+        return;
+      }
+
+      const data = [];
+      const headers = [
+        "Fecha",
+        "Clave",
+        "Descripción",
+        "Cantidad",
+        "Venta",
+        "Precio",
+        "Costo",
+        "Recuperación",
+        "Ganancia",
+      ];
+      data.push(headers);
+
+      rows.forEach((row) => {
+        const cols = row.querySelectorAll("td");
+        if (cols.length > 0) {
+          const rowData = [];
+          cols.forEach((col) => {
+            let text = col.textContent.trim();
+            text = text.replace(/[^\w\s\d.,$C\-]/g, "").trim();
+            rowData.push(text);
+          });
+          if (rowData.length === 9) {
+            data.push(rowData);
+          }
+        }
+      });
+
+      let csvContent = "";
+      data.forEach((row) => {
+        const escapedRow = row.map((cell) => {
+          if (
+            typeof cell === "string" &&
+            (cell.includes(",") || cell.includes('"') || cell.includes("\n"))
+          ) {
+            return `"${cell.replace(/"/g, '""')}"`;
+          }
+          return cell;
+        });
+        csvContent += escapedRow.join(",") + "\n";
+      });
+
+      const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+
+      const now = new Date();
+      const fechaStr = now.toISOString().slice(0, 10);
+      link.setAttribute("download", `productos_vendidos_${fechaStr}.csv`);
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      console.log("✅ CSV exportado correctamente");
+    });
+
+  async function loadProductos(filtros = {}) {
+    console.log("🔄 Cargando productos vendidos...");
+    tbody.innerHTML =
+      '<tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+
+    try {
+      let url = `${API_URL}/admin/ventas/productos-vendidos`;
+      const params = new URLSearchParams();
+
+      if (filtros.inicio) params.append("inicio", filtros.inicio);
+      if (filtros.fin) params.append("fin", filtros.fin);
+
+      if (params.toString()) {
+        url += "?" + params.toString();
+      }
+
+      console.log("📡 URL:", url);
+
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("📡 Status:", response.status);
+
+      if (response.status === 401) {
+        tbody.innerHTML =
+          '<tr><td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
+        return;
+      }
+
+      const data = await response.json();
+      console.log("📦 Datos recibidos:", data);
+
+      if (!data.success || !data.productos) {
+        tbody.innerHTML =
+          '<tr><td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td></tr>';
+        return;
+      }
+
+      todosLosProductos = data.productos;
+      console.log("📊 Productos encontrados:", todosLosProductos.length);
+
+      renderProductos(todosLosProductos);
+    } catch (error) {
+      console.error("❌ Error:", error);
+      tbody.innerHTML = `<tr><td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
+    }
+  }
+
+  document.getElementById("btn-mostrar").addEventListener("click", () => {
+    const inicio = document.getElementById("fecha-inicio").value;
+    const fin = document.getElementById("fecha-fin").value;
+
+    if (!inicio || !fin) {
+      alert("⚠️ Selecciona ambas fechas (inicial y final) para filtrar.");
+      return;
+    }
+
+    loadProductos({ inicio, fin });
   });
 
-  // Exportar como CSV (alternativa ligera sin librerías)
-  const csvContent =
-    "data:text/csv;charset=utf-8," + data.map((e) => e.join(",")).join("\n");
+  document.getElementById("btn-refrescar").addEventListener("click", () => {
+    document.getElementById("fecha-inicio").value = "";
+    document.getElementById("fecha-fin").value = "";
+    loadProductos({});
+  });
 
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "reporte_productos_vendidos.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => loadProductos({}));
+  } else {
+    loadProductos({});
+  }
+})();
