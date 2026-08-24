@@ -1,14 +1,10 @@
 (function () {
-    console.log("🚀 ===== REPORTE DE PRODUCTOS VENDIDOS INICIADO =====");
+    console.log("🚀 INICIADO");
 
     const token = localStorage.getItem("token");
     const API_URL = window.API_URL || "https://invensaas-backend.onrender.com/api";
     
     let todosLosProductos = [];
-    let productosActuales = [];
-
-    console.log("🔑 Token:", token ? "✅ Sí" : "❌ No");
-    console.log("🌐 API_URL:", API_URL);
 
     if (!token) {
         document.getElementById("productos-tbody").innerHTML =
@@ -23,7 +19,7 @@
     const searchInput = document.getElementById("search-producto");
     const clearSearchBtn = document.getElementById("clear-search");
 
-    // ===== FUNCIONES DE UTILIDAD =====
+    // ===== FUNCIONES =====
     function formatNumber(value) {
         const num = Number(value);
         return isNaN(num) ? "0.00" : num.toFixed(2);
@@ -54,54 +50,44 @@
         return String(text).replace(regex, '<span class="highlight">$1</span>');
     }
 
-    // ===== RENDERIZAR TABLA CON FILTRO EN TIEMPO REAL =====
-    function renderizarTabla(searchQuery = "") {
-        console.log("📊 Renderizando tabla. Búsqueda:", searchQuery || "(vacío)");
-        console.log("📊 Productos disponibles:", productosActuales.length);
+    // ===== FUNCIÓN PRINCIPAL: RENDERIZAR TABLA =====
+    function renderizarTabla(productos, searchQuery = "") {
+        console.log("📊 Renderizando. Productos:", productos ? productos.length : 0, "Búsqueda:", searchQuery);
 
-        // Si no hay productos, mostrar mensaje
-        if (!productosActuales || productosActuales.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="9" class="empty">📭 No hay productos vendidos disponibles.</td>
-                </tr>`;
+        if (!productos || productos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" class="empty">📭 No hay productos</td></tr>';
             totalProductosEl.textContent = "0";
             totalVentasEl.textContent = "C$0.00";
             totalGananciaEl.textContent = "C$0.00";
             return;
         }
 
-        // APLICAR FILTRO DE BÚSQUEDA EN TIEMPO REAL
-        let datosMostrar = productosActuales;
+        // === FILTRAR POR BÚSQUEDA ===
+        let datosFiltrados = productos;
         if (searchQuery && searchQuery.trim()) {
             const query = searchQuery.trim().toLowerCase();
-            datosMostrar = productosActuales.filter(p => {
+            datosFiltrados = productos.filter(p => {
                 const desc = (p.descripcion || "").toLowerCase();
                 const clave = (p.clave || "").toLowerCase();
                 return desc.includes(query) || clave.includes(query);
             });
-            console.log("🔍 Filtrados a", datosMostrar.length, "productos (de", productosActuales.length, ")");
+            console.log("🔍 Filtrados:", datosFiltrados.length, "de", productos.length);
         }
 
-        // Si no hay coincidencias
-        if (datosMostrar.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="9" class="empty">🔍 No se encontraron productos que coincidan con "<strong>${searchQuery}</strong>"</td>
-                </tr>`;
+        if (datosFiltrados.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" class="empty">🔍 No se encontró "<strong>${searchQuery}</strong>"</td></tr>`;
             totalProductosEl.textContent = "0";
             totalVentasEl.textContent = "C$0.00";
             totalGananciaEl.textContent = "C$0.00";
             return;
         }
 
-        // Generar HTML de la tabla
         let html = "";
         let totalVentas = 0;
         let totalGanancia = 0;
         let totalUnidades = 0;
 
-        datosMostrar.forEach((p) => {
+        datosFiltrados.forEach((p) => {
             const cantidad = Number(p.cantidad) || 0;
             const venta = Number(p.venta) || 0;
             const costo = Number(p.costo) || 0;
@@ -151,19 +137,113 @@
         }
     }
 
-    // ===== ACTUALIZAR BOTÓN LIMPIAR =====
-    function actualizarBotonLimpiar(query) {
+    // ===== CARGAR PRODUCTOS =====
+    async function cargarProductos(inicio = null, fin = null) {
+        console.log("🔄 Cargando...");
+        tbody.innerHTML = '<tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+
+        try {
+            let url = `${API_URL}/admin/ventas/productos-vendidos`;
+            const params = new URLSearchParams();
+
+            if (inicio && fin) {
+                params.append("inicio", inicio);
+                params.append("fin", fin);
+            }
+
+            if (params.toString()) {
+                url += "?" + params.toString();
+            }
+
+            console.log("📡 URL:", url);
+
+            const response = await fetch(url, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (response.status === 401) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
+                return;
+            }
+
+            const data = await response.json();
+            console.log("📦 Datos:", data);
+
+            if (!data.success || !data.productos) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty">❌ Error al cargar</td></tr>';
+                return;
+            }
+
+            todosLosProductos = data.productos;
+            console.log("📊 Productos:", todosLosProductos.length);
+
+            // Renderizar con la búsqueda actual
+            const searchQuery = searchInput.value || "";
+            renderizarTabla(todosLosProductos, searchQuery);
+
+        } catch (error) {
+            console.error("❌ Error:", error);
+            tbody.innerHTML = `<tr><td colspan="9" class="empty">❌ Error: ${error.message}</td></tr>`;
+        }
+    }
+
+    // ===== MANEJAR BÚSQUEDA =====
+    function handleSearch() {
+        const query = searchInput.value;
+        console.log("✏️ BUSCANDO:", query || "(vacío)");
+        
+        // Mostrar/ocultar botón limpiar
         if (query && query.trim()) {
             clearSearchBtn.classList.add("visible");
         } else {
             clearSearchBtn.classList.remove("visible");
         }
+
+        // Filtrar en tiempo real
+        if (todosLosProductos.length > 0) {
+            renderizarTabla(todosLosProductos, query);
+        } else {
+            console.log("⚠️ No hay productos para filtrar");
+        }
     }
 
-    // ===== EXPORTAR CSV =====
+    // ===== EVENTOS =====
+    // Evento de búsqueda en tiempo real
+    searchInput.addEventListener("input", handleSearch);
+
+    // Limpiar búsqueda
+    clearSearchBtn.addEventListener("click", function () {
+        searchInput.value = "";
+        clearSearchBtn.classList.remove("visible");
+        renderizarTabla(todosLosProductos, "");
+        searchInput.focus();
+    });
+
+    // Botón Mostrar (con fecha)
+    document.getElementById("btn-mostrar").addEventListener("click", async () => {
+        const inicio = document.getElementById("fecha-inicio").value;
+        const fin = document.getElementById("fecha-fin").value;
+
+        if (!inicio || !fin) {
+            alert("⚠️ Selecciona ambas fechas.");
+            return;
+        }
+
+        await cargarProductos(inicio, fin);
+    });
+
+    // Botón Refrescar
+    document.getElementById("btn-refrescar").addEventListener("click", async () => {
+        document.getElementById("fecha-inicio").value = "";
+        document.getElementById("fecha-fin").value = "";
+        searchInput.value = "";
+        clearSearchBtn.classList.remove("visible");
+        await cargarProductos();
+    });
+
+    // Exportar CSV
     document.getElementById("btn-exportar").addEventListener("click", function () {
         const rows = tbody.querySelectorAll("tr");
-
         if (rows.length === 0 || rows[0].classList.contains("empty")) {
             alert("⚠️ No hay datos para exportar.");
             return;
@@ -203,158 +283,19 @@
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
-
         const now = new Date();
         const fechaStr = now.toISOString().slice(0, 10);
         link.setAttribute("download", `productos_vendidos_${fechaStr}.csv`);
-
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-
-        console.log("✅ CSV exportado correctamente");
-    });
-
-    // ===== CARGAR PRODUCTOS (CON O SIN FECHA) =====
-    async function cargarProductos(inicio = null, fin = null) {
-        console.log("🔄 Cargando productos...");
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td>
-            </tr>`;
-
-        try {
-            let url = `${API_URL}/admin/ventas/productos-vendidos`;
-            const params = new URLSearchParams();
-
-            if (inicio && fin) {
-                params.append("inicio", inicio);
-                params.append("fin", fin);
-                console.log("📅 Con filtro de fecha:", inicio, "a", fin);
-            } else {
-                console.log("📅 Sin filtro de fecha (todos los productos)");
-            }
-
-            if (params.toString()) {
-                url += "?" + params.toString();
-            }
-
-            console.log("📡 URL:", url);
-
-            const response = await fetch(url, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.status === 401) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td>
-                    </tr>`;
-                return;
-            }
-
-            const data = await response.json();
-            console.log("📦 Datos recibidos:", data);
-
-            if (!data.success || !data.productos) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td>
-                    </tr>`;
-                return;
-            }
-
-            // Guardar productos actuales
-            productosActuales = data.productos;
-            
-            // Si no hay filtro de fecha, también guardar en todosLosProductos
-            if (!inicio && !fin) {
-                todosLosProductos = data.productos;
-            }
-
-            console.log("📊 Productos cargados:", productosActuales.length);
-
-            // Aplicar búsqueda actual (si existe)
-            const searchQuery = searchInput.value || "";
-            renderizarTabla(searchQuery);
-
-        } catch (error) {
-            console.error("❌ Error:", error);
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td>
-                </tr>`;
-        }
-    }
-
-    // ===== EVENTO DE BÚSQUEDA EN TIEMPO REAL =====
-    let timeoutId = null;
-    searchInput.addEventListener("input", function () {
-        const query = this.value;
-        console.log("✏️ Input detectado:", query || "(vacío)");
-        
-        actualizarBotonLimpiar(query);
-
-        // Debounce para mejor rendimiento
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            renderizarTabla(query);
-        }, 300);
-    });
-
-    // ===== LIMPIAR BÚSQUEDA =====
-    clearSearchBtn.addEventListener("click", function () {
-        console.log("🧹 Limpiando búsqueda");
-        searchInput.value = "";
-        actualizarBotonLimpiar("");
-        renderizarTabla("");
-        searchInput.focus();
-    });
-
-    // ===== BOTÓN MOSTRAR (CON FILTRO DE FECHA) =====
-    document.getElementById("btn-mostrar").addEventListener("click", async () => {
-        const inicio = document.getElementById("fecha-inicio").value;
-        const fin = document.getElementById("fecha-fin").value;
-
-        if (!inicio || !fin) {
-            alert("⚠️ Selecciona ambas fechas (inicial y final) para filtrar.");
-            return;
-        }
-
-        console.log("📅 Aplicando filtro de fecha:", inicio, "a", fin);
-        
-        // Cargar productos con el filtro de fecha
-        await cargarProductos(inicio, fin);
-    });
-
-    // ===== BOTÓN REFRESCAR =====
-    document.getElementById("btn-refrescar").addEventListener("click", async () => {
-        console.log("🔄 Refrescando...");
-        
-        // Limpiar fechas
-        document.getElementById("fecha-inicio").value = "";
-        document.getElementById("fecha-fin").value = "";
-        
-        // Limpiar búsqueda
-        searchInput.value = "";
-        actualizarBotonLimpiar("");
-        
-        // Cargar todos los productos (sin filtro de fecha)
-        await cargarProductos();
     });
 
     // ===== INICIALIZAR =====
-    async function init() {
-        console.log("🚀 Inicializando...");
-        // Cargar todos los productos al inicio (sin filtro de fecha)
-        await cargarProductos();
-    }
-
-    // Ejecutar cuando el DOM esté listo
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
+        document.addEventListener("DOMContentLoaded", () => cargarProductos());
     } else {
-        init();
+        cargarProductos();
     }
 })();
