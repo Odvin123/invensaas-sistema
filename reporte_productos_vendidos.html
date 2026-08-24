@@ -33,6 +33,18 @@
                     <label><i class="fas fa-calendar-alt"></i> Fecha Final</label>
                     <input type="date" id="fecha-fin">
                 </div>
+
+                <!-- 🔍 NUEVO FILTRO DE BÚSQUEDA POR DESCRIPCIÓN -->
+                <div class="group search-group">
+                    <label><i class="fas fa-search"></i> Buscar Producto</label>
+                    <div class="search-wrapper">
+                        <input type="text" id="search-producto" placeholder="Escribe para filtrar..." autocomplete="off">
+                        <button class="clear-search" id="clear-search" aria-label="Limpiar búsqueda">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
                 <button class="btn-execute" id="btn-mostrar"><i class="fas fa-eye"></i> Mostrar</button>
                 <button class="btn-refresh" id="btn-refrescar"><i class="fas fa-sync-alt"></i> Refrescar</button>
             </div>
