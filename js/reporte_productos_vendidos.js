@@ -8,6 +8,7 @@
     let productosConFiltroFecha = [];
     let busquedaActual = "";
     let filtrosActivos = {};
+    let datosCargados = false;
 
     console.log("🔑 Token:", token ? "✅ Sí" : "❌ No");
     console.log("🌐 API_URL:", API_URL);
@@ -59,14 +60,21 @@
 
     // ===== RENDERIZAR TABLA CON FILTRO DE BÚSQUEDA =====
     function renderProductosConBusqueda(searchQuery = "") {
-        // Primero, obtener los productos base (todos o con filtro de fecha)
-        const productosBase = productosConFiltroFecha.length > 0 ? 
-            productosConFiltroFecha : 
-            todosLosProductos;
-
-        if (!productosBase || productosBase.length === 0) {
+        // Determinar qué productos usar como base
+        let productosBase = [];
+        
+        // Si hay productos con filtro de fecha, usarlos
+        if (productosConFiltroFecha && productosConFiltroFecha.length > 0) {
+            productosBase = productosConFiltroFecha;
+        } 
+        // Si no hay filtro de fecha pero hay todos los productos, usarlos
+        else if (todosLosProductos && todosLosProductos.length > 0) {
+            productosBase = todosLosProductos;
+        }
+        // Si no hay datos, mostrar mensaje
+        else {
             tbody.innerHTML =
-                '<tr><td colspan="9" class="empty">📭 No hay productos vendidos en este período.</td></tr>';
+                '<tr><td colspan="9" class="empty">📭 No hay productos vendidos disponibles.</td></tr>';
             totalProductosEl.textContent = "0";
             totalVentasEl.textContent = "C$0.00";
             totalGananciaEl.textContent = "C$0.00";
@@ -232,12 +240,10 @@
         console.log("✅ CSV exportado correctamente");
     });
 
-    // ===== CARGAR PRODUCTOS DESDE API =====
-    async function loadProductos(filtros = {}) {
-        console.log("🔄 Cargando productos vendidos...");
-        tbody.innerHTML =
-            '<tr><td colspan="9" class="empty"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
-
+    // ===== CARGAR PRODUCTOS CON FILTRO DE FECHA =====
+    async function loadProductosConFecha(filtros = {}) {
+        console.log("🔄 Cargando productos con filtro de fecha...");
+        
         try {
             let url = `${API_URL}/admin/ventas/productos-vendidos`;
             const params = new URLSearchParams();
@@ -249,13 +255,11 @@
                 url += "?" + params.toString();
             }
 
-            console.log("📡 URL:", url);
+            console.log("📡 URL con filtro:", url);
 
             const response = await fetch(url, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-
-            console.log("📡 Status:", response.status);
 
             if (response.status === 401) {
                 tbody.innerHTML =
@@ -264,7 +268,7 @@
             }
 
             const data = await response.json();
-            console.log("📦 Datos recibidos:", data);
+            console.log("📦 Datos con filtro recibidos:", data);
 
             if (!data.success || !data.productos) {
                 tbody.innerHTML =
@@ -272,32 +276,13 @@
                 return;
             }
 
-            // Guardar los productos con el filtro de fecha aplicado (o vacío si no hay filtro)
+            // Guardar productos con filtro de fecha
             productosConFiltroFecha = data.productos;
-            
-            // Si NO hay filtros de fecha, guardar también en todosLosProductos
-            if (!filtros.inicio && !filtros.fin) {
-                todosLosProductos = data.productos;
-            } else {
-                // Si hay filtros de fecha, TODOS los productos originales deben mantenerse
-                // para cuando se quite el filtro de fecha
-                if (todosLosProductos.length === 0) {
-                    // Solo cargar todos si es la primera vez
-                    // Para este caso, necesitamos cargar todos los productos sin filtro
-                    await cargarTodosLosProductos();
-                }
-            }
+            console.log("📊 Productos con filtro:", productosConFiltroFecha.length);
 
-            console.log("📊 Productos encontrados:", data.productos.length);
-            console.log("📊 Todos los productos:", todosLosProductos.length);
-
-            // Aplicar búsqueda actual
+            // Aplicar búsqueda actual si existe
             const searchQuery = searchInput.value || "";
             renderProductosConBusqueda(searchQuery);
-            actualizarBotonLimpiar(searchQuery);
-
-            // Guardar filtros activos
-            filtrosActivos = filtros;
 
         } catch (error) {
             console.error("❌ Error:", error);
@@ -306,19 +291,45 @@
         }
     }
 
-    // ===== FUNCIÓN PARA CARGAR TODOS LOS PRODUCTOS (SIN FILTRO) =====
-    async function cargarTodosLosProductos() {
+    // ===== CARGAR TODOS LOS PRODUCTOS (SIN FILTRO) =====
+    async function loadTodosLosProductos() {
+        console.log("🔄 Cargando todos los productos (sin filtro)...");
+        
         try {
             const response = await fetch(`${API_URL}/admin/ventas/productos-vendidos`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            const data = await response.json();
-            if (data.success && data.productos) {
-                todosLosProductos = data.productos;
-                console.log("📊 Todos los productos cargados:", todosLosProductos.length);
+
+            if (response.status === 401) {
+                tbody.innerHTML =
+                    '<tr><td colspan="9" class="empty">❌ Sesión expirada. <a href="login.html">Iniciar sesión</a></td></tr>';
+                return;
             }
+
+            const data = await response.json();
+            console.log("📦 Todos los productos recibidos:", data);
+
+            if (!data.success || !data.productos) {
+                tbody.innerHTML =
+                    '<tr><td colspan="9" class="empty">❌ Error al cargar productos vendidos.</td></tr>';
+                return;
+            }
+
+            // Guardar todos los productos
+            todosLosProductos = data.productos;
+            productosConFiltroFecha = data.productos; // Inicialmente, los productos con filtro son todos
+            datosCargados = true;
+            
+            console.log("📊 Todos los productos:", todosLosProductos.length);
+
+            // Aplicar búsqueda actual si existe
+            const searchQuery = searchInput.value || "";
+            renderProductosConBusqueda(searchQuery);
+
         } catch (error) {
-            console.error("❌ Error cargando todos los productos:", error);
+            console.error("❌ Error:", error);
+            tbody.innerHTML =
+                `<tr><td colspan="9" class="empty">❌ Error de conexión: ${error.message}</td></tr>`;
         }
     }
 
@@ -332,6 +343,7 @@
         // Debounce para mejor rendimiento
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
+            // Siempre aplicar la búsqueda sobre los datos actuales
             renderProductosConBusqueda(query);
         }, 300);
     });
@@ -355,35 +367,29 @@
             return;
         }
 
-        // Limpiar búsqueda (opcional - puedes decidir si mantenerla)
-        // searchInput.value = "";
-        // busquedaActual = "";
-        // actualizarBotonLimpiar("");
-
-        await loadProductos({ inicio, fin });
+        // Cargar productos con el filtro de fecha
+        await loadProductosConFecha({ inicio, fin });
     });
 
     // ===== BOTÓN REFRESCAR =====
     document.getElementById("btn-refrescar").addEventListener("click", async () => {
+        // Limpiar fechas
         document.getElementById("fecha-inicio").value = "";
         document.getElementById("fecha-fin").value = "";
         
-        // Mantener la búsqueda si existe
-        // Si quieres limpiar la búsqueda también, descomenta estas líneas:
-        // searchInput.value = "";
-        // busquedaActual = "";
-        // actualizarBotonLimpiar("");
+        // Limpiar búsqueda
+        searchInput.value = "";
+        busquedaActual = "";
+        actualizarBotonLimpiar("");
         
-        productosConFiltroFecha = todosLosProductos;
-        await loadProductos({});
+        // Recargar todos los productos
+        await loadTodosLosProductos();
     });
 
     // ===== INICIALIZAR =====
     async function init() {
-        // Primero cargar todos los productos sin filtro
-        await cargarTodosLosProductos();
-        productosConFiltroFecha = todosLosProductos;
-        renderProductosConBusqueda("");
+        // Cargar todos los productos al inicio
+        await loadTodosLosProductos();
     }
 
     if (document.readyState === "loading") {
