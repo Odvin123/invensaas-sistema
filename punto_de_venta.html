@@ -154,9 +154,10 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
                     <div>
                         <label for="cantidad_venta">Cantidad a Vender:</label>
-                        <input type="number" id="cantidad_venta" required min="0.01" step="any" value="1"
+                        <input type="text" id="cantidad_venta" required placeholder="Ej: 1, 0.50, 2.5"
                             oninput="validateStock();calcularSubtotalConDescuento()"
-                            style="width:100%; padding:10px; border:2px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; -moz-appearance:textfield;">
+                            style="width:100%; padding:10px; border:2px solid 
+                            var(--border); border-radius:8px; font-family:'Inter',sans-serif; -moz-appearance:textfield;">
                     </div>
                     <div>
                         <label for="existencia_stock">Existencia (Stock):</label>
