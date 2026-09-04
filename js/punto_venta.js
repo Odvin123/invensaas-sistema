@@ -354,7 +354,7 @@ function validateStock() {
 
   let cantidad = parseFloat(cantidadStr);
 
-  if (isNaN(cantidad) || cantidad >= 0) {
+  if (isNaN(cantidad) || cantidad <= 0) {
     alert("Por favor, ingrese una cantidad válida (mayor a 0).");
     cantidadInput.value = "";
     cantidadInput.focus();
