@@ -343,38 +343,30 @@ function selectProductForSale(productId) {
   calcularSubtotalConDescuento();
 }
 function validateStock() {
-  const stock =
-    parseFloat(document.getElementById("existencia_stock").value) || 0;
-  const cantidadInput = document.getElementById("cantidad_venta");
-  const cantidadStr = cantidadInput.value.trim();
-
-  if (cantidadStr === "") {
-    return;
-  }
-
-  let cantidad = parseFloat(cantidadStr);
-
-  if (isNaN(cantidad) || cantidad <= 0) {
-    alert("Por favor, ingrese una cantidad válida (mayor a 0).");
-    cantidadInput.value = "";
-    cantidadInput.focus();
-    return;
-  }
-
-  if (stock !== "--" && stock < cantidad) {
-    alert(
-      `⚠️ Stock Insuficiente. Solo hay ${stock.toFixed(2)} unidades disponibles.`,
-    );
-    cantidadInput.value = stock > 0 ? stock.toFixed(2) : "";
-    if (stock <= 0) {
-      alert("❌ Este producto no tiene stock disponible.");
-      cantidadInput.value = "";
+    const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
+    const cantidadInput = document.getElementById('cantidad_venta');
+    const cantidadStr = cantidadInput.value.trim();
+    
+    if (cantidadStr === '') {
+        cantidadInput.style.borderColor = 'var(--border)';
+        return;
     }
-  }
-
-  calcularSubtotalConDescuento();
+    
+    let cantidad = parseFloat(cantidadStr);
+    
+    if (isNaN(cantidad) || cantidad <= 0) {
+        cantidadInput.style.borderColor = '#ef4444';
+        return;
+    }
+    
+    cantidadInput.style.borderColor = 'var(--border)';
+    
+    if (stock > 0 && stock < cantidad) {
+        cantidadInput.style.borderColor = '#eab308';
+    }
+    
+    calcularSubtotalConDescuento();
 }
-
 function clearMovimientoInputs() {
   document.getElementById("selected_product_id").value = "";
   document.getElementById("selected_product_clave").value = "";
@@ -386,11 +378,11 @@ function clearMovimientoInputs() {
   document.getElementById("subtotal-con-descuento").textContent = "C$0.00";
   document.getElementById("descuento_producto").style.borderColor = "#e2e8f0";
 }
-
-    document.getElementById('movimientoVentasForm').addEventListener('submit', function (e) {
+document.getElementById('movimientoVentasForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const productId = parseInt(document.getElementById('selected_product_id').value);
     const cantidadStr = document.getElementById('cantidad_venta').value.trim();
+    const cantidadInput = document.getElementById('cantidad_venta');
     const stock = parseFloat(document.getElementById('existencia_stock').value) || 0;
     const precioStr = document.getElementById('precio_unitario').value.replace('C$', '').trim();
     const precio = parseFloat(precioStr) || 0;
@@ -401,19 +393,13 @@ function clearMovimientoInputs() {
         return;
     }
     
-    if (cantidadStr === '') {
-        alert("❌ Por favor, ingrese la cantidad a vender.");
-        document.getElementById('cantidad_venta').focus();
-        return;
+    if (cantidadStr === '' || isNaN(parseFloat(cantidadStr)) || parseFloat(cantidadStr) <= 0) {
+        cantidadInput.style.borderColor = '#ef4444';
+        cantidadInput.focus();
+        return; 
     }
     
     const cantidad = parseFloat(cantidadStr);
-    if (isNaN(cantidad) || cantidad <= 0) {
-        alert("❌ La cantidad debe ser un número positivo.");
-        document.getElementById('cantidad_venta').value = '';
-        document.getElementById('cantidad_venta').focus();
-        return;
-    }
 
     const productoData = productosInventarioCache.find(p => p.id === productId);
     if (!productoData) return;
@@ -422,8 +408,9 @@ function clearMovimientoInputs() {
     const currentlyInSale = existingItem ? existingItem.cantidad : 0;
 
     if ((currentlyInSale + cantidad) > stock) {
-        alert(`⚠️ Stock Insuficiente. Stock disponible: ${stock.toFixed(2)}`);
-        return;
+        cantidadInput.style.borderColor = '#ef4444';
+        cantidadInput.focus();
+        return; 
     }
 
     const subtotal = cantidad * precio;
